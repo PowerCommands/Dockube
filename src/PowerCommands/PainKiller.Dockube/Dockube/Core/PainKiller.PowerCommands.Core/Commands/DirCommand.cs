@@ -1,6 +1,4 @@
-﻿using PainKiller.PowerCommands.Core.Commands;
-
-namespace DockubeCommands.Commands
+﻿namespace PainKiller.PowerCommands.Core.Commands
 {
     [PowerCommandDesign(description: "List the content of the working directory or this applications app directory, with the option to open the directory with the File explorer ",
         options: "open|app",
