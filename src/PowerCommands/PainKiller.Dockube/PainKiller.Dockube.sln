@@ -1,0 +1,85 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9C70681C-3DAA-4C26-82C7-5FC4EEFCA560}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.ReadLine", "Dockube\Core\PainKiller.PowerCommands.ReadLine\PainKiller.PowerCommands.ReadLine.csproj", "{FA6C42B9-B3E4-4DC4-BB3B-C7575359E1D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.Configuration", "Dockube\Core\PainKiller.PowerCommands.Configuration\PainKiller.PowerCommands.Configuration.csproj", "{867E85F4-7EAF-48B9-B867-C9D3CD4C0233}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.Core", "Dockube\Core\PainKiller.PowerCommands.Core\PainKiller.PowerCommands.Core.csproj", "{22F34187-86B3-429A-B55F-8C4FC6409DD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.Security", "Dockube\Core\PainKiller.PowerCommands.Security\PainKiller.PowerCommands.Security.csproj", "{B3DFF4E8-FBF6-443A-8636-797E7B42126F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.Shared", "Dockube\Core\PainKiller.PowerCommands.Shared\PainKiller.PowerCommands.Shared.csproj", "{4A79D676-782F-453E-AF37-26D131432CEC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Third party components", "Third party components", "{483A69D4-F043-4B6F-B0D9-EB4A8C4028F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.SerilogExtensions", "Dockube\Third party components\PainKiller.SerilogExtensions\PainKiller.SerilogExtensions.csproj", "{F6E775B0-0C60-4DE3-9FA7-9F54BC5E69F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.Bootstrap", "Dockube\PainKiller.PowerCommands.Bootstrap\PainKiller.PowerCommands.Bootstrap.csproj", "{7E193415-25B8-4A95-8545-B06C5EC6454E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockubeCommands", "Dockube\DockubeCommands\DockubeCommands.csproj", "{5531476C-2690-4741-A36B-4F70C355DBBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PainKiller.PowerCommands.PowerCommandsConsole", "Dockube\PainKiller.PowerCommands.PowerCommandsConsole\PainKiller.PowerCommands.PowerCommandsConsole.csproj", "{C48A3B0C-AAC6-4EC3-9089-402F2750E131}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA6C42B9-B3E4-4DC4-BB3B-C7575359E1D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA6C42B9-B3E4-4DC4-BB3B-C7575359E1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA6C42B9-B3E4-4DC4-BB3B-C7575359E1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA6C42B9-B3E4-4DC4-BB3B-C7575359E1D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{867E85F4-7EAF-48B9-B867-C9D3CD4C0233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{867E85F4-7EAF-48B9-B867-C9D3CD4C0233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{867E85F4-7EAF-48B9-B867-C9D3CD4C0233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{867E85F4-7EAF-48B9-B867-C9D3CD4C0233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22F34187-86B3-429A-B55F-8C4FC6409DD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22F34187-86B3-429A-B55F-8C4FC6409DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22F34187-86B3-429A-B55F-8C4FC6409DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22F34187-86B3-429A-B55F-8C4FC6409DD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3DFF4E8-FBF6-443A-8636-797E7B42126F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3DFF4E8-FBF6-443A-8636-797E7B42126F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3DFF4E8-FBF6-443A-8636-797E7B42126F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3DFF4E8-FBF6-443A-8636-797E7B42126F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A79D676-782F-453E-AF37-26D131432CEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A79D676-782F-453E-AF37-26D131432CEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A79D676-782F-453E-AF37-26D131432CEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A79D676-782F-453E-AF37-26D131432CEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6E775B0-0C60-4DE3-9FA7-9F54BC5E69F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6E775B0-0C60-4DE3-9FA7-9F54BC5E69F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6E775B0-0C60-4DE3-9FA7-9F54BC5E69F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6E775B0-0C60-4DE3-9FA7-9F54BC5E69F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E193415-25B8-4A95-8545-B06C5EC6454E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E193415-25B8-4A95-8545-B06C5EC6454E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E193415-25B8-4A95-8545-B06C5EC6454E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E193415-25B8-4A95-8545-B06C5EC6454E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5531476C-2690-4741-A36B-4F70C355DBBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5531476C-2690-4741-A36B-4F70C355DBBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5531476C-2690-4741-A36B-4F70C355DBBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5531476C-2690-4741-A36B-4F70C355DBBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48A3B0C-AAC6-4EC3-9089-402F2750E131}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48A3B0C-AAC6-4EC3-9089-402F2750E131}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48A3B0C-AAC6-4EC3-9089-402F2750E131}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48A3B0C-AAC6-4EC3-9089-402F2750E131}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA6C42B9-B3E4-4DC4-BB3B-C7575359E1D8} = {9C70681C-3DAA-4C26-82C7-5FC4EEFCA560}
+		{867E85F4-7EAF-48B9-B867-C9D3CD4C0233} = {9C70681C-3DAA-4C26-82C7-5FC4EEFCA560}
+		{22F34187-86B3-429A-B55F-8C4FC6409DD0} = {9C70681C-3DAA-4C26-82C7-5FC4EEFCA560}
+		{B3DFF4E8-FBF6-443A-8636-797E7B42126F} = {9C70681C-3DAA-4C26-82C7-5FC4EEFCA560}
+		{4A79D676-782F-453E-AF37-26D131432CEC} = {9C70681C-3DAA-4C26-82C7-5FC4EEFCA560}
+		{F6E775B0-0C60-4DE3-9FA7-9F54BC5E69F7} = {483A69D4-F043-4B6F-B0D9-EB4A8C4028F5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AEF3B277-7535-4E53-B3D8-A8BBE45471E4}
+	EndGlobalSection
+EndGlobal
