@@ -39,6 +39,9 @@
 		<None Update="Manifests\argocd\argocd-06-open-tutorial.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\gogs\docker-compose\docker-compose.yaml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Manifests\gogs\gogs-021-pause.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

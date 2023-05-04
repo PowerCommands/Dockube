@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  gogs:
+    image: gogs/gogs:latest
+    container_name: gogs
+    ports:
+      - "3000:3000"
+      - "22:22"
+    volumes:
+      - ./data:/data
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - RUN_MODE=prod
