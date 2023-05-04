@@ -28,8 +28,8 @@ configuration:
     name: PainKiller Core
   bookmark:
     bookmarks:
-    - name: Program
-      path: C:\Program Files
+    - name: Manifests
+      path: manifests
       index: 0
   secret:
     secrets:    

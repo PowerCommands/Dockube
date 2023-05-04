@@ -39,12 +39,32 @@
 		<None Update="Manifests\argocd\argocd-06-open-tutorial.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\gogs\gogs-021-pause.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\gogs-06-open-admin.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\gogs-01-namespace.yaml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\gogs-02-set-namespace-context.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\gogs-03-pvc.yaml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\gogs-04-deploy.yaml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\gogs-05-service.yaml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="PowerCommandsConfiguration.yaml">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Manifests\" />
 	  <Folder Include="Managers\" />
 	  <Folder Include="DomainObjects\" />
 	</ItemGroup>

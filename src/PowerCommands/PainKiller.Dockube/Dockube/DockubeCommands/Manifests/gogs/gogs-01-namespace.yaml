@@ -1,0 +1,5 @@
+# https://github.com/drabo/gogs/blob/master/gogs.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gogs
