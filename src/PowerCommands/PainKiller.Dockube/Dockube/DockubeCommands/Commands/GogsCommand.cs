@@ -1,5 +1,4 @@
 using DockubeCommands.Managers;
-using PainKiller.PowerCommands.Security.Services;
 
 namespace DockubeCommands.Commands;
 
@@ -15,6 +14,7 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
     {
         var path = GetOptionValue("path");
         var content = GetOptionValue("content");
+        bool commit = false;
 
 
         var accessToken = Configuration.Secret.DecryptSecret("##gogsAT##");
@@ -22,21 +22,21 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
         var gogsManager = new GogsManager(Configuration.GogsServer, Configuration.GogsUserName, accessToken);
         var repo = gogsManager.GetRepo(Configuration.GogsMainRepo);
         WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
-
         if (!string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(path))
         {
             var response = gogsManager.AddFileToRepo(Configuration.GogsMainRepo, path, content);
+            commit = true;
             WriteSuccessLine($"{response}");
         }
         else if (!string.IsNullOrEmpty(path))
         {
             var response = gogsManager.DeleteFileFromRepo(Configuration.GogsMainRepo, path);
+            commit = true;
             WriteSuccessLine($"{response}");
         }
-
-        if (!string.IsNullOrEmpty(content))
+        if (commit)
         {
-            var response = gogsManager.CommitChanges(Configuration.GogsMainRepo);
+            var response = gogsManager.CommitChanges(Configuration.GogsMainRepo, "Commit made with Dockube PowerCommands");
             WriteSuccessLine($"{response}");
         }
         return Ok();
