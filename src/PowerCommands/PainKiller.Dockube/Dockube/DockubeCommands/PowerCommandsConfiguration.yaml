@@ -7,7 +7,9 @@ configuration:
   backupPath: ..\..\..\..\Core\PainKiller.PowerCommands.Core\  
   defaultGitRepositoryPath: ..\..\..\..\..\..\
   pathToDockerDesktop: C:\Program Files\Docker\Docker
-  loginShellCommand:   
+  gogsServer: http://192.168.0.15:3000/api/v1
+  gogsUserName: dockube
+  gogsMainRepo: dockube-main
   metadata:
     name: Dockube
     description: Description of my project
