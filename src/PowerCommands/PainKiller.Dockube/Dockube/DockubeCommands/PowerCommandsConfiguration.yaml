@@ -8,7 +8,7 @@ configuration:
   defaultGitRepositoryPath: ..\..\..\..\..\..\
   pathToDockerDesktop: C:\Program Files\Docker\Docker
   gogsServer: http://192.168.0.15:3000/api/v1
-  gogsUserName: dockube
+  gogsUserName: dockube  
   gogsMainRepo: dockube-main
   metadata:
     name: Dockube
@@ -34,7 +34,10 @@ configuration:
       path: manifests
       index: 0
   secret:
-    secrets:    
+    secrets:
+    - name: gogsAT
+      options:
+        target: User
   environment:
     variables:
     - name: OS

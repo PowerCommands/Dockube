@@ -1,12 +1,11 @@
-using RestSharp;
-using System.Text;
-using DockubeCommands.DomainObjects;
+using DockubeCommands.Managers;
 using PainKiller.PowerCommands.Security.Services;
 
 namespace DockubeCommands.Commands;
 
 [PowerCommandTest(         tests: " ")]
 [PowerCommandDesign( description: "Connect to your gogs repo",
+                         options: "path|content",
                          example: "gogs")]
 public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 {
@@ -14,23 +13,32 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 
     public override RunResult Run()
     {
-        Console.Write("Password: ");
-        var password = PasswordPromptService.Service.ReadPassword();
-        Console.WriteLine();
-        var repo = GetRepo(Configuration.GogsUserName, Configuration.GogsMainRepo, password);
+        var path = GetOptionValue("path");
+        var content = GetOptionValue("content");
+
+
+        var accessToken = Configuration.Secret.DecryptSecret("##gogsAT##");
+        
+        var gogsManager = new GogsManager(Configuration.GogsServer, Configuration.GogsUserName, accessToken);
+        var repo = gogsManager.GetRepo(Configuration.GogsMainRepo);
         WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
+
+        if (!string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(path))
+        {
+            var response = gogsManager.AddFileToRepo(Configuration.GogsMainRepo, path, content);
+            WriteSuccessLine($"{response}");
+        }
+        else if (!string.IsNullOrEmpty(path))
+        {
+            var response = gogsManager.DeleteFileFromRepo(Configuration.GogsMainRepo, path);
+            WriteSuccessLine($"{response}");
+        }
+
+        if (!string.IsNullOrEmpty(content))
+        {
+            var response = gogsManager.CommitChanges(Configuration.GogsMainRepo);
+            WriteSuccessLine($"{response}");
+        }
         return Ok();
-    }
-
-    private GitRepo GetRepo(string userName,string repoName, string password)
-    {
-        var client = new RestClient(Configuration.GogsServer);
-        var request = new RestRequest($"repos/{userName}/{repoName}");
-        request.AddUrlSegment("username", userName);
-        request.AddUrlSegment("reponame", repoName);
-
-        request.AddHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{userName}:{password}")));
-        var response = client.Get<GitRepo>(request) ?? new GitRepo { name = "-", description = "?" };
-        return response;
     }
 }
