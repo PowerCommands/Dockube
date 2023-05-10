@@ -22,6 +22,9 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
         var repo = gogsManager.GetRepo(Configuration.GitMainRepo);
         WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
 
+        var tree = gogsManager.GeTreeResponse(Configuration.GitMainRepo);
+        foreach (var treeItem in tree.Tree) WriteLine($"{treeItem.Path} {treeItem.Type}");
+
         if (!string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(path))
         {
             var response = gogsManager.AddFileToRepo(Configuration.GitMainRepo, path, content);

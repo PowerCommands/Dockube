@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using RestSharp;
+﻿using RestSharp;
 using System.Text;
 using DockubeCommands.DomainObjects;
 using System.Text.Json;
@@ -29,6 +28,19 @@ public class GogsManager
         var request = GetRestRequest(repoName, Method.Get);
         var response = _client.Get<GitRepo>(request) ?? new GitRepo { name = "-", description = "?" };
         return response;
+    }
+
+    public TreeResponse GeTreeResponse(string repoName)
+    {
+        var apiUrl = $"repos/{_userName}/{repoName}/git/trees/master?recursive=true";
+        // Create a request to get the repository tree
+        var request = new RestRequest(apiUrl);
+        request.AddUrlSegment("username", _userName);
+        request.AddUrlSegment("reponame", repoName);
+        request.AddHeader("Authorization", $"token {_accessToken}");
+
+        var getResponse = _client.Execute<TreeResponse>(request);
+        return getResponse.Data ?? new TreeResponse{Tree = new List<TreeItem>()};
     }
 
     public string AddFileToRepo(string repoName, string path, string fileContent)
