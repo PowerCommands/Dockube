@@ -16,12 +16,12 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
         var content = GetOptionValue("content");
         bool commit = false;
 
+        var accessToken = Configuration.Secret.DecryptSecret("##gitAT##");
 
-        var accessToken = Configuration.Secret.DecryptSecret("##gogsAT##");
-        
-        var gogsManager = new GogsManager(Configuration.GitServerApi, Configuration.GitUserName, accessToken);
+        var gogsManager = new GogsManager(Configuration.GitServerApi, Configuration.GitUserName, Configuration.Environment.GetValue("gitEmail"), accessToken, "master");
         var repo = gogsManager.GetRepo(Configuration.GitMainRepo);
         WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
+
         if (!string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(path))
         {
             var response = gogsManager.AddFileToRepo(Configuration.GitMainRepo, path, content);

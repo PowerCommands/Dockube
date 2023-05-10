@@ -1,7 +1,8 @@
-﻿using RestSharp;
+﻿using System.Reflection.Metadata;
+using RestSharp;
 using System.Text;
-using System.Text.Json;
 using DockubeCommands.DomainObjects;
+using System.Text.Json;
 
 namespace DockubeCommands.Managers;
 
@@ -9,14 +10,17 @@ public class GogsManager
 {
     
     private readonly string _userName;
+    private readonly string _userEmail;
     private readonly string _accessToken;
+    private readonly string _branchName;
     private readonly RestClient _client;
 
-    public GogsManager(string gogsServer, string userName, string accessToken)
+    public GogsManager(string gogsServer, string userName, string userEmail, string accessToken, string branchName)
     {
-        
         _userName = userName;
+        _userEmail = userEmail;
         _accessToken = accessToken;
+        _branchName = branchName;
         _client = new RestClient(gogsServer);
     }
 
@@ -39,27 +43,17 @@ public class GogsManager
     public string DeleteFileFromRepo(string repoName, string path)
     {
         var content = GetContent(repoName, path);
-        if (string.IsNullOrEmpty(content.sha)) return $"File {path} not found";
-
-        //var client = new HttpClient();
-        //client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Token", _accessToken );
-        //var baseUrl = $"{_gogsServer}/repos/{_userName}/{repoName}/contents/{path}?sha={content.sha}";
-        //var deleteResponse = client.DeleteAsync(baseUrl).Result;
-
-
-        var request = GetContentRestRequest(repoName, Method.Delete, content.path);
-        request.AddParameter("path", content.path);
+        var request = GetContentRestRequest(repoName, Method.Delete, path);
+        request.AddUrlSegment("path", path);
         request.AddParameter("sha", content.sha);
-        request.AddParameter("branch","master");
+        request.AddParameter("branch", _branchName);
         request.AddParameter("committer.name", _userName);
-        request.AddParameter("committer.email","harri.klingsten@gmail.com");
+        request.AddParameter("committer.email", _userEmail);
         
 
         request.AddJsonBody(new { message = $"Delete file {content.path}", sha = content.sha });
-        
-        
         var response = _client.Execute(request);
-        return $"File {content.path} sha: {content.sha} deleted. status code: {response.StatusCode}";
+        return $"{response.StatusCode}";
     }
 
     public GogsContent GetContent(string repoName, string path)
@@ -72,12 +66,12 @@ public class GogsManager
         return content;
     }
 
-    public string CommitChanges(string repoName, string commitMessage)
+    public string CommitChanges(string repoName, string message)
     {
         var request = GetRestRequest(repoName, Method.Post);
-        request.AddJsonBody(new { message = commitMessage, content = "commit content", branch_name = "master" });
+        request.AddJsonBody(new { message = message, content = "commit content", branch_name = _branchName });
         var response = _client.Execute(request);
-        return $"Commit status code: {response.StatusCode}";
+        return $"Commit: {response.StatusCode}";
     }
 
     private RestRequest GetRestRequest(string repoName, Method method)
