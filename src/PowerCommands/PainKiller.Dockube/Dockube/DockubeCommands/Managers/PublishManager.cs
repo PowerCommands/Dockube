@@ -33,8 +33,8 @@ public class PublishManager : IPublishManager
                 Thread.Sleep(1000);
             }
         }
-        WriteLine(processMetadata.Description);
-        WriteSuccessLine($"{fileInfo.Name} executed OK");
+        WriteLine($"{processMetadata.Description}");
+        WriteSuccessLine($"{fileInfo.Name} executed OK\n");
         if (string.IsNullOrEmpty(processMetadata.Url))
         {
             var applicationName = processMetadata.Name.Replace(".exe", "").Replace(".bat", "").Replace(".cmd", "");
@@ -63,7 +63,7 @@ public class PublishManager : IPublishManager
         else nmnSpace = "";
         var fileInfo = new FileInfo(fileName);
         ShellService.Service.Execute("kubectl", $"apply {nmnSpace} -f {fileInfo.FullName}", _workingDirectory, WriteLine, "", waitForExit: true);
-        WriteSuccessLine($"{fileInfo.Name} applied OK");
+        WriteSuccessLine($"{fileInfo.Name} applied OK\n");
     }
 
     #region Write helpers

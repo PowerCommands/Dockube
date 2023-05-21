@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gogs-config
+data:
+  app.ini: |
+    [database]
+    DB_TYPE  = sqlite3
+    HOST     = 127.0.0.1:3306
+    NAME     = gogs
+    USER     = root
+    PASSWD   =
+    SSL_MODE = disable
+    PATH     = /data/gogs.db
+
+    [security]
+    INSTALL_LOCK = true
+    ADMIN_USER   = dockube
+    ADMIN_PASSWD = abcd!234
+    ADMIN_EMAIL  = ##ADMIN_EMAIL##
+
+    [server]
+    DOMAIN           = localhost
+    HTTP_PORT        = 3000
+    ROOT_URL         = http://localhost:30080/
+    DISABLE_SSH      = false
+    SSH_PORT         = 22
+    START_SSH_SERVER = false
+
+    [repository]
+    ROOT = /data/git/gogs-repositories
+
+    [mailer]
+    ENABLED = false
+
+    [service]
+    REGISTER_EMAIL_CONFIRM = false
+
+    [oauth2]
+    ENABLED = false
+
+    [picture]
+    DISABLE_GRAVATAR        = false
+    ENABLE_FEDERATED_AVATAR = false
+
+    [log]
+    MODE      = console
+    LEVEL     = Info
+    ROOT_PATH = /app/gogs/log

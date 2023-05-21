@@ -8,7 +8,7 @@ configuration:
   pathToDockerDesktop: C:\Program Files\Docker\Docker
   gitServerApi: http://192.168.0.15:3000/api/v1
   gitServer: http://192.168.0.15:3000
-  gitUserName: dockube    
+  gitUserName: dockube      
   gitMainRepo: dockube-main
   metadata:
     name: Dockube

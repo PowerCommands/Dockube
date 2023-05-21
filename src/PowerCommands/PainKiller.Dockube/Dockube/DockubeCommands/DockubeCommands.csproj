@@ -36,7 +36,13 @@
 		<None Update="Manifests\argocd\argocd-05-open-admin.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\argocd\argocd-06-open-admin.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Manifests\argocd\argocd-06-open-tutorial.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\argocd\argocd-07-open-tutorial.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Manifests\core-dns\Corefile">
@@ -46,6 +52,9 @@
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Manifests\gogs\gogs-021-pause.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\templates\gogs-04-config-map.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Manifests\gogs\gogs-06-open-admin.json">
@@ -60,10 +69,10 @@
 		<None Update="Manifests\gogs\gogs-03-pvc.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Manifests\gogs\gogs-04-deploy.yaml">
+		<None Update="Manifests\gogs\gogs-05-deploy.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Manifests\gogs\gogs-05-service.yaml">
+		<None Update="Manifests\gogs\gogs-07-service.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Manifests\templates\argocd-02-deployment.yaml">

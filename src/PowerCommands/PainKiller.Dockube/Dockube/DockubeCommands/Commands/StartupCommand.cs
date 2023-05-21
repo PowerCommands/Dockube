@@ -26,6 +26,14 @@ public class StartupCommand : CommandBase<PowerCommandsConfiguration>
             WriteCodeExample("Database type","SQLLite3\n");
             WriteCodeExample("Local address","http://localhost:30080/\n");
             WriteCodeExample("Admin account","dockube\n\n");
+            
+            var findAndReplaces = new Dictionary<string, string>
+            {
+                { "##ADMIN_EMAIL##", Configuration.Environment.GetValue("gitEmail") }
+            };
+            var templateFileName = "gogs-04-config-map.yaml";
+            TemplatesManager.FindReplaceFile(findAndReplaces, templateFileName,Path.Combine(AppContext.BaseDirectory, $"Manifests\\gogs"));
+
             var workingDirectory = Path.Combine(AppContext.BaseDirectory, "Manifests", "gogs");
             IPublishManager publisher = new PublishManager(workingDirectory);
             publisher.Publish(workingDirectory, "gogs");
@@ -43,7 +51,7 @@ public class StartupCommand : CommandBase<PowerCommandsConfiguration>
                 { "##repository_path##", $"manifests" }
             };
             var templateFileName = "argocd-05-add-application-dockube.yaml";
-            TemplatesManager.FindReplaceFile(findAndReplaces, Path.Combine(AppContext.BaseDirectory, $"Manifests\\templates\\{templateFileName}"),Path.Combine(AppContext.BaseDirectory, $"Manifests\\argocd\\{templateFileName}"));
+            TemplatesManager.FindReplaceFile(findAndReplaces, templateFileName,Path.Combine(AppContext.BaseDirectory, $"Manifests\\argocd"));
             var workingDirectory = Path.Combine(AppContext.BaseDirectory, "Manifests", "argocd");
             IPublishManager publisher = new PublishManager(workingDirectory);
             publisher.Publish(workingDirectory, "argocd");

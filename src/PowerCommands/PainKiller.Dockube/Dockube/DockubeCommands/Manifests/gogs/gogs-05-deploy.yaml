@@ -1,3 +1,4 @@
+
 #https://github.com/drabo/gogs
 apiVersion: apps/v1
 kind: Deployment
@@ -30,27 +31,13 @@ spec:
         volumeMounts:
         - name: gogs-persistent-storage
           mountPath: /data
+        - name: gogs-config
+          mountPath: /data/gogs/conf/app.ini
+          subPath: app.ini
       volumes:
       - name: gogs-persistent-storage
         persistentVolumeClaim:
           claimName: gogs-pv-claim
-#---
-#apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: gogs-ingress
-#   namespace: gogs
-#   annotations:
-#     nginx.ingress.kubernetes.io/rewrite-target: /
-#spec:
-#   rules:
-#   - host: gogs.local
-#     http:
-#       paths:
-#       - path: /
-#         pathType: Prefix
-#         backend:
-#           service:
-#             name: gogs-svc
-#             port:
-#               number: 18080
+      - name: gogs-config
+        configMap:
+            name: gogs-config
