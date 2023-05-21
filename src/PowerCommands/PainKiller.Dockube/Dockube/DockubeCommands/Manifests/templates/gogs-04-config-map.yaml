@@ -11,9 +11,7 @@ data:
 
     [security]
     INSTALL_LOCK = true
-    ADMIN_EMAIL  = ##ADMIN_EMAIL##
-    ##ADMIN_USER   = dockube
-    ##ADMIN_PASSWD = abcd!234
+    ADMIN_EMAIL  = ##ADMIN_EMAIL##    
 
     [server]
     DOMAIN           = localhost
