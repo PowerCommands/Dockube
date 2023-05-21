@@ -40,4 +40,4 @@ spec:
           claimName: gogs-pv-claim
       - name: gogs-config
         configMap:
-            name: gogs-config
+          name: gogs-config

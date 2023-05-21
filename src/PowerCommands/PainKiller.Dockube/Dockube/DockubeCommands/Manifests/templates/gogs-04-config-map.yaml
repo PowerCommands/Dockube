@@ -5,19 +5,15 @@ metadata:
 data:
   app.ini: |
     [database]
-    DB_TYPE  = sqlite3
-    HOST     = 127.0.0.1:3306
-    NAME     = gogs
-    USER     = root
-    PASSWD   =
-    SSL_MODE = disable
+    TYPE  = sqlite3    
+    SSL_MODE = disable    
     PATH     = /data/gogs.db
 
     [security]
     INSTALL_LOCK = true
-    ADMIN_USER   = dockube
-    ADMIN_PASSWD = abcd!234
     ADMIN_EMAIL  = ##ADMIN_EMAIL##
+    ##ADMIN_USER   = dockube
+    ##ADMIN_PASSWD = abcd!234
 
     [server]
     DOMAIN           = localhost
