@@ -77,7 +77,6 @@ public class GogsManager
         var content = JsonSerializer.Deserialize<GogsContent>(response.Content) ?? new GogsContent();
         return content;
     }
-
     public string CommitChanges(string repoName, string message)
     {
         var request = GetRestRequest(repoName, Method.Post);

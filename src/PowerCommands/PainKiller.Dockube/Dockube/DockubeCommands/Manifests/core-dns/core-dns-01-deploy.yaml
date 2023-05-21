@@ -1,0 +1,56 @@
+#https://github.com/drabo/gogs
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs
+  namespace: gogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs
+  template:
+    metadata:
+      labels:
+        app: gogs
+        # istio-injection: enabled
+        version: v1
+    spec:
+      containers:
+      - name: gogs
+        image: gogs/gogs:0.13
+        ports:
+        - containerPort: 22
+          name: ssh
+        - containerPort: 3000
+          name: http
+        env:
+        - name: SOCAT_LINK
+          value: "false"
+        volumeMounts:
+        - name: gogs-persistent-storage
+          mountPath: /data
+      volumes:
+      - name: gogs-persistent-storage
+        persistentVolumeClaim:
+          claimName: gogs-pv-claim
+#---
+#apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: gogs-ingress
+#   namespace: gogs
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+#spec:
+#   rules:
+#   - host: gogs.local
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: gogs-svc
+#             port:
+#               number: 18080

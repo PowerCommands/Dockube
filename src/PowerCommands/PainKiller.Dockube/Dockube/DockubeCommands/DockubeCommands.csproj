@@ -39,6 +39,9 @@
 		<None Update="Manifests\argocd\argocd-06-open-tutorial.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\core-dns\Corefile">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Manifests\gogs\docker-compose\docker-compose.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
@@ -63,15 +66,21 @@
 		<None Update="Manifests\gogs\gogs-05-service.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\templates\argocd-02-deployment.yaml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\templates\argocd-05-add-application-dockube.yaml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="PowerCommandsConfiguration.yaml">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Managers\" />
 	  <Folder Include="DomainObjects\" />
 	</ItemGroup>
 	<ItemGroup>
+	  <PackageReference Include="KubernetesClient" Version="11.0.21" />
 	  <PackageReference Include="RestSharp" Version="110.2.0" />
 	</ItemGroup>
 </Project>

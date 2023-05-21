@@ -17053,3 +17053,20 @@ spec:
       app.kubernetes.io/name: argocd-server
   policyTypes:
   - Ingress
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dockube
+spec:
+  destination:
+    namespace: 
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    repoURL: ##repository_url##
+    path: ##repository_path##
+    targetRevision: HEAD
+  syncPolicy:
+    automated: true
+    selfHeal: true
