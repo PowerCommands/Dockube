@@ -54,6 +54,15 @@
 		<None Update="Manifests\gogs\gogs-021-pause.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\gogs\init-repo-files\LICENSE">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\init-repo-files\_gitignore">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gogs\init-repo-files\README.md">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Manifests\templates\gogs-04-config-map.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
@@ -86,10 +95,10 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="DomainObjects\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <PackageReference Include="KubernetesClient" Version="11.0.21" />
 	  <PackageReference Include="RestSharp" Version="110.2.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Manifests\ms-sql\" />
 	</ItemGroup>
 </Project>

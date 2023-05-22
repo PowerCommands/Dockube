@@ -6,10 +6,12 @@ configuration:
   repository: https://github.com/PowerCommands/PowerCommands2022
   backupPath: ..\..\..\..\Core\PainKiller.PowerCommands.Core\    
   pathToDockerDesktop: C:\Program Files\Docker\Docker
-  gitServerApi: http://192.168.0.15:3000/api/v1
-  gitServer: http://192.168.0.15:3000
+  gitServerApi: http://localhost:30080/api/v1
+  gitServer: http://localhost:30080
   gitUserName: dockube      
   gitMainRepo: dockube-main
+  constants:
+    gogsContainerStartsWith: gogs-    
   metadata:
     name: Dockube
     description: Description of my project

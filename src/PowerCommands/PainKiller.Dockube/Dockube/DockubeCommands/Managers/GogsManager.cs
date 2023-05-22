@@ -2,12 +2,14 @@
 using System.Text;
 using DockubeCommands.DomainObjects;
 using System.Text.Json;
+using System.Net;
+using System.ComponentModel;
 
 namespace DockubeCommands.Managers;
 
 public class GogsManager
 {
-    
+
     private readonly string _userName;
     private readonly string _userEmail;
     private readonly string _accessToken;
@@ -40,7 +42,7 @@ public class GogsManager
         request.AddHeader("Authorization", $"token {_accessToken}");
 
         var getResponse = _client.Execute<TreeResponse>(request);
-        return getResponse.Data ?? new TreeResponse{Tree = new List<TreeItem>()};
+        return getResponse.Data ?? new TreeResponse { Tree = new List<TreeItem>() };
     }
 
     public string AddFileToRepo(string repoName, string path, string fileContent)
@@ -61,11 +63,33 @@ public class GogsManager
         request.AddParameter("branch", _branchName);
         request.AddParameter("committer.name", _userName);
         request.AddParameter("committer.email", _userEmail);
-        
+
 
         request.AddJsonBody(new { message = $"Delete file {content.path}", sha = content.sha });
         var response = _client.Execute(request);
         return $"{response.StatusCode}";
+    }
+
+    public string CreateRepo(string repoName)
+    {
+        var request = new RestRequest("user/repos", Method.Post);
+        request.AddHeader("Authorization", $"token {_accessToken}");
+        var requestBody = new { name = repoName };
+        request.AddJsonBody(requestBody);
+        var response = _client.Execute(request);
+        return $"{response.StatusCode}";
+    }
+
+    public void InitializeRepo(string repoName)
+    {
+        var content = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Manifests\\gogs\\init-repo-files\\_gitignore"));
+        AddFileToRepo(repoName, ".gitignore", content);
+
+        content = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Manifests\\gogs\\init-repo-files\\LICENSE"));
+        AddFileToRepo(repoName, "LICENSE", content);
+
+        content = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Manifests\\gogs\\init-repo-files\\README.md"));
+        AddFileToRepo(repoName, "README.md", content);
     }
 
     public GogsContent GetContent(string repoName, string path)

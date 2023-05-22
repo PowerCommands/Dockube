@@ -4,7 +4,7 @@ namespace DockubeCommands.Commands;
 
 [PowerCommandTest(         tests: " ")]
 [PowerCommandDesign( description: "Connect to your gogs repo",
-                         options: "path|content",
+                         options: "create|path|content",
                          example: "gogs")]
 public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 {
@@ -12,13 +12,20 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 
     public override RunResult Run()
     {
+        var create = GetOptionValue("create");
         var path = GetOptionValue("path");
         var content = GetOptionValue("content");
         bool commit = false;
 
         var accessToken = Configuration.Secret.DecryptSecret("##gitAT##");
-
         var gogsManager = new GogsManager(Configuration.GitServerApi, Configuration.GitUserName, Configuration.Environment.GetValue("gitEmail"), accessToken, "master");
+
+        if (!string.IsNullOrEmpty(create))
+        {
+            CreateRepo(gogsManager, create);
+            return Ok();
+        }
+
         var repo = gogsManager.GetRepo(Configuration.GitMainRepo);
         WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
 
@@ -43,5 +50,14 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
             WriteSuccessLine($"{response}");
         }
         return Ok();
+    }
+
+    public void CreateRepo(GogsManager gogsManager, string repoName)
+    {
+        var response = gogsManager.CreateRepo(repoName);
+        WriteSuccessLine(response);
+
+        gogsManager.InitializeRepo(repoName);
+        gogsManager.CommitChanges(repoName, "Initialization of the repo by PowerCommands.");
     }
 }

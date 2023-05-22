@@ -22,39 +22,57 @@ public class StartupCommand : CommandBase<PowerCommandsConfiguration>
         var confirmed = !HasOption("confirm") || DialogService.YesNoDialog("Do you want to deploy Git server?");
         if (confirmed)
         {
-            WriteHeadLine("Important when gogs is starting");
-            WriteCodeExample("Database type","SQLLite3\n");
-            WriteCodeExample("Local address","http://localhost:30080/\n");
-            WriteCodeExample("Admin account","dockube\n\n");
+            WriteHeadLine("Important! You have to register a new user when the gogs Admin appear in your browser");
+            WriteCodeExample("User name",$"{Configuration.GitUserName}\n");
+            WriteCodeExample("User email",$"{Configuration.Environment.GetValue(Configuration.Constants.GitEmailEnvVar)}\n\n");
+            Write("Press any key to continue...");
+            Console.ReadLine();
             
             var findAndReplaces = new Dictionary<string, string>
             {
-                { "##ADMIN_EMAIL##", Configuration.Environment.GetValue("gitEmail") }
+                { "##ADMIN_EMAIL##", Configuration.Environment.GetValue(Configuration.Constants.GitEmailEnvVar) }
             };
-            var templateFileName = "gogs-04-config-map.yaml";
-            TemplatesManager.FindReplaceFile(findAndReplaces, templateFileName,Path.Combine(AppContext.BaseDirectory, $"Manifests\\gogs"));
+            TemplatesManager.FindReplaceFile(findAndReplaces, Configuration.Constants.GogsTemplateFileName,Path.Combine(AppContext.BaseDirectory, Configuration.Constants.GogsManifestDirectory));
 
-            var workingDirectory = Path.Combine(AppContext.BaseDirectory, "Manifests", "gogs");
+            var workingDirectory = Path.Combine(AppContext.BaseDirectory, Configuration.Constants.GogsManifestDirectory);
             IPublishManager publisher = new PublishManager(workingDirectory);
-            publisher.Publish(workingDirectory, "gogs");
-            DialogService.QuestionAnswerDialog("Setup the main repo named dockube-main in Gogs?");
-            DialogService.QuestionAnswerDialog("Now add a file with the subfolder path manifests so that ArgoCD can target that directory in repo in the next step?");
+            publisher.Publish(workingDirectory, Configuration.Constants.GogsNamespace);
+            WriteCodeExample("User name",$"{Configuration.GitUserName}\n");
+            WriteCodeExample("User email",$"{Configuration.Environment.GetValue(Configuration.Constants.GitEmailEnvVar)}\n\n");
+            var response = DialogService.YesNoDialog("At this point you need to have set up the gogs account according to the instructions, continue?");
+            if (!response) return Ok();
+            WriteHeadLine("Next step is to setup an access token, so please login and navigate to my settings/applications.");
+            WriteHeadLine("Here you can create a access token, give it any name you like, remember to copy the token.");
+            Write("Press any key to continue when you have created your token and copied to memory, cause you need to store this as an encrypted secret...");
+            Console.ReadLine();
+            WriteLine($"Next step is to create a secret, press any key to continue...");
+            Console.ReadLine();
+            var hasSecretInitialized = SecretManager.CheckEncryptConfiguration();
+            if (!hasSecretInitialized)
+            {
+                WriteLine("You need to initialize the secrete feature that first with this command:");
+                WriteCodeExample("secret","--initialize\n");
+                WriteLine("Then you can re run this command again.");
+                return Ok();
+            }
+            SecretManager.CreateSecret(Configuration, Configuration.Constants.GitAccessTokenSecret);
+            Write("When you have created the secret, everything with the Gogs server is now setup!\nPress any key to continue...");
+            Console.ReadLine();
         }
 
         confirmed = !HasOption("confirm") || DialogService.YesNoDialog("Do you want to deploy ArgoCD?");
         if (confirmed)
         {
-            var gitServerIp = KubernetesManager.GetIpAddress("gogs-", "gogs").Result;
+            var gitServerIp = KubernetesManager.GetIpAddress(Configuration.Constants.GogsContainerStartsWith, Configuration.Constants.GogsNamespace).Result;
             var findAndReplaces = new Dictionary<string, string>
             {
-                { "##repository_url##", $"http://{gitServerIp}:3000/dockube/dockube-main" },
-                { "##repository_path##", $"manifests" }
+                { Configuration.Constants.RepositoryUrlPlaceholder, $"http://{gitServerIp}:3000/{Configuration.GitUserName}/{Configuration.GitMainRepo}" },
+                { Configuration.Constants.RepositoryPathPlaceholder, Configuration.Constants.RepositoryPath }
             };
-            var templateFileName = "argocd-05-add-application-dockube.yaml";
-            TemplatesManager.FindReplaceFile(findAndReplaces, templateFileName,Path.Combine(AppContext.BaseDirectory, $"Manifests\\argocd"));
-            var workingDirectory = Path.Combine(AppContext.BaseDirectory, "Manifests", "argocd");
+            TemplatesManager.FindReplaceFile(findAndReplaces, Configuration.Constants.ArgoCdTemplateFileName,Path.Combine(AppContext.BaseDirectory, Configuration.Constants.ArgoCdManifestDirectory));
+            var workingDirectory = Path.Combine(AppContext.BaseDirectory, Configuration.Constants.ArgoCdManifestDirectory);
             IPublishManager publisher = new PublishManager(workingDirectory);
-            publisher.Publish(workingDirectory, "argocd");
+            publisher.Publish(workingDirectory, Configuration.Constants.ArgoCdNamespace);
         }
         return Ok();
     }
