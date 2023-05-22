@@ -2,5 +2,5 @@
 
 public interface IPublishManager
 {
-    void Publish(string path, string kubernetesNamespace);
+    string Publish(string path, string kubernetesNamespace);
 }

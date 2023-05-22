@@ -11,9 +11,8 @@ public class DockcubeConstants
     public string ArgoCdTemplateFileName { get; set; } = "argocd-05-add-application-dockube.yaml";
     public string ArgoCdManifestDirectory { get; set; } = "Manifests\\argocd";
     public string ArgoCdNamespace { get; set; } = "argocd";
+    public string MsSqlManifestDirectory { get; set; } = "Manifests\\ms-sql";
     public string RepositoryPath { get; set; } = "manifests";
-    public string RepositoryPathPlaceholder { get; set; } = "##repository_path##";
-    public string RepositoryUrlPlaceholder { get; set; } = "##repository_url##";
-    
-
+    public string RepositoryPathPlaceholder { get; set; } = "##RepositoryPath##";
+    public string RepositoryUrlPlaceholder { get; set; } = "##RepositoryUrl##";
 }

@@ -10,8 +10,7 @@ data:
     PATH     = /data/gogs.db
 
     [security]
-    INSTALL_LOCK = true
-    ADMIN_EMAIL  = ##ADMIN_EMAIL##    
+    INSTALL_LOCK = true    
 
     [server]
     DOMAIN           = localhost
@@ -23,6 +22,7 @@ data:
 
     [repository]
     ROOT = /data/git/gogs-repositories
+    GIT_TIMEOUT = 300
 
     [mailer]
     ENABLED = false

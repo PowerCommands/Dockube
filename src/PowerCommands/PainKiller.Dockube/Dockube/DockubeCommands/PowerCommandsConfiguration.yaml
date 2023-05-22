@@ -35,6 +35,9 @@ configuration:
     - name: Manifests
       path: manifests
       index: 0
+    - name: Repos
+      path: repos
+      index: 1
   secret:
     secrets:
     - name: gitAT

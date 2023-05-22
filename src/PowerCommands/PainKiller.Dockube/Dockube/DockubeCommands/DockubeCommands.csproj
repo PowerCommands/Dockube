@@ -42,9 +42,6 @@
 		<None Update="Manifests\argocd\argocd-06-open-tutorial.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Manifests\argocd\argocd-07-open-tutorial.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="Manifests\core-dns\Corefile">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -61,6 +58,21 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Manifests\gogs\init-repo-files\README.md">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\ms-sql\ms-sql-00-namespace.yaml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\ms-sql\ms-sql-01-pvc.yaml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\ms-sql\ms-sql-02-secret.yaml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\ms-sql\ms-sql-03-sqlserver-deploy.yaml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\ms-sql\ms-sql-04-sqlserver-svc.yaml">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Manifests\templates\gogs-04-config-map.yaml">
@@ -96,9 +108,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="KubernetesClient" Version="11.0.21" />
+	  <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
 	  <PackageReference Include="RestSharp" Version="110.2.0" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Manifests\ms-sql\" />
 	</ItemGroup>
 </Project>

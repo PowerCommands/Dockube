@@ -25,6 +25,13 @@ public static class ArgoCdManager
         }
         return "";
     }
+
+    public static string GetPassword()
+    {
+        ShellService.Service.Execute(programName: "kubectl", arguments: $"-n argocd get secret argocd-initial-admin-secret -o jsonpath=\"{{.data.password}}\"", workingDirectory: AppContext.BaseDirectory, ReadLine, fileExtension: "", waitForExit: true);
+        return _token;
+        
+    }
     public static async Task<bool> CreateArgoCdApplication(string uriToArgoCd, string authToken, string applicationName, string repoUrl, string path, Action<string> writeFunction)
     {
         var httpClientHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };

@@ -4,7 +4,7 @@ namespace DockubeCommands.Managers;
 
 public static class SecretManager
 {
-    public static void CreateSecret(PowerCommandsConfiguration configuration, string accessTokenSecret)
+    public static string CreateSecret(PowerCommandsConfiguration configuration, string accessTokenSecret)
     {
         Console.Write("Enter secret: ");
         var password = PasswordPromptService.Service.ReadPassword();
@@ -15,7 +15,7 @@ public static class SecretManager
         if (password != passwordConfirm)
         {
             Console.WriteLine("Passwords do not match");
-            return;
+            return "";
         }
         var secret = new SecretItemConfiguration { Name = configuration.Constants.GitAccessTokenSecret };
         SecretService.Service.SetSecret(configuration.Constants.GitAccessTokenSecret, password, secret.Options, EncryptionService.Service.EncryptString);
@@ -25,6 +25,7 @@ public static class SecretManager
         configuration.Secret.Secrets.Add(secret);
         ConfigurationService.Service.SaveChanges(configuration);
         Console.WriteLine("Configuration and environment variable saved (or updated).");
+        return password;
     }
     public static bool CheckEncryptConfiguration()
     {

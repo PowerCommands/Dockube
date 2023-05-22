@@ -10,7 +10,7 @@ public class PublishManager : IPublishManager
     private string _lastReadLine = "";
 
     public PublishManager(string workingDirectory) => _workingDirectory = workingDirectory;
-    public void Publish(string path, string kubernetesNamespace)
+    public string Publish(string path, string kubernetesNamespace)
     {
         var yamlFiles = Directory.GetFiles(path).OrderBy(f => f).ToList();
         foreach (var fileName in yamlFiles)
@@ -19,20 +19,14 @@ public class PublishManager : IPublishManager
             if(fileName.ToLower().EndsWith(".json")) HandleJsonFile(fileName);
         }
         if (!string.IsNullOrEmpty(kubernetesNamespace)) ShellService.Service.Execute("kubectl",$"config set-context --current --namespace={kubernetesNamespace}","", WriteLine,"", waitForExit: true);
+        return _lastReadLine;
     }
 
     private void HandleJsonFile(string fileName)
     {
         var fileInfo = new FileInfo(fileName);
         var processMetadata = StorageService<ProcessMetadata>.Service.GetObject(fileName);
-        if (processMetadata.WaitSec > 0)
-        {
-            for (int i = 0; i < processMetadata.WaitSec; i++)
-            {
-                OverwritePreviousLine($"Waiting a {processMetadata.WaitSec-i} seconds, before executing [{processMetadata.Description}] ...");
-                Thread.Sleep(1000);
-            }
-        }
+        if (processMetadata.WaitSec > 0) PauseService.Pause(processMetadata.WaitSec,$", before executing [{processMetadata.Description}] ...\"");
         WriteLine($"{processMetadata.Description}");
         WriteSuccessLine($"{fileInfo.Name} executed OK\n");
         if (string.IsNullOrEmpty(processMetadata.Url))
@@ -68,12 +62,6 @@ public class PublishManager : IPublishManager
 
     #region Write helpers
     protected void ReadLine(string output) => _lastReadLine = output;
-    protected void OverwritePreviousLine(string output)
-    {
-        Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
-        var padRight = Console.BufferWidth - output.Length;
-        WriteLine(output.PadRight(padRight > 0 ? padRight : 0));
-    }
     protected void WriteLine(string output) => ConsoleService.Service.WriteLine(nameof(PublishManager), writeLog: true, text:output);
     protected void WriteSuccessLine(string output) => ConsoleService.Service.WriteSuccessLine(nameof(PublishManager), text:output, writeLog: true);
     #endregion

@@ -1,27 +1,29 @@
-﻿using RestSharp;
+﻿using System.Net;
+using RestSharp;
 using System.Text;
 using DockubeCommands.DomainObjects;
 using System.Text.Json;
-using System.Net;
-using System.ComponentModel;
 
 namespace DockubeCommands.Managers;
 
 public class GogsManager
 {
-
+    private readonly string _gogsServer;
     private readonly string _userName;
     private readonly string _userEmail;
     private readonly string _accessToken;
     private readonly string _branchName;
+    private readonly string _manifestsPath;
     private readonly RestClient _client;
 
-    public GogsManager(string gogsServer, string userName, string userEmail, string accessToken, string branchName)
+    public GogsManager(string gogsServer, string userName, string userEmail, string accessToken, string branchName, string manifestsPath)
     {
+        _gogsServer = gogsServer;
         _userName = userName;
         _userEmail = userEmail;
         _accessToken = accessToken;
         _branchName = branchName;
+        _manifestsPath = manifestsPath;
         _client = new RestClient(gogsServer);
     }
 
@@ -74,7 +76,7 @@ public class GogsManager
     {
         var request = new RestRequest("user/repos", Method.Post);
         request.AddHeader("Authorization", $"token {_accessToken}");
-        var requestBody = new { name = repoName };
+        var requestBody = new { name = repoName, description = "auto created repo", gitignores = "VisualStudio", license = "GNU General Public License v3.0"  };
         request.AddJsonBody(requestBody);
         var response = _client.Execute(request);
         return $"{response.StatusCode}";
@@ -90,6 +92,17 @@ public class GogsManager
 
         content = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Manifests\\gogs\\init-repo-files\\README.md"));
         AddFileToRepo(repoName, "README.md", content);
+    }
+
+    public void AddFilesToRepo(string repoName, string pathToFiles, string filter = "*.yaml")
+    {
+        foreach (var fileName in Directory.GetFiles(pathToFiles, filter))
+        {
+            var fileInfo = new FileInfo(fileName);
+            var content = File.ReadAllText(fileName);
+            AddFileToRepo(repoName, $"{_manifestsPath}/{fileInfo.Name}", content);
+            Console.WriteLine($"Added file {fileInfo.Name} to {_manifestsPath}");
+        }
     }
 
     public GogsContent GetContent(string repoName, string path)
