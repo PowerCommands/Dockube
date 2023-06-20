@@ -1,7 +1,6 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+
+public interface IHelpService
 {
-    public interface IHelpService
-    {
-        void ShowHelp(IConsoleCommand command, bool clearConsole = true);
-    }
+    void ShowHelp(IConsoleCommand command, bool clearConsole = true);
 }

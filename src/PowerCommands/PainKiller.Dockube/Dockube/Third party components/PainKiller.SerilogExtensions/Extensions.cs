@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using PainKiller.SerilogExtensions.DomainObjects;
 using Serilog.Events;
-using System;
 
 namespace PainKiller.SerilogExtensions
 {

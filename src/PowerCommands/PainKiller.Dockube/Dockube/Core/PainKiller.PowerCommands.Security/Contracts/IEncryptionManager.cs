@@ -1,8 +1,7 @@
-﻿namespace PainKiller.PowerCommands.Security.Contracts
+﻿namespace PainKiller.PowerCommands.Security.Contracts;
+
+public interface IEncryptionManager
 {
-    public interface IEncryptionManager
-    {
-        string EncryptString(string plainText, string sharedSecret);
-        string DecryptString(string cipherText, string sharedSecret);
-    }
+    string EncryptString(string plainText, string sharedSecret);
+    string DecryptString(string cipherText, string sharedSecret);
 }

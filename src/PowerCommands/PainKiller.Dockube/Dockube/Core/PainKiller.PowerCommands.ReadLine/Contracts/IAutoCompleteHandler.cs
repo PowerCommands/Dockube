@@ -1,8 +1,6 @@
-﻿namespace PainKiller.PowerCommands.ReadLine.Contracts
+﻿namespace PainKiller.PowerCommands.ReadLine.Contracts;
+public interface IAutoCompleteHandler
 {
-    public interface IAutoCompleteHandler
-    {
-        char[] Separators { get; set; }
-        string[] GetSuggestions(string text, int index);
-    }
+    char[] Separators { get; set; }
+    string[] GetSuggestions(string text, int index);
 }

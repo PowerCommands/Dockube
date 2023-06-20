@@ -1,7 +1,6 @@
-﻿namespace PainKiller.PowerCommands.Shared.DomainObjects.Configuration
+﻿namespace PainKiller.PowerCommands.Shared.DomainObjects.Configuration;
+
+public class SecretConfiguration
 {
-    public class SecretConfiguration
-    {
-        public List<SecretItemConfiguration> Secrets { get; set; } = new();
-    }
+    public List<SecretItemConfiguration> Secrets { get; set; } = new();
 }

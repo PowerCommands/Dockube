@@ -1,8 +1,7 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+
+public interface ISolutionFileManager
 {
-    public interface ISolutionFileManager
-    {
-        void WriteValidProjectFiles(string name, string[] validProjectFiles, string solutionFileTarget);
-        void RemoveGlobalSectionNestedProjects(string name, string solutionFileTarget);
-    }
+    void WriteValidProjectFiles(string name, string[] validProjectFiles, string solutionFileTarget);
+    void RemoveGlobalSectionNestedProjects(string name, string solutionFileTarget);
 }

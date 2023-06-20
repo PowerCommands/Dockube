@@ -1,8 +1,7 @@
-﻿namespace PainKiller.PowerCommands.Shared.Utils.DisplayTable
+﻿namespace PainKiller.PowerCommands.Shared.Utils.DisplayTable;
+
+public enum Alignment
 {
-    public enum Alignment
-    {
-        Left,
-        Right
-    }
+    Left,
+    Right
 }

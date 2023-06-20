@@ -1,7 +1,5 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+public interface IDownloadWithProgressService
 {
-    public interface IDownloadWithProgressService
-    {
-        Task Download(string downloadUrl, string destinationFilePath, Func<long?, long, double?, string, string, bool> progressChanged);
-    }
+    Task Download(string downloadUrl, string destinationFilePath, Func<long?, long, double?, string, string, bool> progressChanged);
 }

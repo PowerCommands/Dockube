@@ -1,17 +1,16 @@
-﻿namespace PainKiller.PowerCommands.Shared.Enums
+﻿namespace PainKiller.PowerCommands.Shared.Enums;
+
+public enum RunResultStatus
 {
-    public enum RunResultStatus
-    {
-        Ok,
-        Quit,
-        ExceptionThrown,
-        ArgumentError,
-        SyntaxError,
-        RunExternalPowerCommand,
-        InputValidationError,
-        Initializing,
-        Async,
-        Help,
-        Continue
-    }
+    Ok,
+    Quit,
+    ExceptionThrown,
+    ArgumentError,
+    SyntaxError,
+    RunExternalPowerCommand,
+    InputValidationError,
+    Initializing,
+    Async,
+    Help,
+    Continue
 }

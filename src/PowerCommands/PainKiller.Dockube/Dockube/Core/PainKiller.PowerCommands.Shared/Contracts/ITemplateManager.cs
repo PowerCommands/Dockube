@@ -1,9 +1,8 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+
+public interface ITemplateManager
 {
-    public interface ITemplateManager
-    {
-        void InitializeTemplatesDirectory();
-        void CopyTemplates();
-        void CreateCommand(string templateName, string commandName);
-    }
+    void InitializeTemplatesDirectory();
+    void CopyTemplates();
+    void CreateCommand(string templateName, string commandName);
 }

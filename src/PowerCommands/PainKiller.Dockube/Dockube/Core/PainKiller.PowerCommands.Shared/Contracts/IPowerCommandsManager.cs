@@ -1,7 +1,5 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+public interface IPowerCommandsManager
 {
-    public interface IPowerCommandsManager
-    {
-        void Run(string[] args);
-    }
+    void Run(string[] args);
 }

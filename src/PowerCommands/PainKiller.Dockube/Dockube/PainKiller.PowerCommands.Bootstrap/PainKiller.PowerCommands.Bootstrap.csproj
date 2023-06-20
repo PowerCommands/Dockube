@@ -20,4 +20,10 @@
 		<Folder Include="Extensions\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="whats_new.md">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

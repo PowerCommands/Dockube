@@ -1,8 +1,7 @@
-﻿namespace PainKiller.PowerCommands.Core.BaseClasses
+﻿namespace PainKiller.PowerCommands.Core.BaseClasses;
+
+public class IndexedInput
 {
-    public class IndexedInput
-    {
-        public short Index { get; set; }
-        public string Value { get; set; } = "";
-    }
+    public short Index { get; set; }
+    public string Value { get; set; } = "";
 }

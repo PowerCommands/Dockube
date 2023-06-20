@@ -1,7 +1,6 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+
+public interface IExtendedPowerCommandServices<out TConfiguration> : IPowerCommandServices where TConfiguration : ICommandsConfiguration
 {
-    public interface IExtendedPowerCommandServices<out TConfiguration> : IPowerCommandServices where TConfiguration : ICommandsConfiguration
-    {
-        TConfiguration ExtendedConfiguration { get; }
-    }
+    TConfiguration ExtendedConfiguration { get; }
 }

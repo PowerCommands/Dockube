@@ -1,7 +1,6 @@
-﻿namespace PainKiller.PowerCommands.Configuration.DomainObjects
+﻿namespace PainKiller.PowerCommands.Configuration.DomainObjects;
+
+public class SecurityConfiguration
 {
-    public class SecurityConfiguration
-    {
-        public EncryptionConfiguration Encryption { get; set; } = new();
-    }
+    public EncryptionConfiguration Encryption { get; set; } = new();
 }

@@ -1,7 +1,6 @@
-﻿namespace PainKiller.PowerCommands.Shared.DomainObjects.Documentation
+﻿namespace PainKiller.PowerCommands.Shared.DomainObjects.Documentation;
+
+public class DocsDB
 {
-    public class DocsDB
-    {
-        public List<Doc> Docs { get; set; } = new();
-    }
+    public List<Doc> Docs { get; set; } = new();
 }

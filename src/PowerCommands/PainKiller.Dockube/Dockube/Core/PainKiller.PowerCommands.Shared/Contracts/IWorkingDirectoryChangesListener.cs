@@ -1,8 +1,7 @@
-﻿namespace PainKiller.PowerCommands.Shared.Contracts
+﻿namespace PainKiller.PowerCommands.Shared.Contracts;
+
+public interface IWorkingDirectoryChangesListener
 {
-    public interface IWorkingDirectoryChangesListener
-    {
-        void OnWorkingDirectoryChanged(string[] files, string[] directories);
-        void InitializeWorkingDirectory();
-    }
+    void OnWorkingDirectoryChanged(string[] files, string[] directories);
+    void InitializeWorkingDirectory();
 }

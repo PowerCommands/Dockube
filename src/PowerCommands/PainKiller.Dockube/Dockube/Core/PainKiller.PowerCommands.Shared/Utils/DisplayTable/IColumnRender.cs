@@ -1,7 +1,6 @@
-﻿namespace PainKiller.PowerCommands.Shared.Utils.DisplayTable
+﻿namespace PainKiller.PowerCommands.Shared.Utils.DisplayTable;
+
+public interface IColumnRender
 {
-    public interface IColumnRender
-    {
-        void Write(string value);
-    }
+    void Write(string value);
 }
