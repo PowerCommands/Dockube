@@ -1,0 +1,10 @@
+additionalProperties:
+  aspnetCoreVersion: 6.0
+  nullableReferenceTypes: true
+  buildTarget: library
+  useSwashbuckle: true
+  packageName: DockCubeApi.Server
+  packageTitle: DockCubeApi.Server
+  packageDescription: DockCubeAPI server generated code
+  licenseName: GNU General Public License v3.0
+  packageAuthors: PainKiller
