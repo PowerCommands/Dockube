@@ -8,6 +8,7 @@ public class DdCommand : CommandBase<PowerCommandsConfiguration>
 
     public override RunResult Run()
     {
+        Console.Clear();
         WriteSuccessLine("Docker Desktop starting please wait...");
         var fullFileName = Path.Combine(Configuration.PathToDockerDesktop, "Docker Desktop.exe");
         ShellService.Service.Execute(fullFileName, arguments: "", workingDirectory: "", WriteLine, fileExtension: "");

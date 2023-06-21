@@ -4,22 +4,23 @@ using System.Text;
 
 namespace DockubeCommands.Commands;
 
+[PowerCommandsToolbar(    labels: "Options:|--confirm|(optional) confirm each service.")]
 [PowerCommandDesign( description: "Startup your Dockube environment",
                          options: "confirm",
                         useAsync: false,
                          example: "startup")]
-public class StartupCommand : CommandBase<PowerCommandsConfiguration>
+public class StartupCommand : CommandWithToolbarBase<PowerCommandsConfiguration>
 {
     public StartupCommand(string identifier, PowerCommandsConfiguration configuration) : base(identifier, configuration) { }
 
     public override RunResult Run()
     {
+        ClearToolbar();
         if (!KubernetesManager.IsKubernetesAvailable().Result)
         {
             WriteCodeExample("Kubernetes environment not available","Run command dd to start up the Docker Desktop service and try again...");
             return Ok();
         }
-
         var confirmed = !HasOption("confirm") || DialogService.YesNoDialog("Do you want to deploy Git server?");
         if (confirmed)
         {
