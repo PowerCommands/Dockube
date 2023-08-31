@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\generated-code\src\DockCubeApi.Server\DockCubeApi.Server.csproj" />
+    <ProjectReference Include="..\..\PainKiller.Dockube.Shared\PainKiller.Dockube.Shared.csproj" />
   </ItemGroup>
 
 </Project>
