@@ -1,4 +1,5 @@
 using DockubeCommands.Managers;
+using LibGit2Sharp;
 
 namespace DockubeCommands.Commands;
 
@@ -24,8 +25,8 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 
         if (!string.IsNullOrEmpty(create))
         {
-            gitManager.DeleteRepository(create);
-            //CreateRepo(gogsManager, gitManager, create);
+            //gitManager.DeleteRepository(create);
+            CreateRepo(gogsManager, gitManager, create);
             return Ok();
         }
 
@@ -57,7 +58,11 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 
     public void CreateRepo(GogsManager gogsManager, GitManager gitManager, string repoName)
     {
-        gitManager.CreateRepository(repoName);
+        var result = gitManager.CreateRepositoryAsync(repoName).Result;
+        WriteLine(result);
+        
+        
+
         //var response = gogsManager.CreateRepo(repoName);
         //WriteSuccessLine(response);
         //PauseService.Pause(3);

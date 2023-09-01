@@ -1,4 +1,9 @@
-﻿using LibGit2Sharp;
+﻿using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using IdentityModel.Client;
+using LibGit2Sharp;
 
 namespace DockubeCommands.Managers;
 
@@ -16,6 +21,7 @@ public class GitManager
         _userEmail = userEmail;
         _accessToken = accessToken;
     }
+
     public void InitialiseRepository(string repoName)
     {
         var clonePath = Path.Combine(AppContext.BaseDirectory, $"repos\\{repoName}");
@@ -32,7 +38,7 @@ public class GitManager
             }
         };
         Repository.Clone(repositoryUrl, clonePath, options);
-        
+
         using var repo = new Repository(clonePath);
         var fileContent = "Read me...";
 
@@ -60,7 +66,7 @@ public class GitManager
                 Password = string.Empty
             }
         };
-        repo.Network.Push(remote, $"refs/heads/master:{commit.Id.Sha}",  pushOptions);
+        repo.Network.Push(remote, $"refs/heads/master:{commit.Id.Sha}", pushOptions);
     }
 
     public void CreateRepository(string repoName)
@@ -88,6 +94,7 @@ public class GitManager
             // Push the commit to the remote origin
             newRepo.Network.Push(remote, $"refs/heads/master:{commit.Id.Sha}", pushOptions);
         }
+
         Console.WriteLine("New repository created successfully on Gogs.");
     }
 
@@ -107,6 +114,80 @@ public class GitManager
         {
             Console.WriteLine($"Error deleting repository: {response.ReasonPhrase}");
         }
+    }
+
+    public async Task<string> CreateRepositoryAsync(string repoName)
+    {
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Authorization", $"token {_accessToken}");
+
+        client.BaseAddress = new Uri(_gogsServer);
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        var parameters = new
+        {
+            name = repoName,
+            description = "My new repository"
+        };
+        var json = JsonSerializer.Serialize(parameters);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync($"/api/v1/admin/users/{_userName}/repos", content);
+
+        return response.IsSuccessStatusCode ? "New repository created successfully on Gogs." : $"Error creating repository: {response.ReasonPhrase}";
+    }
+
+    public void PushToRepository(string repositoryUrl, string repositoryPath)
+    {
+        // Configure git
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = "config --global user.name \"Your Name\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            }
+        };
+        process.Start();
+        process.WaitForExit();
+
+        process.StartInfo.Arguments = "config --global user.email \"you@example.com\"";
+        process.Start();
+        process.WaitForExit();
+
+        process.StartInfo.Arguments = $"config --global http.extraHeader \"Authorization: basic {_accessToken}\"";
+        process.Start();
+        process.WaitForExit();
+
+        // Clone the repository
+        process.StartInfo.Arguments = $"clone {repositoryUrl}";
+        process.Start();
+        process.WaitForExit();
+
+        // Create a file in the repository
+        File.WriteAllText(Path.Combine(repositoryPath, "README.md"), "# My Repository");
+
+        // Add the file to the repository
+        process.StartInfo.Arguments = "add .";
+        process.StartInfo.WorkingDirectory = repositoryPath;
+        process.Start();
+        process.WaitForExit();
+
+        // Commit the changes
+        process.StartInfo.Arguments = "commit -m \"Initial commit\"";
+        process.Start();
+        process.WaitForExit();
+
+        // Push the changes
+        process.StartInfo.Arguments = "push";
+        process.Start();
+        process.WaitForExit();
+
+        Console.WriteLine("Commit pushed successfully to repository.");
     }
 
 }
