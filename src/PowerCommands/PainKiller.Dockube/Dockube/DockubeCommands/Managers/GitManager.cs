@@ -90,4 +90,23 @@ public class GitManager
         }
         Console.WriteLine("New repository created successfully on Gogs.");
     }
+
+    public void DeleteRepository(string repoName)
+    {
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Authorization", $"token {_accessToken}");
+
+        var url = $"{_gogsServer}/api/v1/repos/{_userName}/{repoName}";
+        var response = client.DeleteAsync(url).Result;
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Repository deleted successfully from Gogs.");
+        }
+        else
+        {
+            Console.WriteLine($"Error deleting repository: {response.ReasonPhrase}");
+        }
+    }
+
 }

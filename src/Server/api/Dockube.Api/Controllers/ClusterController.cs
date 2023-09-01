@@ -1,4 +1,5 @@
-﻿using k8s;
+﻿using Dockube.Shared.DomainObjects;
+using k8s;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dockube.Api.Controllers
@@ -32,5 +33,5 @@ namespace Dockube.Api.Controllers
         }
     }
 
-    public record Pod(string Name, string Phase, string Kind, string Uid);
+    
 }

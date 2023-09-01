@@ -25,4 +25,13 @@ public static class KubernetesManager
         }
         return true;
     }
+    public static void ApplyYamlFile(string nspace, string fileName)
+    {
+        Action<string> writer = s => ConsoleService.Service.WriteSuccessLine(nameof(KubernetesManager),$"{fileName} applied OK\n");
+        var nmnSpace = nspace;
+        if (!string.IsNullOrEmpty(nmnSpace) && !fileName.ToLower().Contains("namespace")) nmnSpace = $"-n {nspace}";
+        else nmnSpace = "";
+        var fileInfo = new FileInfo(fileName);
+        ShellService.Service.Execute("kubectl", $"apply {nmnSpace} -f {fileInfo.FullName}", "", writer, "", waitForExit: true);
+    }
 }

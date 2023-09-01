@@ -24,33 +24,34 @@ public class GogsCommand : CommandBase<PowerCommandsConfiguration>
 
         if (!string.IsNullOrEmpty(create))
         {
-            CreateRepo(gogsManager, gitManager, create);
+            gitManager.DeleteRepository(create);
+            //CreateRepo(gogsManager, gitManager, create);
             return Ok();
         }
 
-        var repo = gogsManager.GetRepo(repoName);
-        WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
+        //var repo = gogsManager.GetRepo(repoName);
+        //WriteSuccessLine($"{repo.name} {repo.description} created: {repo.created_at} ");
 
-        var tree = gogsManager.GeTreeResponse(repoName);
-        foreach (var treeItem in tree.Tree) WriteLine($"{treeItem.Path} {treeItem.Type}");
+        //var tree = gogsManager.GeTreeResponse(repoName);
+        //foreach (var treeItem in tree.Tree) WriteLine($"{treeItem.Path} {treeItem.Type}");
 
-        if (!string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(path))
-        {
-            var response = gogsManager.AddFileToRepo(repoName, path, content);
-            commit = true;
-            WriteSuccessLine($"{response}");
-        }
-        else if (!string.IsNullOrEmpty(path))
-        {
-            var response = gogsManager.DeleteFileFromRepo(repoName, path);
-            commit = true;
-            WriteSuccessLine($"{response}");
-        }
-        if (commit)
-        {
-            var response = gogsManager.CommitChanges(repoName, "Commit made with Dockube PowerCommands");
-            WriteSuccessLine($"{response}");
-        }
+        //if (!string.IsNullOrEmpty(content) && !string.IsNullOrEmpty(path))
+        //{
+        //    var response = gogsManager.AddFileToRepo(repoName, path, content);
+        //    commit = true;
+        //    WriteSuccessLine($"{response}");
+        //}
+        //else if (!string.IsNullOrEmpty(path))
+        //{
+        //    var response = gogsManager.DeleteFileFromRepo(repoName, path);
+        //    commit = true;
+        //    WriteSuccessLine($"{response}");
+        //}
+        //if (commit)
+        //{
+        //    var response = gogsManager.CommitChanges(repoName, "Commit made with Dockube PowerCommands");
+        //    WriteSuccessLine($"{response}");
+        //}
         return Ok();
     }
 

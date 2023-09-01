@@ -10,6 +10,7 @@ configuration:
   gitServer: http://localhost:30080
   gitUserName: dockube      
   gitMainRepo: dockube-main
+  argoCdAdmin: https://localhost:8080/
   constants:
     gogsContainerStartsWith: gogs-    
   metadata:
