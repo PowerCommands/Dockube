@@ -5,17 +5,50 @@ namespace Dockube.Api.Controllers;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class GitController : ControllerBase
 {
     [HttpGet]
-    public IActionResult Get(string repoName)
+    public IActionResult Get()
     {
-        CreateAndPushRepository(repoName, "http://localhost:30080");
-        return Ok($"Repo: {repoName} created");
+        try
+        {
+            var repoName = "dockube-main";
+            var token = "aa6f5c99f071abc0eb38c0c72a2c9e283b915ab7";
+            var url = $"http://dockube:{token}@host.docker.internal:3000/dockube/dockube-main";
+            //var url = $"http://host.docker.internal:3000/dockube/{repoName}";
+            var server = "http://host.docker.internal:3000";
+
+            CreateFileAndPushRepository(repoName, url);
+            return Ok($"Added dummie file to {repoName}: {url}");
+        }
+        catch(Exception ex)
+        {
+            return Ok(ex.Message);
+        }
     }
 
-    public void CreateAndPushRepository(string repoName, string gogsServer)
+    public void StoreCredentials(string url, string token)
+    {
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = "credential-cache store",
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            }
+        };
+        process.Start();
+        process.StandardInput.WriteLine($"url={url}");
+        process.StandardInput.WriteLine($"username={token}");
+        process.StandardInput.WriteLine();
+        process.WaitForExit();
+    }
+
+    public void CreateFileAndPushRepository(string repoName, string gogsServer)
     {
         // Initialize a new repository
         var process = new Process
@@ -23,7 +56,7 @@ public class GitController : ControllerBase
             StartInfo = new ProcessStartInfo
             {
                 FileName = "git",
-                Arguments = $"init {repoName}",
+                Arguments = $"clone {gogsServer}.git",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -32,30 +65,23 @@ public class GitController : ControllerBase
         process.Start();
         process.WaitForExit();
 
-        // Change directory to the new repository
         Directory.SetCurrentDirectory(repoName);
 
-        var filePath = Path.Combine(repoName, "README.md");
+        var filePath = "babar.md";
         
         System.IO.File.WriteAllText(filePath, "This is a new repository.");
-        process.StartInfo.Arguments = "add README.md";
+        process.StartInfo.Arguments = $"add {filePath}";
         process.Start();
         process.WaitForExit();
 
         // Commit the changes
-        process.StartInfo.Arguments = "commit -m \"Initial commit\"";
-        process.Start();
-        process.WaitForExit();
-
-        // Set the remote origin URL
-        process.StartInfo.Arguments = $"remote add origin {gogsServer}/{repoName}.git";
+        process.StartInfo.Arguments = "commit -m \"Added file\"";
         process.Start();
         process.WaitForExit();
 
         // Push the commit to the remote origin
-        process.StartInfo.Arguments = "push -u origin master";
+        process.StartInfo.Arguments = "push -v";
         process.Start();
         process.WaitForExit();
     }
-
 }

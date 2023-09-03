@@ -5,8 +5,6 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
-		<DockerComposeBuildArguments>--no-cache</DockerComposeBuildArguments>
 	</PropertyGroup>
 
 	<ItemGroup>

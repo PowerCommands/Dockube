@@ -19,14 +19,14 @@
       }
     },
     "Docker": {
+      "commandName": "Docker",      
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
         "GIT_USERNAME": "dockube",
         "GIT_EMAIL": "jan.banan@gmail.com",
         "GIT_ACCESS_TOKEN": "6890e6167395fd37c2d58915b9faff80d8ed8b0b"
       },
-      "commandName": "Docker",
-      "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true
     }
   },

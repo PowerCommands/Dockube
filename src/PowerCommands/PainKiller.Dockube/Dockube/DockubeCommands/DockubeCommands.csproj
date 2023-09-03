@@ -45,6 +45,12 @@
 		<None Update="Manifests\core-dns\Corefile">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Manifests\gitea\docker-compose.yaml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Manifests\gitea\gitea\dummie.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Manifests\gogs\docker-compose\docker-compose.yaml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
