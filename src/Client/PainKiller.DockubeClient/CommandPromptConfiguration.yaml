@@ -1,0 +1,36 @@
+version: 1.0
+configuration:
+  dockube:    
+    ssl:
+      executablePath: OpenSSL-Win64\bin
+      output: ssl-output
+  core:
+    name: Dockube
+    version: 1.0
+    prompt: cp>
+    defaultCommand: ''
+    showLogo: true
+    logoColor: DarkMagenta
+    suggestions: 
+    - exit
+    roamingDirectory: Dockube
+    modules:
+      security:
+        secrets:
+        - name: CommandPrompt_encryptionManager
+          options:
+            target: User
+      storage:
+        applicationDataFolder: $ROAMING$\Dockube
+        backupPath: backup
+      infoPanel:
+        enabled: true
+        height: 2
+        updateIntervalSeconds: 60
+        backgroundColor: DarkMagenta
+        foregroundColor: White
+  log:
+    fileName: commandprompt.log
+    filePath: logs
+    rollingIntervall: Day
+    restrictedToMinimumLevel: Debug

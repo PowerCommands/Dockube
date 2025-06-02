@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+		<LangVersion>12.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+		<Version>1.0.4.3</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="DomainObjects\" />
+    <Folder Include="Handlers\" />
+    <Folder Include="Managers\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+</Project>
