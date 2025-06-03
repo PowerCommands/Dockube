@@ -1,6 +1,4 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Contracts;
-using PainKiller.DockubeClient.Contracts;
-using PainKiller.DockubeClient.Services;
 
 namespace PainKiller.DockubeClient.DomainObjects;
 public class DockubeInfoPanelContent(string executablePath) : IInfoPanelContent

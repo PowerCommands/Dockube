@@ -4,6 +4,8 @@ configuration:
     ssl:
       executablePath: OpenSSL-Win64\bin
       output: ssl-output
+      defaultName: Dockube
+      defaultCa: Dockube Intermediate CA
   core:
     name: Dockube
     version: 1.0

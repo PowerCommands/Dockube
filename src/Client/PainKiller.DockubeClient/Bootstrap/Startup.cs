@@ -7,7 +7,6 @@ using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
-using PainKiller.DockubeClient.Configuration;
 using PainKiller.DockubeClient.DomainObjects;
 using PainKiller.ReadLine;
 using Serilog;
