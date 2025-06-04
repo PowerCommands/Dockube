@@ -39,6 +39,7 @@ public class SslService(string executablePath) : ISslService
         var csrPath = Path.Combine(intermediatesDir, "intermediate.csr");
         var crtPath = Path.Combine(intermediatesDir, "intermediate.crt");
         var serialPath = Path.Combine(intermediatesDir, "intermediate.srl");
+        var configPath = Path.Combine(AppContext.BaseDirectory, "Configuration", "intermediate.cnf");
 
         var rootDir = Path.Combine(outputFolder, "root");
         var rootKey = Path.Combine(rootDir, "root.key");
@@ -58,7 +59,7 @@ public class SslService(string executablePath) : ISslService
             _logger.LogError("Failed to create intermediate CSR or key.");
             return "Failed to create intermediate CSR or key.";
         }
-        var signCmd = $"x509 -req -in \"{csrPath}\" -CA \"{rootCrt}\" -CAkey \"{rootKey}\" -CAcreateserial -CAserial \"{serialPath}\" -out \"{crtPath}\" -days {validDays} -sha256";
+        var signCmd = $"x509 -req -in \"{csrPath}\" -CA \"{rootCrt}\" -CAkey \"{rootKey}\" -CAcreateserial -CAserial \"{serialPath}\" -out \"{crtPath}\" -days {validDays} -sha256 -extfile \"{configPath}\" -extensions v3_ca";
         var signResult = ShellService.Default.StartInteractiveProcess(_fullPath, signCmd);
         _logger.LogInformation(signResult);
         if (!File.Exists(crtPath))

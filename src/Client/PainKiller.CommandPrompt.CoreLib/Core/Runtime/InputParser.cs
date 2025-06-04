@@ -1,46 +1,52 @@
 ﻿using System.Text.RegularExpressions;
-
 namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
-
 public class InputParser : IInputParser
 {
+    private static readonly Regex TokenPattern = new(@"--\w+(=""[^""]*""|\S+)?|""[^""]*""|\S+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
     public ICommandLineInput Parse(string rawInput)
     {
         rawInput = rawInput?.Trim() ?? string.Empty;
-        if (string.IsNullOrEmpty(rawInput)) return new CommandLineInput(Raw: string.Empty, Identifier: string.Empty, Arguments: [], Quotes: [], Options: new Dictionary<string, string?>());
-        
-        var quotes = new List<string>();
-        var quoteMatches = Regex.Matches(rawInput, "\"([^\"]*)\"");
-        foreach (Match match in quoteMatches) quotes.Add(match.Value);
-     
-        var rawWithoutQuotes = rawInput;
-        foreach (var q in quotes) rawWithoutQuotes = rawWithoutQuotes.Replace(q, string.Empty);
-        var tokens = rawWithoutQuotes.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-        var identifier = tokens.Count > 0 ? tokens[0] : string.Empty;
-        if (tokens.Count > 0) tokens.RemoveAt(0);
-        var options = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-        var arguments = new List<string>();
-        for (int i = 0; i < tokens.Count; i++)
-        {
-            var token = tokens[i];
-            if (token.StartsWith("--"))
-            {
-                var key = token.TrimStart('-');
-                var value = string.Empty;
+        if (rawInput.Length == 0) return new CommandLineInput(Raw: string.Empty, Identifier: string.Empty, Arguments: [], Quotes: [], Options: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 
-                if (i + 1 < tokens.Count && !tokens[i + 1].StartsWith("--"))
+        var options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var arguments = new List<string>();
+        var quotes = new List<string>();
+
+        var matches = TokenPattern.Matches(rawInput);
+        if (matches.Count == 0) return new CommandLineInput(Raw: rawInput, Identifier: rawInput, Arguments: [], Quotes: [], Options: options);
+        var identifier = matches[0].Value;
+        for (var i = 1; i < matches.Count; i++)
+        {
+            var token = matches[i].Value;
+            if (token.StartsWith("--", StringComparison.Ordinal))
+            {
+                var withoutDashes = token.Substring(2);
+                if (withoutDashes.Contains('='))
                 {
-                    value = tokens[i + 1];
-                    i++;
+                    var idx = withoutDashes.IndexOf('=');
+                    var key = withoutDashes.Substring(0, idx);
+                    var rawVal = withoutDashes.Substring(idx + 1);
+                    var val = TrimQuotes(rawVal);
+                    options[key] = val;
                 }
-                options[key] = value;
+                else
+                {
+                    options[withoutDashes] = "";
+                }
             }
             else
             {
-                arguments.Add(token);
+                var val = TrimQuotes(token);
+                if (token.Length > 1 && token[0] == '"' && token[^1] == '"') quotes.Add(val);
+                arguments.Add(val);
             }
         }
-        for (int i = 0; i < quotes.Count; i++) quotes[i] = quotes[i].Trim('"');
         return new CommandLineInput(Raw: rawInput, Identifier: identifier, Arguments: arguments.ToArray(), Quotes: quotes.ToArray(), Options: options);
+        
+        static string TrimQuotes(string s)
+        {
+            if (s.Length > 1 && s[0] == '"' && s[^1] == '"') return s.Substring(1, s.Length - 2);
+            return s;
+        }
     }
 }

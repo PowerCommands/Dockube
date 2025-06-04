@@ -5,7 +5,7 @@ namespace PainKiller.DockubeClient.Commands;
 [CommandDesign(     description: "Create and manage certificates", 
                          quotes: ["name"],
                       arguments: ["Operation"],
-                        options: ["days","ca"],
+                        options: ["ca","days"],
                     suggestions: ["root", "intermediate","tls", "auth"],
                        examples: ["//Create root certificate using default name","certificate --root", "//Sign certificate using root certificate using default name","certificate --sign"])]
 public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
