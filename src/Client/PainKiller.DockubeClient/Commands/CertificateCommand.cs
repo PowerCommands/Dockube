@@ -6,7 +6,7 @@ namespace PainKiller.DockubeClient.Commands;
                          quotes: ["name"],
                       arguments: ["Operation"],
                         options: ["ca","days"],
-                    suggestions: ["root", "intermediate","tls", "auth"],
+                    suggestions: ["inspect","root", "intermediate","tls", "auth"],
                        examples: ["//Create root certificate using default name","certificate --root", "//Sign certificate using root certificate using default name","certificate --sign"])]
 public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -22,7 +22,43 @@ public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandP
         if (operation == "intermediate") return CreateIntermediateCa(sslService, output, $"{name} Intermediate CA", validDays);
         if (operation == "tls") return SignTslCertificate(sslService, output, name, validDays, caName);
         if (operation == "auth") return SignAuthCertificate(sslService, output, name, validDays, caName);
+        if (operation == "inspect") return Inspect(sslService, name);
 
+        return Ok();
+    }
+
+    private RunResult Inspect(ISslService service, string name)
+    {
+        var certInfo = service.InspectCertificate(name);
+        if (certInfo != null)
+        {
+            Writer.WriteHeadLine(certInfo.SubjectCn);
+            Writer.WriteLine($"Issuer: {certInfo.Issuer}");
+            Writer.WriteLine($"Valid From: {certInfo.ValidFrom}");
+            Writer.WriteLine($"Valid To: {certInfo.ValidTo}");
+            Writer.WriteLine($"Is Valid Now: {certInfo.IsValidNow}");
+            Writer.WriteLine($"Thumbprint (SHA1): {certInfo.ThumbprintSha1}");
+            if (!string.IsNullOrEmpty(certInfo.KeyUsage))
+            {
+                Writer.WriteLine($"Key Usage: {certInfo.KeyUsage}");
+            }
+            if (certInfo.ExtendedKeyUsages.Any())
+            {
+                Writer.WriteLine("Extended Key Usages:");
+                foreach (var usage in certInfo.ExtendedKeyUsages)
+                {
+                    Writer.WriteLine($"- {usage}");
+                }
+            }
+            if (certInfo.SubjectAlternativeNames.Any())
+            {
+                Writer.WriteLine("Subject Alternative Names:");
+                foreach (var san in certInfo.SubjectAlternativeNames)
+                {
+                    Writer.WriteLine($"- {san}");
+                }
+            }
+        }
         return Ok();
     }
     private RunResult CreateRootCa(ISslService service, string output, string name, int validDays)

@@ -1,7 +1,10 @@
 ﻿using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using PainKiller.DockubeClient.DomainObjects;
 
 namespace PainKiller.DockubeClient.Services;
 public class SslService(string executablePath) : ISslService
@@ -79,10 +82,10 @@ public class SslService(string executablePath) : ISslService
 
         var keyPath = Path.Combine(keyDir, $"{commonName}.key");
         var csrPath = Path.Combine(reqDir, $"{commonName}.csr");
-        
+
         var eku = "extendedKeyUsage = serverAuth";
         var ku = "keyUsage = digitalSignature,keyEncipherment";
-        
+
         var sanItems = new List<string> { $"DNS:{commonName}" }; // always include CN
         if (sanList != null)
         {
@@ -120,10 +123,10 @@ public class SslService(string executablePath) : ISslService
 
         var keyPath = Path.Combine(keyDir, $"{commonName}.key");
         var csrPath = Path.Combine(reqDir, $"{commonName}.csr");
-        
+
         var eku = "extendedKeyUsage = clientAuth";
         var ku = "keyUsage = digitalSignature";
-        
+
         var sanItems = new List<string> { commonName.Contains('@') ? $"email:{commonName}" : $"URI:spiffe://dockube/{commonName}" };
         if (sanList != null)
         {
@@ -172,7 +175,7 @@ public class SslService(string executablePath) : ISslService
         var caKey = Path.Combine(caDir, "intermediate.key");
         var serialPath = Path.Combine(caDir, "intermediate.srl");
 
-        var sanItems = new List<string> { {commonName} }; // always include CN
+        var sanItems = new List<string> { { commonName } }; // always include CN
         if (sanList != null)
         {
             foreach (var item in sanList.Where(s => !string.IsNullOrEmpty(s)))
@@ -204,20 +207,56 @@ public class SslService(string executablePath) : ISslService
 
         return $"✔ Certificate created: {crtPath}\n✔ Signed by Intermediate CA: {caName}";
     }
+    public CertificateInfo InspectCertificate(string certPath)
+    {
+        if (!File.Exists(certPath))
+        {
+            var cwd = Directory.GetCurrentDirectory();
+            var fallbackCert = Directory.EnumerateFiles(cwd)
+                .FirstOrDefault(f =>
+                    f.EndsWith(".crt", StringComparison.OrdinalIgnoreCase) ||
+                    f.EndsWith(".cer", StringComparison.OrdinalIgnoreCase));
 
+            if (fallbackCert != null)
+            {
+                _logger.LogWarning("Specified certificate not found, using fallback: {Fallback}", Path.GetFileName(fallbackCert));
+                certPath = fallbackCert;
+            }
+            else
+            {
+                throw new FileNotFoundException("Certificate file not found and no fallback .crt or .cer found in working directory.", certPath);
+            }
+        }
+        using var cert = X509CertificateLoader.LoadCertificateFromFile(certPath);
+        var info = new CertificateInfo
+        {
+            FileName = Path.GetFileName(certPath),
+            SubjectCn = cert.GetNameInfo(X509NameType.DnsName, false),
+            Issuer = cert.Issuer,
+            ValidFrom = cert.NotBefore,
+            ValidTo = cert.NotAfter,
+            IsValidNow = DateTime.Now >= cert.NotBefore && DateTime.Now <= cert.NotAfter,
+            ThumbprintSha1 = cert.Thumbprint
+        };
+        var keyUsage = cert.Extensions.OfType<X509KeyUsageExtension>().FirstOrDefault();
+        if (keyUsage != null) info.KeyUsage = keyUsage.KeyUsages.ToString();
+        
+        var eku = cert.Extensions.OfType<X509EnhancedKeyUsageExtension>().FirstOrDefault();
+        if (eku != null) info.ExtendedKeyUsages = eku.EnhancedKeyUsages.Cast<Oid>().Select(o => o.FriendlyName).ToList();
+        var sanExt = cert.Extensions.Cast<X509Extension>().FirstOrDefault(e => e.Oid?.Value == "2.5.29.17");
+        if (sanExt != null)
+        {
+            var sanFormatted = sanExt.Format(true);
+            info.SubjectAlternativeNames = sanFormatted.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+        }
+        return info;
+    }
     private void GenerateOpenSslConfig(string templatePath, string outputPath, string commonName, IEnumerable<string> sanList)
     {
-        if (!File.Exists(templatePath))
-        {
-            throw new FileNotFoundException("Template file not found.", templatePath);
-        }
+        if (!File.Exists(templatePath)) throw new FileNotFoundException("Template file not found.", templatePath);
 
         var template = File.ReadAllText(templatePath);
-
-        // Ersätt $NAME$
         template = template.Replace("$NAME$", commonName);
-
-        // Bygg alt_names sektion från sanList
         var dnsEntries = new List<string>();
         int index = 1;
         foreach (var entry in sanList.Distinct())
@@ -229,9 +268,7 @@ public class SslService(string executablePath) : ISslService
 
             index++;
         }
-
         var dnsBlock = string.Join(Environment.NewLine, dnsEntries);
-
         template = template.Replace("$DNS$", dnsBlock);
         File.WriteAllText(outputPath, template);
     }

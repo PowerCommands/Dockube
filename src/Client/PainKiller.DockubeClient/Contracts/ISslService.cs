@@ -1,4 +1,6 @@
-﻿namespace PainKiller.DockubeClient.Contracts;
+﻿using PainKiller.DockubeClient.DomainObjects;
+
+namespace PainKiller.DockubeClient.Contracts;
 public interface ISslService
 {
     string GetVersion();
@@ -7,4 +9,5 @@ public interface ISslService
     string CreateRequestForTls(string commonName, string outputFolder, IEnumerable<string>? sanList = null);
     string CreateRequestForAuth(string commonName, string outputFolder, IEnumerable<string>? sanList = null);
     string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName, IEnumerable<string>? sanList = null);
+    CertificateInfo InspectCertificate(string certPath);
 }
