@@ -28,7 +28,7 @@ configuration:
       infoPanel:
         enabled: true
         height: 2
-        updateIntervalSeconds: 60
+        updateIntervalSeconds: -1
         backgroundColor: DarkMagenta
         foregroundColor: White
   log:

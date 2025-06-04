@@ -6,5 +6,5 @@ public interface ISslService
     string CreateIntermediateCertificate(string name, int validDays, string outputFolder);
     string CreateRequestForTls(string commonName, string outputFolder, IEnumerable<string>? sanList = null);
     string CreateRequestForAuth(string commonName, string outputFolder, IEnumerable<string>? sanList = null);
-    string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName);
+    string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName, IEnumerable<string>? sanList = null);
 }

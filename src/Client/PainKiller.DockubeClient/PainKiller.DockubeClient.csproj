@@ -8,11 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Configuration\cert.cnf" />
     <None Remove="Configuration\intermediate.cnf" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="CommandPromptConfiguration.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Configuration\cert.cnf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Configuration\intermediate.cnf">

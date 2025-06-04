@@ -157,7 +157,7 @@ public class SslService(string executablePath) : ISslService
 
         return $"✔ Auth Private key: {keyPath}\n✔ Auth CSR: {csrPath}\n✔ SAN: {string.Join(", ", sanItems)}";
     }
-    public string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName)
+    public string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName, IEnumerable<string>? sanList = null)
     {
         var reqDir = Path.Combine(outputFolder, "request");
         var crtDir = Path.Combine(outputFolder, "certificate");
@@ -172,12 +172,27 @@ public class SslService(string executablePath) : ISslService
         var caKey = Path.Combine(caDir, "intermediate.key");
         var serialPath = Path.Combine(caDir, "intermediate.srl");
 
+        var sanItems = new List<string> { {commonName} }; // always include CN
+        if (sanList != null)
+        {
+            foreach (var item in sanList.Where(s => !string.IsNullOrEmpty(s)))
+            {
+                sanItems.Add(item);
+            }
+        }
         if (!File.Exists(caCrt) || !File.Exists(caKey))
         {
             _logger.LogError($"Intermediate CA '{caName}' not found in '{caDir}'.");
             return $"Intermediate CA '{caName}' not found. Please create it first.";
         }
-        var signRequest = $"x509 -req -in \"{csrPath}\" -CA \"{caCrt}\" -CAkey \"{caKey}\" -CAcreateserial -CAserial \"{serialPath}\" -out \"{crtPath}\" -days {validDays} -sha256";
+
+        var certTemplateConfig = Path.Combine(AppContext.BaseDirectory, "Configuration", "cert.cnf");
+        var certOutputConfig = Path.Combine(AppContext.BaseDirectory, $"cert.{commonName}.cnf");
+
+        GenerateOpenSslConfig(certTemplateConfig, certOutputConfig, commonName, sanItems);
+
+        var signRequest = $"x509 -req " + $"-in \"{csrPath}\" " + $"-CA \"{caCrt}\" " + $"-CAkey \"{caKey}\" " + $"-CAcreateserial -CAserial \"{serialPath}\" " + $"-out \"{crtPath}\" " + $"-days {validDays} " + $"-sha256 " + $"-extfile \"{certOutputConfig}\" -extensions req_ext";
+
         var result = ShellService.Default.StartInteractiveProcess(_fullPath, signRequest);
         _logger.LogInformation(result);
 
@@ -188,5 +203,36 @@ public class SslService(string executablePath) : ISslService
         }
 
         return $"✔ Certificate created: {crtPath}\n✔ Signed by Intermediate CA: {caName}";
+    }
+
+    private void GenerateOpenSslConfig(string templatePath, string outputPath, string commonName, IEnumerable<string> sanList)
+    {
+        if (!File.Exists(templatePath))
+        {
+            throw new FileNotFoundException("Template file not found.", templatePath);
+        }
+
+        var template = File.ReadAllText(templatePath);
+
+        // Ersätt $NAME$
+        template = template.Replace("$NAME$", commonName);
+
+        // Bygg alt_names sektion från sanList
+        var dnsEntries = new List<string>();
+        int index = 1;
+        foreach (var entry in sanList.Distinct())
+        {
+            if (IPAddress.TryParse(entry, out _))
+                dnsEntries.Add($"IP.{index} = {entry}");
+            else
+                dnsEntries.Add($"DNS.{index} = {entry}");
+
+            index++;
+        }
+
+        var dnsBlock = string.Join(Environment.NewLine, dnsEntries);
+
+        template = template.Replace("$DNS$", dnsBlock);
+        File.WriteAllText(outputPath, template);
     }
 }

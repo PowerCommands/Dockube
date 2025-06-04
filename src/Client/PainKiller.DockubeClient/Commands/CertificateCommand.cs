@@ -61,7 +61,7 @@ public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandP
         
         var signResponse = DialogService.YesNoDialog($"Do you want to create and sign this certificate with {ca}?");
         if (!signResponse) return Ok();
-        var signResult = service.CreateAndSignCertificate(name, validDays, output, ca);
+        var signResult = service.CreateAndSignCertificate(name, validDays, output, ca, sanItems);
         Writer.WriteLine(signResult);
         return Ok();
     }
