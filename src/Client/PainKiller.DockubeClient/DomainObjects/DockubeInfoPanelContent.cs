@@ -5,10 +5,15 @@ public class DockubeInfoPanelContent(string executablePath) : IInfoPanelContent
 {
     public string GetText()
     {
+        var sslVersion = GetSslVersion();
+        var dockerVersion = DockerService.Default.Version;
+        return $"Docker version: {dockerVersion} SSL version: {sslVersion}";
+    }
+    private string GetSslVersion()
+    {
         ISslService sslService = new SslService(executablePath);
         var versionInfo = sslService.GetVersion().Trim().Split(' ').Take(2);
-        var retVal = $"SSL version: {string.Join(' ', versionInfo).Trim()}";
-        var shortText = retVal;
-        return retVal.Length > Console.WindowWidth ? shortText : retVal;
+        var retVal = $"{string.Join(' ', versionInfo).Trim()}";
+        return retVal;
     }
 }

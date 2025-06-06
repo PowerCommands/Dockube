@@ -1,6 +1,7 @@
 version: 1.0
 configuration:
-  dockube:    
+  dockube:
+    autostartDockerDesktop: true
     ssl:
       executablePath: OpenSSL-Win64\bin
       output: ssl-output
