@@ -6,8 +6,7 @@ public class DockubeInfoPanelContent(string executablePath) : IInfoPanelContent
     public string GetText()
     {
         var sslVersion = GetSslVersion();
-        var dockerVersion = DockerService.Default.Version;
-        return $"Docker version: {dockerVersion} SSL version: {sslVersion}";
+        return $"SSL version: {sslVersion}";
     }
     private string GetSslVersion()
     {
