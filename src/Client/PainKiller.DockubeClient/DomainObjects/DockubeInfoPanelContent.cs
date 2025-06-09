@@ -10,8 +10,7 @@ public class DockubeInfoPanelContent(string executablePath) : IInfoPanelContent
     }
     private string GetSslVersion()
     {
-        ISslService sslService = new SslService(executablePath);
-        var versionInfo = sslService.GetVersion().Trim().Split(' ').Take(2);
+        var versionInfo = SslService.Default.GetVersion().Trim().Split(' ').Take(2);
         var retVal = $"{string.Join(' ', versionInfo).Trim()}";
         return retVal;
     }

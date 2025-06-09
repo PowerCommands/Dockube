@@ -22,6 +22,9 @@
     <Content Include="Configuration\intermediate.cnf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Manifests\Grafana-Prometheus\Grafana-Prometheus.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

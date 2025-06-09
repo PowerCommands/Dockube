@@ -7,15 +7,17 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.DomainObjects;
 
 namespace PainKiller.DockubeClient.Services;
-public class SslService(string executablePath) : ISslService
+public class SslService : ISslService
 {
-    private readonly ILogger<SslService> _logger = LoggerProvider.CreateLogger<SslService>();
+    private static readonly Lazy<SslService> Instance = new(() => new SslService());    
+    public static SslService Default => Instance.Value;
+    private SslService() { }
 
-    private readonly string _fullPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), executablePath), "openssl.exe");
+    private readonly ILogger<SslService> _logger = LoggerProvider.CreateLogger<SslService>();
+    private const string ExecutableName = "openssl";
     public string GetVersion()
     {
-        if (string.IsNullOrEmpty(executablePath)) return "";
-        var version = ShellService.Default.StartInteractiveProcess(_fullPath, "version");
+        var version = ShellService.Default.StartInteractiveProcess(ExecutableName, "version", Environment.CurrentDirectory);
         if (!string.IsNullOrEmpty(version)) return version;
         _logger.LogError("OpenSSL executable not found or version command failed.");
         return "OpenSSL executable not found or version command failed.";
@@ -29,7 +31,7 @@ public class SslService(string executablePath) : ISslService
         var crtPath = Path.Combine(rootDirectory, "root.crt");
 
         var arguments = $"req -x509 -new -nodes -keyout \"{keyPath}\" -out \"{crtPath}\" -subj \"/CN={name}\" -days {validDays} -newkey rsa:4096";
-        var result = ShellService.Default.StartInteractiveProcess(_fullPath, arguments);
+        var result = ShellService.Default.StartInteractiveProcess(ExecutableName, arguments, Environment.CurrentDirectory);
         _logger.LogInformation(result);
         return $"Creating root certificate: {name} for {validDays} days at {crtPath}";
     }
@@ -54,7 +56,7 @@ public class SslService(string executablePath) : ISslService
             return "Root certificate or key not found. Please create a root CA first.";
         }
         var csrCmd = $"req -new -newkey rsa:4096 -nodes -keyout \"{keyPath}\" -out \"{csrPath}\" -subj \"/CN={name}\"";
-        var csrResult = ShellService.Default.StartInteractiveProcess(_fullPath, csrCmd);
+        var csrResult = ShellService.Default.StartInteractiveProcess(ExecutableName, csrCmd, Environment.CurrentDirectory);
         _logger.LogInformation(csrResult);
 
         if (!File.Exists(csrPath) || !File.Exists(keyPath))
@@ -63,7 +65,7 @@ public class SslService(string executablePath) : ISslService
             return "Failed to create intermediate CSR or key.";
         }
         var signCmd = $"x509 -req -in \"{csrPath}\" -CA \"{rootCrt}\" -CAkey \"{rootKey}\" -CAcreateserial -CAserial \"{serialPath}\" -out \"{crtPath}\" -days {validDays} -sha256 -extfile \"{configPath}\" -extensions v3_ca";
-        var signResult = ShellService.Default.StartInteractiveProcess(_fullPath, signCmd);
+        var signResult = ShellService.Default.StartInteractiveProcess(ExecutableName, signCmd, Environment.CurrentDirectory);
         _logger.LogInformation(signResult);
         if (!File.Exists(crtPath))
         {
@@ -102,7 +104,7 @@ public class SslService(string executablePath) : ISslService
             $"-subj \"/CN={commonName}\" " +
             $"-addext \"{eku}\" -addext \"{ku}\" -addext \"{san}\"";
 
-        var result = ShellService.Default.StartInteractiveProcess(_fullPath, genRequest);
+        var result = ShellService.Default.StartInteractiveProcess(ExecutableName, genRequest, Environment.CurrentDirectory);
         _logger.LogInformation(result);
 
         if (!File.Exists(csrPath) || !File.Exists(keyPath))
@@ -149,7 +151,7 @@ public class SslService(string executablePath) : ISslService
             $"-subj \"/CN={commonName}\" " +
             $"-addext \"{eku}\" -addext \"{ku}\" -addext \"{san}\"";
 
-        var result = ShellService.Default.StartInteractiveProcess(_fullPath, genRequest);
+        var result = ShellService.Default.StartInteractiveProcess(ExecutableName, genRequest, Environment.CurrentDirectory);
         _logger.LogInformation(result);
 
         if (!File.Exists(csrPath) || !File.Exists(keyPath))
@@ -196,7 +198,7 @@ public class SslService(string executablePath) : ISslService
 
         var signRequest = $"x509 -req " + $"-in \"{csrPath}\" " + $"-CA \"{caCrt}\" " + $"-CAkey \"{caKey}\" " + $"-CAcreateserial -CAserial \"{serialPath}\" " + $"-out \"{crtPath}\" " + $"-days {validDays} " + $"-sha256 " + $"-extfile \"{certOutputConfig}\" -extensions req_ext";
 
-        var result = ShellService.Default.StartInteractiveProcess(_fullPath, signRequest);
+        var result = ShellService.Default.StartInteractiveProcess(ExecutableName, signRequest, Environment.CurrentDirectory);
         _logger.LogInformation(result);
 
         if (!File.Exists(crtPath))
@@ -243,7 +245,7 @@ public class SslService(string executablePath) : ISslService
         
         var eku = cert.Extensions.OfType<X509EnhancedKeyUsageExtension>().FirstOrDefault();
         if (eku != null) info.ExtendedKeyUsages = eku.EnhancedKeyUsages.Cast<Oid>().Select(o => o.FriendlyName).ToList();
-        var sanExt = cert.Extensions.Cast<X509Extension>().FirstOrDefault(e => e.Oid?.Value == "2.5.29.17");
+        var sanExt = cert.Extensions.FirstOrDefault(e => e.Oid?.Value == "2.5.29.17");
         if (sanExt != null)
         {
             var sanFormatted = sanExt.Format(true);

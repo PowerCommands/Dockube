@@ -1,0 +1,43 @@
+﻿using PainKiller.CommandPrompt.CoreLib.Core.Services;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using PainKiller.DockubeClient.DomainObjects;
+namespace PainKiller.DockubeClient.Services;
+public class PublishService(string basePath) : IPublishService
+{
+    public void ExecuteRelease(DockubeRelease release)
+    {
+        EnsureNamespaceExists(release.Namespace);
+
+        foreach (var res in release.Resources)
+        {
+            var resourcePath = Path.Combine(basePath, release.Name, res.Path);
+
+            foreach (var cmd in res.Before)
+                RunCommand(cmd, "Before");
+
+            RunCommand($"kubectl apply -f \"{resourcePath}\" -n {release.Namespace}", "Apply");
+
+            foreach (var cmd in res.After)
+                RunCommand(cmd, "After");
+        }
+    }
+    private void EnsureNamespaceExists(string ns)
+    {
+        var command = $"create namespace {ns} --dry-run=client -o yaml | kubectl apply -f -";
+        RunCommand($"kubectl {command}", "EnsureNamespace");
+    }
+    private void RunCommand(string command, string stage)
+    {
+        var fireAndForget = command.StartsWith("$ASYNC$ ", StringComparison.OrdinalIgnoreCase);
+        ConsoleService.Writer.WriteLine($"[{stage}] Executing command: {command}");
+        if (fireAndForget)
+        {
+            command = command[8..].Trim();
+            ConsoleService.Writer.WriteLine($"[{stage}] Fire and forget command: {command}");
+            ShellService.Default.Execute("cmd.exe", $"/c {command}");
+            return;
+        }
+        var result = ShellService.Default.StartInteractiveProcess("cmd.exe", $"/c {command}");
+        ConsoleService.Writer.WriteSuccessLine(result);
+    }
+}

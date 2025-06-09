@@ -1,6 +1,8 @@
+using PainKiller.DockubeClient.DomainObjects;
 namespace PainKiller.DockubeClient.Configuration;
 public class DockubeConfiguration
 {
-    public bool AutostartDockerDesktop { get; set; }
+    public string ManifestBasePath { get; set; } = "Manifests";
+    public DockubeRelease[] Releases { get; set; } = [];
     public SslConfiguration Ssl { get; set; } = new();
 }

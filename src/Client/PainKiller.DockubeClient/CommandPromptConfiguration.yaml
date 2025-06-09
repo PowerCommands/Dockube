@@ -1,12 +1,23 @@
 version: 1.0
 configuration:
   dockube:
-    autostartDockerDesktop: true
+    manifestBasePath: Manifests
     ssl:
       executablePath: OpenSSL-Win64\bin
       output: ssl-output
       defaultName: Dockube
-      defaultCa: Dockube Intermediate CA      
+      defaultCa: Dockube Intermediate CA
+    releases:
+      - name: Grafana-Prometheus
+        namespace: observation
+        resources:
+          - path: Grafana-Prometheus.yaml
+            before:
+              - echo Starting Prometheus and Grafana installation
+            after:
+              - echo Prometheus and Grafana services deployed
+              - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
+              - kubectl get pods -n observation 
   core:
     name: Dockube
     version: 1.0
