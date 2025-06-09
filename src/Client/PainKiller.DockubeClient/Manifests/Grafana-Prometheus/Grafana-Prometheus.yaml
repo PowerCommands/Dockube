@@ -1,5 +1,4 @@
 
-# Prometheus Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,7 +13,6 @@ spec:
   selector:
     app: prometheus
 ---
-# Prometheus Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,24 +35,13 @@ spec:
           ports:
             - containerPort: 9090
 ---
-# Grafana datasource and dashboard config in one ConfigMap
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-dashboard-prometheus
+  name: grafana-datasources
   labels:
-    grafana_dashboard: "1"
+    grafana_datasource: "1"
 data:
-  dashboards.yaml: |
-    apiVersion: 1
-    providers:
-      - name: default
-        orgId: 1
-        folder: ""
-        type: file
-        options:
-          path: /etc/grafana/provisioning/dashboards
-          updateIntervalSeconds: 10
   prometheus.yaml: |
     apiVersion: 1
     datasources:
@@ -63,39 +50,7 @@ data:
         access: proxy
         url: http://prometheus:9090
         isDefault: true
-  prometheus-overview.json: |
-    {
-      "id": null,
-      "uid": "prometheus-overview",
-      "title": "Prometheus Overview",
-      "tags": ["generated"],
-      "timezone": "browser",
-      "schemaVersion": 30,
-      "version": 1,
-      "refresh": "5s",
-      "panels": [
-        {
-          "type": "graph",
-          "title": "Prometheus: Memory Usage",
-          "datasource": "Prometheus",
-          "targets": [
-            {
-              "expr": "process_resident_memory_bytes",
-              "legendFormat": "{{job}}",
-              "refId": "A"
-            }
-          ],
-          "gridPos": {
-            "x": 0,
-            "y": 0,
-            "w": 12,
-            "h": 8
-          }
-        }
-      ]
-    }
 ---
-# Grafana Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -110,7 +65,6 @@ spec:
   selector:
     app: grafana
 ---
-# Grafana Deployment with merged provisioning
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -138,10 +92,37 @@ spec:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: dockube123
           volumeMounts:
+            - name: config
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
             - name: dashboards
               mountPath: /etc/grafana/provisioning/dashboards
-              readOnly: true
+            - name: dashboards-config
+              mountPath: /etc/grafana/provisioning/dashboards.yaml
+              subPath: dashboards.yaml
       volumes:
+        - name: config
+          configMap:
+            name: grafana-datasources
         - name: dashboards
           configMap:
-            name: grafana-dashboard-prometheus
+            name: grafana-custom-dashboard
+        - name: dashboards-config
+          configMap:
+            name: grafana-dashboards-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: ""
+        type: file
+        options:
+          path: /etc/grafana/provisioning/dashboards
+          updateIntervalSeconds: 10

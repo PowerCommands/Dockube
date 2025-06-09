@@ -15,7 +15,7 @@ configuration:
             before:
               - echo Starting Prometheus and Grafana installation
             after:
-              - echo Prometheus and Grafana services deployed
+              - echo Prometheus and Grafana services deployed              
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
               - kubectl get pods -n observation 
   core:
