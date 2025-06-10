@@ -1,6 +1,8 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.DomainObjects;
+using PainKiller.DockubeClient.Extensions;
+
 namespace PainKiller.DockubeClient.Services;
 public class PublishService(string basePath) : IPublishService
 {
@@ -10,12 +12,13 @@ public class PublishService(string basePath) : IPublishService
 
         foreach (var res in release.Resources)
         {
-            var resourcePath = Path.Combine(basePath, release.Name, res.Path);
+            var resourcePath = Path.Combine(basePath, release.Name, res.Source);
 
             foreach (var cmd in res.Before)
                 RunCommand(cmd, "Before");
 
-            RunCommand($"kubectl apply -f \"{resourcePath}\" -n {release.Namespace}", "Apply");
+            var command = res.ToCommand(basePath, release.Name, release.Namespace);
+            RunCommand(command, "Apply");
 
             foreach (var cmd in res.After)
                 RunCommand(cmd, "After");

@@ -11,13 +11,31 @@ configuration:
       - name: Grafana-Prometheus
         namespace: observation
         resources:
-          - path: Grafana-Prometheus.yaml
+          - type: kubectl
+            source: Grafana-Prometheus.yaml
             before:
               - echo Starting Prometheus and Grafana installation
             after:
-              - echo Prometheus and Grafana services deployed              
+              - echo Prometheus and Grafana services deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
-              - kubectl get pods -n observation 
+              - kubectl get pods -n observation
+
+      - name: Grafana-Prometheus-Helm
+        namespace: observation
+        resources:
+          - type: helm
+            source: grafana
+            before:
+              - echo Installing Grafana via Helm
+            after:
+              - echo Grafana Helm chart deployed
+              - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
+              - kubectl get pods -n observation
+            parameters:
+              repo: https://grafana.github.io/helm-charts
+              version: 7.3.0
+              values: grafana-values.yaml
+
   core:
     name: Dockube
     version: 1.0
@@ -25,15 +43,15 @@ configuration:
     defaultCommand: ''
     showLogo: true
     logoColor: DarkMagenta
-    suggestions: 
-    - exit
+    suggestions:
+      - exit
     roamingDirectory: Dockube
     modules:
       security:
         secrets:
-        - name: CommandPrompt_encryptionManager
-          options:
-            target: User
+          - name: CommandPrompt_encryptionManager
+            options:
+              target: User
       storage:
         applicationDataFolder: $ROAMING$\Dockube
         backupPath: backup
