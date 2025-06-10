@@ -12,7 +12,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Commands;
 
 [CommandDesign(description: "Get, creates, removes or view secrets, first you need to configure your encryption key with initialize argument",
         options: ["create", "initialize", "salt"],
-        examples: ["//View all declared secrets", "secret", "//Create secret", "secret --create \"mycommand-pass\"", "//Initialize your machine with a new encryption key (stops if this is already done)", "secret --initialize"])]
+        examples: ["//View all declared secrets", "secret", "//Create secret", "secret \"mycommand-pass\" --create", "//Initialize your machine with a new encryption key (stops if this is already done)", "secret --initialize"])]
 public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
 {
     private readonly ILogger<SecretCommand> _logger = LoggerProvider.CreateLogger<SecretCommand>();
