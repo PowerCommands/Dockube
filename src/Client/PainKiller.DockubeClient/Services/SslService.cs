@@ -177,7 +177,7 @@ public class SslService : ISslService
         var caKey = Path.Combine(caDir, "intermediate.key");
         var serialPath = Path.Combine(caDir, "intermediate.srl");
 
-        var sanItems = new List<string> { { commonName } }; // always include CN
+        var sanItems = new List<string> { commonName  };
         if (sanList != null)
         {
             foreach (var item in sanList.Where(s => !string.IsNullOrEmpty(s)))
