@@ -5,7 +5,7 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description:  "Run SSH commands",
                         options: ["host", "port", "userName"],
-                       examples: ["//Run SSH command","//ssh"])]
+                       examples: ["//Run SSH command using ssh declared in configuration","//ssh"])]
 public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
