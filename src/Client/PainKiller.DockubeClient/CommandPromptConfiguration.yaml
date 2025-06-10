@@ -23,7 +23,9 @@ configuration:
               - echo Prometheus and Grafana services deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
               - kubectl get pods -n observation
-              - echo Access Grafana at http://localhost:3000
+              - kubectl create secret tls grafana-tls --cert=ssl-output\certificate\grafana.dockube.lan.crt --key=ssl-output\key\grafana.dockube.lan.key -n observation
+              - kubectl create secret tls prometheus-tls --cert=ssl-output\certificate\prometheus.dockube.lan.crt --key=ssl-output\key\prometheus.dockube.lan.key -n observation
+              - echo Access Grafana at https://localhost:3000
 
       - name: Grafana-Prometheus-Helm
         namespace: observation

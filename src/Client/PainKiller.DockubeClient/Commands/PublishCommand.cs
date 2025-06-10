@@ -9,6 +9,7 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
 {
     public override RunResult Run(ICommandLineInput input)
     {
+        Environment.CurrentDirectory = AppContext.BaseDirectory;
         var releaseName = input.Arguments.FirstOrDefault();
         if (string.IsNullOrWhiteSpace(releaseName)) return Nok("Release name is required. Please specify the release you want to publish.");
         Publish(releaseName);
