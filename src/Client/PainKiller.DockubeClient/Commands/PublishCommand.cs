@@ -3,7 +3,7 @@ namespace PainKiller.DockubeClient.Commands;
 [CommandDesign(     description: "Publish an release to your kubernetes cluster", 
                       arguments: ["<release name>"],
                         options: [""],
-                    suggestions: ["Grafana-Prometheus"],
+                    suggestions: ["Grafana-Prometheus","Ingress-Nginx-Helm"],
                        examples: ["//Publish Grafana-Prometheus your core cluster","publish Grafana-Prometheus"])]
 public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {

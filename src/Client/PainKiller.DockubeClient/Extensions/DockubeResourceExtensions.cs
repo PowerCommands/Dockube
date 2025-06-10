@@ -26,7 +26,7 @@ public static class DockubeResourceExtensions
                     ? ""
                     : $"--version {version}";
 
-                return $@"helm repo add {chart} {repo} && ^ helm upgrade --install {chart} {chart}/{chart} -n {namespaceName} {versionArg} {valuesPath}".Replace("\r", "").Replace("\n", "");
+                return $@"helm upgrade --install {chart} {chart}/{chart} -n {namespaceName} {versionArg} {valuesPath}";
 
             default:
                 throw new NotSupportedException($"Unsupported resource type: {resource.Type}");

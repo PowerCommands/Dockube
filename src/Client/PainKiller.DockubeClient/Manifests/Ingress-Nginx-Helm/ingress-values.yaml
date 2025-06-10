@@ -1,0 +1,12 @@
+controller:
+  publishService:
+    enabled: true
+  metrics:
+    enabled: true
+  admissionWebhooks:
+    enabled: true
+  service:
+    type: LoadBalancer
+    ports:
+      http: 80
+      https: 443

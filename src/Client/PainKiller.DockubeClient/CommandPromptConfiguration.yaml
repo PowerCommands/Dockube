@@ -23,6 +23,7 @@ configuration:
               - echo Prometheus and Grafana services deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
               - kubectl get pods -n observation
+              - echo Access Grafana at http://localhost:3000
 
       - name: Grafana-Prometheus-Helm
         namespace: observation
@@ -30,7 +31,8 @@ configuration:
           - type: helm
             source: grafana
             before:
-              - echo Installing Grafana via Helm
+              - echo Installing Grafana using Helm chart
+              - helm repo add grafana https://grafana.github.io/helm-charts
             after:
               - echo Grafana Helm chart deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
@@ -39,7 +41,21 @@ configuration:
               repo: https://grafana.github.io/helm-charts
               version: 7.3.0
               values: grafana-values.yaml
-
+      - name: Ingress-Nginx-Helm
+        namespace: ingress-nginx
+        resources:
+         - type: helm
+           source: ingress-nginx
+           before:
+             - echo Installing NGINX Ingress Controller using Helm chart
+             - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+           after:
+             - echo NGINX Ingress deployed
+             - kubectl get svc -n ingress-nginx
+           parameters:
+             repo: https://kubernetes.github.io/ingress-nginx
+             version: 4.12.3  
+             values: ingress-values.yaml
   core:
     name: Dockube
     version: 1.0

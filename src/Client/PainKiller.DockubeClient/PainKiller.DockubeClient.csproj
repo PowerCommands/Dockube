@@ -40,6 +40,9 @@
     <Content Include="Manifests\Grafana-Prometheus\prometheus-overview-dashboard.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Manifests\Ingress-Nginx-Helm\ingress-values.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

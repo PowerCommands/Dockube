@@ -35,7 +35,8 @@ public class PublishService(string basePath) : IPublishService
         ConsoleService.Writer.WriteLine($"[{stage}] Executing command: {command}");
         if (fireAndForget)
         {
-            Thread.Sleep(3000);
+            Console.WriteLine("Give pod five seconds to start...");
+            Thread.Sleep(5000);
             command = command[8..].Trim();
             ConsoleService.Writer.WriteLine($"[{stage}] Fire and forget command: {command}");
             ShellService.Default.Execute("cmd.exe", $"/c {command}");
