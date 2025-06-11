@@ -68,8 +68,10 @@ configuration:
         - type: kubectl
           source: Minio.yaml          
           certificates:
-          - subjectCn: minio.dockube.lan minioconsole.dockube.lan
-            keyUsage: serverAuth            
+          - subjectCn: minio.dockube.lan
+            keyUsage: serverAuth
+          - subjectCn: minioconsole.dockube.lan
+            keyUsage: serverAuth  
           before:          
           - echo Starting MinIO installation
           after:          
