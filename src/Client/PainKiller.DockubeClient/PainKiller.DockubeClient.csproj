@@ -43,6 +43,9 @@
     <Content Include="Manifests\Ingress-Nginx-Helm\ingress-values.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Manifests\Minio\Minio.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

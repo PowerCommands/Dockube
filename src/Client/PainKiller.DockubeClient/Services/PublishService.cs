@@ -18,8 +18,9 @@ public class PublishService(string basePath, string certificateBasePath, string 
             {
                 CreateCertificate(certificate);
                 Thread.Sleep(1000);
-                var safeName = certificate.SubjectCn.Replace(".", "-") + "-tls";
-                RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{certificate.SubjectCn}.pem --key=ssl-output\\key\\{certificate.SubjectCn}.key -n {release.Namespace}", "Certificate");
+                var safeName = certificate.SubjectCn.Split(' ').First().Replace(".", "-") + "-tls";
+                var cn = certificate.SubjectCn.Split(' ').First();
+                RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{cn}.pem --key=ssl-output\\key\\{cn}.key -n {release.Namespace}", "Certificate");
             }
             foreach (var cmd in res.Before)
                 RunCommand(cmd, "Before");
@@ -35,20 +36,21 @@ public class PublishService(string basePath, string certificateBasePath, string 
     {
         var sslService = SslService.Default;
         var requestSuccess = false;
-        if (!sslService.CertificateExists(request.SubjectCn, certificateBasePath))
+        var cn = request.SubjectCn.Split(' ').First();
+        if (!sslService.CertificateExists(cn, certificateBasePath))
         {
             if (request.KeyUsage.ToLower().Trim() == "serverauth")
             {
-                var response = sslService.CreateRequestForTls(request.SubjectCn, certificateBasePath, [request.SubjectCn]);
+                var response = sslService.CreateRequestForTls(cn, certificateBasePath, request.SubjectCn.Split(' '));
                 Console.WriteLine($"Created TLS request for {request.SubjectCn} with response: {response}");
                 _logger.LogInformation($"Created TLS request for {request.SubjectCn} with response: {response}");
                 requestSuccess = true;
             }
             else if (request.KeyUsage.ToLower().Trim() == "clientauth")
             {
-                var response = sslService.CreateRequestForAuth(request.SubjectCn, certificateBasePath, [request.SubjectCn]);
-                Console.WriteLine($"Created Auth request for {request.SubjectCn} with response: {response}");
-                _logger.LogInformation($"Created Auth request for {request.SubjectCn} with response: {response}");
+                var response = sslService.CreateRequestForAuth(cn, certificateBasePath, [cn]);
+                Console.WriteLine($"Created Auth request for {cn} with response: {response}");
+                _logger.LogInformation($"Created Auth request for {cn} with response: {response}");
                 requestSuccess = true;
             }
             else
@@ -57,31 +59,32 @@ public class PublishService(string basePath, string certificateBasePath, string 
             }
             if (requestSuccess)
             {
-                var response = sslService.CreateAndSignCertificate(request.SubjectCn, request.ValidDays, certificateBasePath, ca);
-                Console.WriteLine($"Created and signed certificate for {request.SubjectCn} with response: {response}");
-                _logger.LogInformation($"Created and signed certificate for {request.SubjectCn} with response: {response}");
+                var response = sslService.CreateAndSignCertificate(cn, request.ValidDays, certificateBasePath, ca, request.SubjectCn.Split(' '));
+                Console.WriteLine($"Created and signed certificate for {cn} with response: {response}");
+                _logger.LogInformation($"Created and signed certificate for {cn} with response: {response}");
             }
             else
             {
-                _logger.LogError($"Failed to create certificate request for {request.SubjectCn}.");
-                throw new InvalidOperationException($"Failed to create certificate request for {request.SubjectCn}.");
+                _logger.LogError($"Failed to create certificate request for {cn}.");
+                throw new InvalidOperationException($"Failed to create certificate request for {cn}.");
             }
         }
         else
         {
-            _logger.LogInformation($"Certificate for {request.SubjectCn} already exists, skipping creation.");
+            Console.WriteLine($"Certificate for {cn} already exists, skipping creation.");
+            _logger.LogInformation($"Certificate for {cn} already exists, skipping creation.");
         }
 
-        if (!sslService.PemFileExists(request.SubjectCn, certificateBasePath))
+        if (!sslService.PemFileExists(cn, certificateBasePath))
         {
-            var response = sslService.ExportFullChainPemFile(request.SubjectCn, ca, certificateBasePath);
-            Console.WriteLine($"Exported full chain PEM file for {request.SubjectCn} with response: {response}");
-            _logger.LogInformation($"Exported full chain PEM file for {request.SubjectCn} with response: {response}");
+            var response = sslService.ExportFullChainPemFile(cn, ca, certificateBasePath);
+            Console.WriteLine($"Exported full chain PEM file for {cn} with response: {response}");
+            _logger.LogInformation($"Exported full chain PEM file for {cn} with response: {response}");
         }
         else
         {
-            Console.WriteLine($"Full chain PEM file for {request.SubjectCn} already exists, skipping export.");
-            _logger.LogInformation($"Full chain PEM file for {request.SubjectCn} already exists, skipping export.");
+            Console.WriteLine($"Full chain PEM file for {cn} already exists, skipping export.");
+            _logger.LogInformation($"Full chain PEM file for {cn} already exists, skipping export.");
         }
     }
     private void EnsureNamespaceExists(string ns)

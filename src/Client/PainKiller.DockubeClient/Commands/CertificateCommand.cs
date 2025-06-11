@@ -34,7 +34,7 @@ public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandP
         var certInfo = _sslService.InspectCertificate(name);
         if (certInfo != null)
         {
-            Writer.WriteHeadLine(certInfo.SubjectCn);
+            Writer.WriteHeadLine($"Subject: {certInfo.SubjectCn}");
             Writer.WriteLine($"Issuer: {certInfo.Issuer}");
             Writer.WriteLine($"Valid From: {certInfo.ValidFrom}");
             Writer.WriteLine($"Valid To: {certInfo.ValidTo}");
