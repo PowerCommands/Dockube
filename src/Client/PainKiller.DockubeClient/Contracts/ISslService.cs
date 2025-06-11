@@ -11,4 +11,6 @@ public interface ISslService
     string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName, IEnumerable<string>? sanList = null);
     string ExportFullChainPemFile(string host, string intermediateDirectory, string output);
     CertificateInfo InspectCertificate(string certPath);
+    bool CertificateExists(string commonName, string outputFolder);
+    bool PemFileExists(string commonName, string outputFolder);
 }

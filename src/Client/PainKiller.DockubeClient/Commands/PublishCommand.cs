@@ -20,7 +20,7 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
         var release = Configuration.Dockube.Releases.FirstOrDefault(r => r.Name.Equals(releaseName, StringComparison.OrdinalIgnoreCase));
         if (release == null) return Nok($"Release '{releaseName}' not found in configuration.");
         
-        var service = new PublishService(Configuration.Dockube.ManifestBasePath);
+        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
         service.ExecuteRelease(release);
         return Ok();
     }

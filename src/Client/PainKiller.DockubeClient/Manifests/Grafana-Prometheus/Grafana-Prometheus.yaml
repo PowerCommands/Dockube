@@ -133,7 +133,7 @@ spec:
   tls:
     - hosts:
         - grafana.dockube.lan
-      secretName: grafana-tls
+      secretName: grafana-dockube-lan-tls
   rules:
     - host: grafana.dockube.lan
       http:

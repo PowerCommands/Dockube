@@ -74,6 +74,18 @@ public class SslService : ISslService
         }
         return $"✔ Intermediate CA created: {crtPath}\n✔ Key: {keyPath}\n✔ Signed by: {rootCrt}";
     }
+    public bool CertificateExists(string commonName, string outputFolder)
+    {
+        var crtDir = Path.Combine(outputFolder, "certificate");
+        var crtPath = Path.Combine(crtDir, $"{commonName}.crt");
+        return File.Exists(crtPath);
+    }
+    public bool PemFileExists(string commonName, string outputFolder)
+    {
+        var crtDir = Path.Combine(outputFolder, "certificate");
+        var crtPath = Path.Combine(crtDir, $"{commonName}.pem");
+        return File.Exists(crtPath);
+    }
     public string CreateRequestForTls(string commonName, string outputFolder, IEnumerable<string>? sanList = null)
     {
         var keyDir = Path.Combine(outputFolder, "key");
