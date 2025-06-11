@@ -253,6 +253,20 @@ public class SslService : ISslService
         }
         return info;
     }
+    public string ExportFullChainPemFile(string host, string intermediateDirectory, string output)
+    {
+        var certPath = Path.Combine(output, "certificate", $"{host}.crt");
+        var intermediatePath = Path.Combine(output, "intermediate", intermediateDirectory, "intermediate.crt");
+        var keyPath = Path.Combine(output, "key", $"{host}.key");
+
+        if (!File.Exists(certPath) || !File.Exists(intermediatePath))
+            throw new FileNotFoundException("Required cert files missing.");
+
+        var fullChainPath = Path.Combine(output, "certificate" ,$"{host}.pem");
+        File.WriteAllText(fullChainPath, File.ReadAllText(certPath) + "\n" + File.ReadAllText(intermediatePath));
+
+        return fullChainPath;
+    }
     private void GenerateOpenSslConfig(string templatePath, string outputPath, string commonName, IEnumerable<string> sanList)
     {
         if (!File.Exists(templatePath)) throw new FileNotFoundException("Template file not found.", templatePath);

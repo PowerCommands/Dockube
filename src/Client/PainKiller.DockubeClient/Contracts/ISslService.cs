@@ -9,5 +9,6 @@ public interface ISslService
     string CreateRequestForTls(string commonName, string outputFolder, IEnumerable<string>? sanList = null);
     string CreateRequestForAuth(string commonName, string outputFolder, IEnumerable<string>? sanList = null);
     string CreateAndSignCertificate(string commonName, int validDays, string outputFolder, string caName, IEnumerable<string>? sanList = null);
+    string ExportFullChainPemFile(string host, string intermediateDirectory, string output);
     CertificateInfo InspectCertificate(string certPath);
 }

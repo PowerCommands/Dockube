@@ -12,8 +12,6 @@ public class PublishService(string basePath) : IPublishService
 
         foreach (var res in release.Resources)
         {
-            var resourcePath = Path.Combine(basePath, release.Name, res.Source);
-
             foreach (var cmd in res.Before)
                 RunCommand(cmd, "Before");
 
@@ -32,11 +30,18 @@ public class PublishService(string basePath) : IPublishService
     private void RunCommand(string command, string stage)
     {
         var fireAndForget = command.StartsWith("$ASYNC$ ", StringComparison.OrdinalIgnoreCase);
+        var sleep = command.StartsWith("$SLEEP$", StringComparison.OrdinalIgnoreCase);
+        if (sleep)
+        {
+            Console.WriteLine("Give pod ten seconds to start...");
+            Thread.Sleep(10000);
+            return;
+        }
         ConsoleService.Writer.WriteLine($"[{stage}] Executing command: {command}");
         if (fireAndForget)
         {
-            Console.WriteLine("Give pod five seconds to start...");
-            Thread.Sleep(5000);
+            Console.WriteLine("Give pod ten seconds to start...");
+            Thread.Sleep(10000);
             command = command[8..].Trim();
             ConsoleService.Writer.WriteLine($"[{stage}] Fire and forget command: {command}");
             ShellService.Default.Execute("cmd.exe", $"/c {command}");

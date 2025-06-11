@@ -125,11 +125,11 @@ data:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grafana
-  namespace: observation
+  name: grafana  
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - grafana.dockube.lan

@@ -10,3 +10,8 @@ controller:
     ports:
       http: 80
       https: 443
+  ingressClassResource:
+    name: nginx
+    enabled: true
+    default: false
+  ingressClass: nginx

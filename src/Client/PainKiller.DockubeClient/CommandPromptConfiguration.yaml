@@ -23,9 +23,9 @@ configuration:
               - echo Prometheus and Grafana services deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
               - kubectl get pods -n observation
-              - kubectl create secret tls grafana-tls --cert=ssl-output\certificate\grafana.dockube.lan.crt --key=ssl-output\key\grafana.dockube.lan.key -n observation
-              - kubectl create secret tls prometheus-tls --cert=ssl-output\certificate\prometheus.dockube.lan.crt --key=ssl-output\key\prometheus.dockube.lan.key -n observation
-              - echo Access Grafana at https://localhost:3000
+              - kubectl create secret tls grafana-tls --cert=ssl-output\certificate\grafana.dockube.lan.pem --key=ssl-output\key\grafana.dockube.lan.key -n observation
+              - kubectl create secret tls prometheus-tls --cert=ssl-output\certificate\prometheus.dockube.lan.pem --key=ssl-output\key\prometheus.dockube.lan.key -n observation
+              - echo Access Grafana at https://grafana.dockube.lan
 
       - name: Grafana-Prometheus-Helm
         namespace: observation
@@ -53,6 +53,7 @@ configuration:
              - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
            after:
              - echo NGINX Ingress deployed
+             - $SLEEP$
              - kubectl get svc -n ingress-nginx
            parameters:
              repo: https://kubernetes.github.io/ingress-nginx

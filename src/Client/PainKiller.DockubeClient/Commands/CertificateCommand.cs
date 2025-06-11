@@ -6,7 +6,7 @@ namespace PainKiller.DockubeClient.Commands;
                          quotes: ["name"],
                       arguments: ["Operation"],
                         options: ["ca","days"],
-                    suggestions: ["inspect","root", "intermediate","tls", "auth"],
+                    suggestions: ["inspect","root", "intermediate","tls", "auth", "pem"],
                        examples: ["//Create root certificate using default name","certificate --root", "//Sign certificate using root certificate using default name","certificate --sign"])]
 public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -22,6 +22,7 @@ public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandP
         if (operation == "root") return CreateRootCa( output, $"{name} Root CA", validDays);
         if (operation == "intermediate") return CreateIntermediateCa(output, $"{name} Intermediate CA", validDays);
         if (operation == "tls") return SignTslCertificate(output, name, validDays, caName);
+        if (operation == "pem") return CreatePemFile(output, name, caName);
         if (operation == "auth") return SignAuthCertificate(output, name, validDays, caName);
         if (operation == "inspect") return Inspect(name);
 
@@ -100,6 +101,12 @@ public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandP
         if (!signResponse) return Ok();
         var signResult = _sslService.CreateAndSignCertificate(name, validDays, output, ca, sanItems);
         Writer.WriteLine(signResult);
+        return Ok();
+    }
+    private RunResult CreatePemFile(string output, string name, string ca)
+    {
+        var response = _sslService.ExportFullChainPemFile(name, ca, output);
+        Writer.WriteLine(response);
         return Ok();
     }
 }
