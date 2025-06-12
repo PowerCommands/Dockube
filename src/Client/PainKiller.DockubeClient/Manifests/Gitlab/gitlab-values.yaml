@@ -1,0 +1,57 @@
+global:
+  edition: ce
+  hosts:
+    domain: dockube.lan
+    externalIP: 127.0.0.1
+    https: true
+
+  ingress:
+    configureCertmanager: false
+    class: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"    
+    hosts:
+      - name: gitlab.dockube.lan
+        path: /
+    tls:
+      enabled: true
+      secretName: gitlab-dockube-lan-tls
+
+  initialRootPassword:
+    secret: gitlab-root-password
+
+certmanager:
+  install: false
+
+nginx-ingress:
+  enabled: false
+
+prometheus:
+  install: false
+
+gitlab:
+  webservice:
+    minReplicas: 1
+    maxReplicas: 1
+    ingress:
+      enabled: true
+      hosts:
+        - name: gitlab.dockube.lan
+          path: /
+
+  registry:
+    ingress:
+      enabled: false
+  pages:
+    ingress:
+      enabled: false
+  minio:
+    ingress:
+      enabled: false
+
+postgresql:
+  install: true
+  postgresqlPassword: supersecurepassword
+
+redis:
+  install: true

@@ -9,15 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Manifests\Grafana-Prometheus-Helm\**" />
     <Compile Remove="Manifests\NewFolder\**" />
+    <EmbeddedResource Remove="Manifests\Grafana-Prometheus-Helm\**" />
     <EmbeddedResource Remove="Manifests\NewFolder\**" />
+    <None Remove="Manifests\Grafana-Prometheus-Helm\**" />
     <None Remove="Manifests\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Configuration\cert.cnf" />
     <None Remove="Configuration\intermediate.cnf" />
-    <None Remove="Manifests\Grafana-Prometheus-Helm\grafana-values.yaml" />
+    <None Remove="Manifests\Gitlab\gitlab-root-secret.yaml" />
+    <None Remove="Manifests\Gitlab\gitlab-values.yaml" />
     <None Remove="Manifests\Grafana-Prometheus\prometheus-overview-dashboard.json" />
   </ItemGroup>
 
@@ -31,7 +35,10 @@
     <Content Include="Configuration\intermediate.cnf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\Grafana-Prometheus-Helm\grafana-values.yaml">
+    <Content Include="Manifests\Gitlab\gitlab-root-secret.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\Gitlab\gitlab-values.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Grafana-Prometheus\Grafana-Prometheus.yaml">

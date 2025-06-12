@@ -30,24 +30,7 @@ configuration:
             after:
               - echo Prometheus and Grafana services deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
-              - kubectl get pods -n observation              
-
-      - name: Grafana-Prometheus-Helm
-        namespace: observation
-        resources:
-          - type: helm
-            source: grafana
-            before:
-              - echo Installing Grafana using Helm chart
-              - helm repo add grafana https://grafana.github.io/helm-charts
-            after:
-              - echo Grafana Helm chart deployed
-              - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
-              - kubectl get pods -n observation
-            parameters:
-              repo: https://grafana.github.io/helm-charts
-              version: 7.3.0
-              values: grafana-values.yaml
+              - kubectl get pods -n observation                    
       - name: Ingress-Nginx-Helm
         namespace: ingress-nginx
         isCore: true
@@ -58,6 +41,8 @@ configuration:
            before:
              - echo Installing NGINX Ingress Controller using Helm chart
              - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+             - helm repo add gitlab https://charts.gitlab.io
+             - helm repo update
            after:
              - echo NGINX Ingress deployed
              - $SLEEP$
@@ -66,6 +51,33 @@ configuration:
              repo: https://kubernetes.github.io/ingress-nginx
              version: 4.12.3  
              values: ingress-values.yaml
+      - name: Gitlab
+        namespace: dockube
+        isCore: true
+        order: 4
+        resources:
+        - type: helm
+          source: gitlab
+          endpoint: https://gitlab.dockube.lan
+          before:              
+            - helm repo add gitlab https://charts.gitlab.io
+            - helm repo update
+            - echo Installing GitLab using official Helm chart
+          after:
+            - echo GitLab deployed
+            - $SLEEP$
+            - kubectl get pods -n dockube
+            - echo Log in at https://gitlab.dockube.lan
+          parameters:
+            repo: https://charts.gitlab.io
+            version: 9.0.2
+            values: gitlab-values.yaml
+            
+        - type: kubectl
+          source: gitlab-root-secret.yaml
+          after:
+            - echo GitLab root secret created            
+            - powershell -Command "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret gitlab-root-password -n dockube -o jsonpath='{.data.password}')))"
       - name: Minio
         namespace: observation
         isCore: true
@@ -80,10 +92,10 @@ configuration:
           - subjectCn: minioconsole.dockube.lan
             keyUsage: serverAuth  
           before:          
-          - echo Starting MinIO installation
+            - echo Starting MinIO installation
           after:          
-          - $SLEEP$
-          - kubectl get pods -n observation          
+            - $SLEEP$
+            - kubectl get pods -n observation     
   core:
     name: Dockube
     version: 1.0
