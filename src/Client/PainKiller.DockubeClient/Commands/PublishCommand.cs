@@ -2,7 +2,7 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Publish an release to your kubernetes cluster", 
                       arguments: ["<release name>"],
-                        options: [""],
+                        options: ["uninstall"],
                     suggestions: ["Ingress-Nginx-Helm","Grafana-Prometheus","Minio"],
                        examples: ["//Publish Grafana-Prometheus your core cluster","publish Grafana-Prometheus"])]
 public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
@@ -12,16 +12,24 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
         Environment.CurrentDirectory = AppContext.BaseDirectory;
         var releaseName = input.Arguments.FirstOrDefault();
         if (string.IsNullOrWhiteSpace(releaseName)) return Nok("Release name is required. Please specify the release you want to publish.");
-        Publish(releaseName);
+        var release = Configuration.Dockube.Releases.FirstOrDefault(r => r.Name.Equals(releaseName, StringComparison.OrdinalIgnoreCase));
+        if (release == null) return Nok($"Release '{release?.Name}' not found in configuration.");
+        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
+        
+        if (input.TryGetOption(out bool uninstall, false)) return UnInstall(release, service);
+        
+        Publish(release, service);
         return Ok();
     }
-    private RunResult Publish(string releaseName)
+    private RunResult Publish(DockubeRelease release, IPublishService service)
     {
-        var release = Configuration.Dockube.Releases.FirstOrDefault(r => r.Name.Equals(releaseName, StringComparison.OrdinalIgnoreCase));
-        if (release == null) return Nok($"Release '{releaseName}' not found in configuration.");
-        
-        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
         service.ExecuteRelease(release);
         return Ok();
     }
+    private RunResult UnInstall(DockubeRelease release, IPublishService service)
+    {
+        service.UninstallRelease(release);
+        return Ok();
+    }
+
 }

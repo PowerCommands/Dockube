@@ -7,4 +7,5 @@ global using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 global using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 global using PainKiller.DockubeClient.Configuration;
 global using PainKiller.DockubeClient.Contracts;
+global using PainKiller.DockubeClient.DomainObjects;
 global using PainKiller.DockubeClient.Services;

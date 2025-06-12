@@ -2,13 +2,28 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
-using PainKiller.DockubeClient.DomainObjects;
 using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Services;
 public class PublishService(string basePath, string certificateBasePath, string ca) : IPublishService
 {
     private readonly ILogger<PublishService> _logger = LoggerProvider.CreateLogger<PublishService>();
+    public void UninstallRelease(DockubeRelease release)
+    {
+        foreach (var res in release.Resources)
+        {
+            var cmd = res.ToUninstallCommand(basePath: basePath, releaseName: release.Name, namespaceName: release.Namespace);
+            RunCommand(cmd, "Uninstall Resource");
+            
+            foreach (var cert in res.Certificates)
+            {
+                var cn = cert.SubjectCn.Split(' ').First();
+                var safeName = cn.Replace(".", "-") + "-tls";
+
+                RunCommand($"kubectl delete secret {safeName} -n {release.Namespace} --ignore-not-found", "Uninstall Certificate");
+            }
+        }
+    }
     public void ExecuteRelease(DockubeRelease release)
     {
         EnsureNamespaceExists(release.Namespace);

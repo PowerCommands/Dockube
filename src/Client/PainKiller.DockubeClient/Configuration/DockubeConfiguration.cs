@@ -1,4 +1,3 @@
-using PainKiller.DockubeClient.DomainObjects;
 namespace PainKiller.DockubeClient.Configuration;
 public class DockubeConfiguration
 {

@@ -1,6 +1,4 @@
-﻿using PainKiller.DockubeClient.DomainObjects;
-
-namespace PainKiller.DockubeClient.Contracts;
+﻿namespace PainKiller.DockubeClient.Contracts;
 public interface ISslService
 {
     string GetVersion();

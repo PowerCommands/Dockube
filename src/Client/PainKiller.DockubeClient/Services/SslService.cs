@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
-using PainKiller.DockubeClient.DomainObjects;
 
 namespace PainKiller.DockubeClient.Services;
 public class SslService : ISslService
