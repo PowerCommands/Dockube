@@ -45,6 +45,7 @@ public class PublishService(string basePath, string certificateBasePath, string 
 
             foreach (var cmd in res.After)
                 RunCommand(cmd, "After");
+            if(!string.IsNullOrEmpty(res.Endpoint)) RunCommand($"echo {res.Endpoint}", "Endpoint: ");
         }
     }
     private void CreateCertificate(CertificateRequest request)

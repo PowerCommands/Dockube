@@ -7,8 +7,8 @@ namespace PainKiller.DockubeClient.Commands;
                       arguments: ["Operation"],
                         options: ["ca","days"],
                     suggestions: ["inspect","root", "intermediate","tls", "auth", "pem"],
-                       examples: ["//Create root certificate using default name","certificate --root", "//Sign certificate using root certificate using default name","certificate --sign"])]
-public class CertificateCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+                       examples: ["//Create root certificate using default name","pki --root", "//Sign and create a TLS certificate using root certificate using default name","pki tls --sign"])]
+public class PkiCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private readonly ISslService _sslService = SslService.Default;
 

@@ -14,9 +14,12 @@ configuration:
     releases:
       - name: Grafana-Prometheus
         namespace: observation
+        isCore: true
+        order: 2
         resources:
           - type: kubectl
             source: Grafana-Prometheus.yaml
+            endpoint: https://grafana.dockube.lan
             certificates:
               - subjectCn: grafana.dockube.lan
                 keyUsage: serverAuth
@@ -27,8 +30,7 @@ configuration:
             after:
               - echo Prometheus and Grafana services deployed
               - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
-              - kubectl get pods -n observation              
-              - echo Access Grafana at https://grafana.dockube.lan
+              - kubectl get pods -n observation                            
 
       - name: Grafana-Prometheus-Helm
         namespace: observation
@@ -48,6 +50,8 @@ configuration:
               values: grafana-values.yaml
       - name: Ingress-Nginx-Helm
         namespace: ingress-nginx
+        isCore: true
+        order: 1
         resources:
          - type: helm
            source: ingress-nginx
@@ -64,9 +68,12 @@ configuration:
              values: ingress-values.yaml
       - name: Minio
         namespace: observation
+        isCore: true
+        order: 3
         resources:
         - type: kubectl
-          source: Minio.yaml          
+          source: Minio.yaml    
+          endpoint: https://minioconsole.dockube.lan/
           certificates:
           - subjectCn: minio.dockube.lan
             keyUsage: serverAuth
@@ -76,8 +83,7 @@ configuration:
           - echo Starting MinIO installation
           after:          
           - $SLEEP$
-          - kubectl get pods -n observation
-          - echo Access MinIO at https://minio.dockube.lan
+          - kubectl get pods -n observation          
   core:
     name: Dockube
     version: 1.0
