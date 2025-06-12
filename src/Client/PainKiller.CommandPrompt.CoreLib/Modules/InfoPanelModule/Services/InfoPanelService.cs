@@ -25,7 +25,7 @@ public sealed class InfoPanelService : IInfoPanelService
         _infoPanel = panel;
         ConsoleService.Writer.SetMargin(_margin);
         Console.CursorTop = _margin+1;
-        EventBusService.Service.Subscribe<AfterCommandExecutionEvent>(eventData => Update());
+        //EventBusService.Service.Subscribe<AfterCommandExecutionEvent>(eventData => Update());
         Console.CursorTop = 10;
         Start();
     }

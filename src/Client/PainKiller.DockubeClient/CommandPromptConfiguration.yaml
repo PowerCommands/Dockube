@@ -52,7 +52,7 @@ configuration:
              version: 4.12.3  
              values: ingress-values.yaml
       - name: Gitlab
-        namespace: dockube
+        namespace: gitlab
         isCore: true
         order: 4
         resources:
@@ -75,9 +75,11 @@ configuration:
             
         - type: kubectl
           source: gitlab-root-secret.yaml
+          before:
+            - $SLEEP$
           after:
             - echo GitLab root secret created            
-            - powershell -Command "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret gitlab-root-password -n dockube -o jsonpath='{.data.password}')))"
+            - kubectl get secret gitlab-root-password -n gitlab -o jsonpath="{.data.password}" | %{ [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) }
       - name: Minio
         namespace: observation
         isCore: true
