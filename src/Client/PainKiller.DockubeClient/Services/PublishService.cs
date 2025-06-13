@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
@@ -52,8 +53,17 @@ public class PublishService(string basePath, string certificateBasePath, string 
                     RunCommand(cmd, "After");
                 foreach (var secret in res.SecretDescriptors)
                 {
-                    Thread.Sleep(1000);
-                    var base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {secret.Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'","");
+                    var retries = 400;
+                    var base64Encoded = "";
+                    while(retries-- > 0)
+                    {
+                        Thread.Sleep(2000);
+                        base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {secret.Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'","");
+                        if (IsBase64(base64Encoded)) break;
+                        _logger.LogWarning($"Secret {secret.Key} not yet available, retrying... ({retries} retries left)");
+                        Console.WriteLine($"Secret {secret.Key} not yet available, retrying... ({retries} retries left)");
+                        Console.SetCursorPosition(0, Console.CursorTop - 1);
+                    }
                     Console.WriteLine(secret.Name);
                     try
                     {
@@ -157,5 +167,13 @@ public class PublishService(string basePath, string certificateBasePath, string 
         }
         var result = ShellService.Default.StartInteractiveProcess("cmd.exe", $"/c {command}");
         ConsoleService.Writer.WriteSuccessLine(result);
+    }
+
+    private static readonly Regex Base64Regex = new(@"^[A-Za-z0-9\+/]*={0,2}$", RegexOptions.Compiled);
+    public static bool IsBase64(string s)
+    {
+        if (string.IsNullOrWhiteSpace(s) || s.Length % 4 != 0) 
+            return false;
+        return Base64Regex.IsMatch(s);
     }
 }

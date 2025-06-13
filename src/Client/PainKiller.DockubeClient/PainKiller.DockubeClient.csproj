@@ -23,6 +23,9 @@
   <ItemGroup>
     <None Remove="Configuration\cert.cnf" />
     <None Remove="Configuration\intermediate.cnf" />
+    <None Remove="Manifests\ArgoCd\ArgoCd-Ingress.yaml" />
+    <None Remove="Manifests\ArgoCd\ArgoCd.yaml" />
+    <None Remove="Manifests\ArgoCd\install.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-root-secret.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-values.yaml" />
     <None Remove="Manifests\Grafana\Grafana.yaml" />
@@ -40,6 +43,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Configuration\intermediate.cnf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\ArgoCd\ArgoCd-Ingress.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\ArgoCd\ArgoCd.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\ArgoCd\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Gitlab\gitlab-root-secret.yaml">

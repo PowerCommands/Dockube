@@ -4,29 +4,30 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Manage the Core Dockube cluster", 
                       arguments: ["<Mode>"],
-                        options: ["pods", "secrets","tls","endpoints","ingress", "hosts"],
-                    suggestions: ["init"],
-                       examples: ["//View status of your dockube platform","dockube","//Initialize the core platform","dockube init"])]
-public class DockubeCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+                         quotes: ["<Namespace name>"],
+                        options: ["hosts", "pods", "secrets","tls","endpoints","ingress","namespaces"],
+                    suggestions: ["init","\"gitlab\"","\"observation\""],
+                       examples: ["//View status of your dockube platform","core","//Initialize the core platform","core init"])]
+public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {
         if(this.GetSuggestion(input.Arguments.FirstOrDefault(),"") == "init") return Init();
-        StatusCoreCluster(input.Options);
+        StatusCoreCluster(input.Options, $"{input.Quotes.FirstOrDefault()}");
         return Ok();
     }
-    private RunResult StatusCoreCluster(IDictionary<string,string> options)
+    private RunResult StatusCoreCluster(IDictionary<string,string> options, string nameSpace)
     {
         var namespaces = Configuration.Dockube.GetReleases().Where(r => r.IsCore && !string.IsNullOrWhiteSpace(r.Namespace)).Select(r => r.Namespace).Distinct().ToList();
         Writer.WriteHeadLine("Core Cluster Status");
 
-        if (options.ContainsKey("pods") || options.Count == 0)
+        if (options.ContainsKey("namespaces") || options.Count == 0)
         {
             Writer.WriteLine("All Namespaces in Cluster");
             RunCommand("kubectl get namespaces", "Namespaces");
         }
 
-        foreach (var ns in namespaces)
+        foreach (var ns in namespaces.Where(n => n.Contains(nameSpace)))
         {
             Writer.WriteHeadLine($"Namespace: {ns}");
 
@@ -62,15 +63,9 @@ public class DockubeCommand(string identifier) : ConsoleCommandBase<CommandPromp
                 RunCommand($@"kubectl get ingress -n {ns} -o jsonpath=""{{range .items[*]}}{{.metadata.name}} {{.spec.rules[*].host}}{{'\n'}}{{end}}""", $"Ingress Hosts in {ns}");
             }
         }
-        if (options.ContainsKey("hosts") || options.Count == 0)
-        {
-            var endpoints = Configuration.Dockube.GetReleases().Where(r => r.IsCore).SelectMany(r => r.Resources).Select(res => res.Endpoint).Where(e => !string.IsNullOrWhiteSpace(e)).Distinct().ToList();
-            Writer.WriteHeadLine("Hosts");
-            foreach (var endpoint in endpoints) Writer.WriteLine($"Endpoint: {endpoint}");
-        }
+        if (options.ContainsKey("hosts") || options.Count == 0) ShowHosts();
         return Ok();
     }
-
     private RunResult Init()
     {
         Writer.WriteHeadLine("Initializing Core Cluster...");
@@ -82,6 +77,13 @@ public class DockubeCommand(string identifier) : ConsoleCommandBase<CommandPromp
             service.ExecuteRelease(release);
             Writer.WriteLine($"Release {release.Name} published successfully.");
         }
+        ShowHosts();
         return Ok();
+    }
+    private void ShowHosts()
+    {
+        var endpoints = Configuration.Dockube.GetReleases().Where(r => r.IsCore).SelectMany(r => r.Resources).Select(res => res.Endpoint).Where(e => !string.IsNullOrWhiteSpace(e)).Distinct().ToList();
+        Writer.WriteHeadLine("Hosts");
+        foreach (var endpoint in endpoints) Writer.WriteLine($"Endpoint: {endpoint}");
     }
 }

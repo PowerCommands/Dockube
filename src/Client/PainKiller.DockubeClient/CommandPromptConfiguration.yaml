@@ -16,7 +16,8 @@ configuration:
       - Prometheus      
       - Grafana
       - Gitlab
-      - Minio        
+      - Minio
+      - ArgoCd
   core:
     name: Dockube
     version: 1.0

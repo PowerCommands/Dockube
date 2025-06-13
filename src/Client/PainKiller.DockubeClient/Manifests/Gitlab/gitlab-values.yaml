@@ -55,3 +55,6 @@ postgresql:
 
 redis:
   install: true
+
+gitlab-runner:
+  install: false

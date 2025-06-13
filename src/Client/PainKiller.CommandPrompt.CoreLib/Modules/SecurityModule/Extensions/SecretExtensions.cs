@@ -34,4 +34,8 @@ public static class SecretExtensions
         ConfigurationService.Service.SaveChanges(configuration);
         return retVal;
     }
+    public static string GetBCrypt(this string input)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(input);
+    }
 }

@@ -1,0 +1,18 @@
+name: ArgoCD
+namespace: argocd
+isCore: true
+resources:  
+  - type: kubectl
+    source: ArgoCd.yaml    
+    secretDescriptors:
+      - name: ArgoCd login with admin/password
+        key: argocd-initial-admin-secret
+        showClearText: true
+    certificates:
+      - subjectCn: argocd.dockube.lan
+        keyUsage: serverAuth
+  - type: kubectl
+    source: ArgoCd-Ingress.yaml
+    endpoint: https://argocd.dockube.lan    
+    after:    
+      - kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name       
