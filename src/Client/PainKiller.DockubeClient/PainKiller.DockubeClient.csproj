@@ -10,10 +10,13 @@
 
   <ItemGroup>
     <Compile Remove="Manifests\Grafana-Prometheus-Helm\**" />
+    <Compile Remove="Manifests\Grafana-Prometheus\**" />
     <Compile Remove="Manifests\NewFolder\**" />
     <EmbeddedResource Remove="Manifests\Grafana-Prometheus-Helm\**" />
+    <EmbeddedResource Remove="Manifests\Grafana-Prometheus\**" />
     <EmbeddedResource Remove="Manifests\NewFolder\**" />
     <None Remove="Manifests\Grafana-Prometheus-Helm\**" />
+    <None Remove="Manifests\Grafana-Prometheus\**" />
     <None Remove="Manifests\NewFolder\**" />
   </ItemGroup>
 
@@ -22,7 +25,11 @@
     <None Remove="Configuration\intermediate.cnf" />
     <None Remove="Manifests\Gitlab\gitlab-root-secret.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-values.yaml" />
-    <None Remove="Manifests\Grafana-Prometheus\prometheus-overview-dashboard.json" />
+    <None Remove="Manifests\Grafana\Grafana.yaml" />
+    <None Remove="Manifests\Grafana\install.yaml" />
+    <None Remove="Manifests\Grafana\prometheus-overview-dashboard.json" />
+    <None Remove="Manifests\Prometheus\install.yaml" />
+    <None Remove="Manifests\Prometheus\Prometheus.yaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,13 +51,13 @@
     <Content Include="Manifests\Gitlab\gitlab-values.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\Grafana-Prometheus\Grafana-Prometheus.yaml">
+    <Content Include="Manifests\Grafana\Grafana.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\Grafana-Prometheus\install.yaml">
+    <Content Include="Manifests\Grafana\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\Grafana-Prometheus\prometheus-overview-dashboard.json">
+    <Content Include="Manifests\Grafana\prometheus-overview-dashboard.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Ingress-Nginx-Helm\ingress-values.yaml">
@@ -63,6 +70,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Minio\Minio.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\Prometheus\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\Prometheus\Prometheus.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

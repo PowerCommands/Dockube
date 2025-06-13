@@ -1,0 +1,12 @@
+name: Grafana
+namespace: observation
+isCore: true
+resources:
+  - type: kubectl
+    source: Grafana.yaml
+    endpoint: https://grafana.dockube.lan
+    certificates:
+      - subjectCn: grafana.dockube.lan
+        keyUsage: serverAuth          
+    after:      
+      - kubectl get pods -n observation

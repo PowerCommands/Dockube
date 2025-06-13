@@ -1,7 +1,6 @@
 name: Ingress-Nginx-Helm
 namespace: ingress-nginx
 isCore: true
-order: 1
 resources:
   - type: helm
     source: ingress-nginx

@@ -75,7 +75,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     {
         Writer.WriteHeadLine("Initializing Core Cluster...");
         var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
-        var coreReleases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).OrderBy(r => r.Order).ToList();
+        var coreReleases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).ToList();
         foreach (var release in coreReleases)
         {
             Writer.WriteLine($"Publishing release: {release.Name}");

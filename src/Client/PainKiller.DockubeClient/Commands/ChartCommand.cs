@@ -23,6 +23,7 @@ public class ChartCommand(string identifier) : ConsoleCommandBase<CommandPromptC
     {
         Writer.WriteHeadLine("Configured Helm repositories:");
         RunCommand("helm repo list", "Helm Repos");
+        ShowCacheStats();
         return Ok();
     }
     public RunResult ViewVersions(string chartName)
@@ -43,4 +44,23 @@ public class ChartCommand(string identifier) : ConsoleCommandBase<CommandPromptC
         RunCommand($"helm repo remove {chartName}", "Helm Repo Remove");
         return Ok();
     }
+
+    public void ShowCacheStats()
+    {
+        var repoPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp", "helm", "repository");
+        if (!Directory.Exists(repoPath))
+            return;
+
+        var files = Directory.GetFiles(repoPath, "*", SearchOption.AllDirectories);
+        if (files.Length == 0)
+            return;
+
+        var totalBytes = files.Sum(f => new FileInfo(f).Length);
+        var totalMb = totalBytes / (1024.0 * 1024.0);
+
+        Writer.WriteHeadLine("Helm repository cache usage:");
+        Writer.WriteLine($"Number of cached files : {files.Length}");
+        Writer.WriteLine($"Total size                   : {totalMb:F2} MB");
+    }
+
 }

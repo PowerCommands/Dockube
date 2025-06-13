@@ -1,0 +1,12 @@
+name: Prometheus
+namespace: observation
+isCore: true
+resources:
+  - type: kubectl
+    source: Grafana-Prometheus.yaml
+    endpoint: https://grafana.dockube.lan https://prometheus.dockube.lan/targets
+    certificates:      
+      - subjectCn: prometheus.dockube.lan
+        keyUsage: serverAuth    
+    after:      
+      - kubectl get pods -n observation

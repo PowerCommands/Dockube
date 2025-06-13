@@ -1,7 +1,6 @@
 name: Gitlab
 namespace: gitlab
 isCore: true
-order: 4
 resources:
   - type: kubectl
     source: gitlab-root-secret.yaml

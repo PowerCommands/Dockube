@@ -13,7 +13,8 @@ configuration:
       userName: dockube
     releases:
       - Ingress-Nginx-Helm  
-      - Grafana-Prometheus      
+      - Prometheus      
+      - Grafana
       - Gitlab
       - Minio        
   core:

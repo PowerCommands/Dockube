@@ -1,7 +1,6 @@
 name: Minio
 namespace: observation
 isCore: true
-order: 3
 resources:
   - type: kubectl
     source: Minio.yaml
