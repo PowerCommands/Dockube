@@ -1,0 +1,19 @@
+name: Grafana-Prometheus
+namespace: observation
+isCore: true
+order: 2
+resources:
+  - type: kubectl
+    source: Grafana-Prometheus.yaml
+    endpoint: https://grafana.dockube.lan https://prometheus.dockube.lan/targets
+    certificates:
+      - subjectCn: grafana.dockube.lan
+        keyUsage: serverAuth
+      - subjectCn: prometheus.dockube.lan
+        keyUsage: serverAuth
+    before:
+      - echo Starting Prometheus and Grafana installation
+    after:
+      - echo Prometheus and Grafana services deployed
+      - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
+      - kubectl get pods -n observation

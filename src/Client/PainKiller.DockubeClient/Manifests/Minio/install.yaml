@@ -1,0 +1,18 @@
+name: Minio
+namespace: observation
+isCore: true
+order: 3
+resources:
+  - type: kubectl
+    source: Minio.yaml
+    endpoint: https://minioconsole.dockube.lan/
+    certificates:
+      - subjectCn: minio.dockube.lan
+        keyUsage: serverAuth
+      - subjectCn: minioconsole.dockube.lan
+        keyUsage: serverAuth
+    before:
+      - echo Starting MinIO installation
+    after:
+      - $SLEEP$
+      - kubectl get pods -n observation

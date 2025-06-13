@@ -8,4 +8,5 @@ public class DockubeResource
     public string[] Before { get; set; } = [];
     public string[] After { get; set; } = [];
     public Dictionary<string, string> Parameters { get; set; } = new();
+    public SecretDescriptor[] SecretDescriptors { get; set; } = [];
 }

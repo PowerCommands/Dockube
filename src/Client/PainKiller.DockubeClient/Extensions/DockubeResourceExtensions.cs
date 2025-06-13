@@ -1,4 +1,8 @@
-﻿namespace PainKiller.DockubeClient.Extensions;
+﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+
+namespace PainKiller.DockubeClient.Extensions;
 
 public static class DockubeResourceExtensions
 {
@@ -37,5 +41,30 @@ public static class DockubeResourceExtensions
             default:
                 throw new NotSupportedException($"Unsupported resource type: {resource.Type}");
         }
+    }
+
+    public static DockubeRelease GetRelease(this DockubeConfiguration configuration, string name)
+    {
+        var fileName = Path.Combine(configuration.ManifestBasePath, name, "install.yaml");
+        var yamlContent = File.ReadAllText(fileName);
+        var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+        return deserializer.Deserialize<DockubeRelease>(yamlContent);
+    }
+    public static List<DockubeRelease> GetReleases(this DockubeConfiguration configuration)
+    {
+        var releases = new List<DockubeRelease>();
+        foreach (var releaseName in configuration.Releases)
+        {
+            try
+            {
+                var release = configuration.GetRelease(releaseName);
+                if (release != null) releases.Add(release);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading release '{releaseName}': {ex.Message}");
+            }
+        }
+        return releases;
     }
 }

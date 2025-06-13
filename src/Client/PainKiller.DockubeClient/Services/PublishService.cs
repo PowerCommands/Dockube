@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
@@ -45,6 +46,22 @@ public class PublishService(string basePath, string certificateBasePath, string 
 
             foreach (var cmd in res.After)
                 RunCommand(cmd, "After");
+            foreach (var secret in res.SecretDescriptors)
+            {
+                Thread.Sleep(1000);
+                var base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {secret.Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'","");
+                Console.WriteLine(secret.Name);
+                try
+                {
+                    var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(base64Encoded));
+                    Console.WriteLine(secret.ShowClearText ? decoded : base64Encoded);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(base64Encoded);
+                }
+            }
             if(!string.IsNullOrEmpty(res.Endpoint)) RunCommand($"echo {res.Endpoint}", "Endpoint: ");
         }
     }

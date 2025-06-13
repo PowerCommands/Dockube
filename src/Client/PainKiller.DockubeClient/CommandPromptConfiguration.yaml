@@ -12,96 +12,10 @@ configuration:
       port: 22
       userName: dockube
     releases:
-      - name: Grafana-Prometheus
-        namespace: observation
-        isCore: true
-        order: 2
-        resources:
-          - type: kubectl
-            source: Grafana-Prometheus.yaml
-            endpoint: https://grafana.dockube.lan https://prometheus.dockube.lan/targets
-            certificates:
-              - subjectCn: grafana.dockube.lan
-                keyUsage: serverAuth
-              - subjectCn: prometheus.dockube.lan
-                keyUsage: serverAuth        
-            before:
-              - echo Starting Prometheus and Grafana installation
-            after:
-              - echo Prometheus and Grafana services deployed
-              - $ASYNC$ kubectl port-forward svc/grafana 3000:80 -n observation
-              - kubectl get pods -n observation                    
-      - name: Ingress-Nginx-Helm
-        namespace: ingress-nginx
-        isCore: true
-        order: 1
-        resources:
-         - type: helm
-           source: ingress-nginx
-           before:
-             - echo Installing NGINX Ingress Controller using Helm chart
-             - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-             - helm repo add gitlab https://charts.gitlab.io
-             - helm repo update
-           after:
-             - echo NGINX Ingress deployed
-             - $SLEEP$
-             - kubectl get svc -n ingress-nginx
-           parameters:
-             repo: https://kubernetes.github.io/ingress-nginx
-             version: 4.12.3  
-             values: ingress-values.yaml
-      - name: Gitlab
-        namespace: gitlab
-        isCore: true
-        order: 4
-        resources:
-        - type: helm
-          source: gitlab
-          endpoint: https://gitlab.dockube.lan
-          certificates:
-          - subjectCn: gitlab.dockube.lan
-            keyUsage: serverAuth
-          before:              
-            - helm repo add gitlab https://charts.gitlab.io
-            - helm repo update
-            - echo Installing GitLab using official Helm chart
-          after:
-            - echo GitLab deployed
-            - $SLEEP$
-            - kubectl get pods -n dockube
-            - echo Log in at https://gitlab.dockube.lan
-          parameters:
-            repo: https://charts.gitlab.io
-            version: 9.0.2
-            values: gitlab-values.yaml
-            
-        - type: kubectl
-          source: gitlab-root-secret.yaml
-          before:
-            - $SLEEP$
-          after:
-            - echo GitLab root secret created            
-            - kubectl get secret gitlab-root-password -n gitlab -o jsonpath='{.data.password}'
-            - echo use decode <base64endocedstring> --base64
-      - name: Minio
-        namespace: observation
-        isCore: true
-        order: 3
-        resources:
-        - type: kubectl
-          source: Minio.yaml    
-          endpoint: https://minioconsole.dockube.lan/
-          certificates:
-          - subjectCn: minio.dockube.lan
-            keyUsage: serverAuth
-          - subjectCn: minioconsole.dockube.lan
-            keyUsage: serverAuth  
-          before:          
-            - echo Starting MinIO installation
-          after:          
-            - $SLEEP$
-            - kubectl get pods -n observation     
+      - Ingress-Nginx-Helm  
+      - Grafana-Prometheus      
+      - Gitlab
+      - Minio        
   core:
     name: Dockube
     version: 1.0

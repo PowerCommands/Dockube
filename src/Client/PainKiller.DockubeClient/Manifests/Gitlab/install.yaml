@@ -1,0 +1,32 @@
+name: Gitlab
+namespace: gitlab
+isCore: true
+order: 4
+resources:
+  - type: kubectl
+    source: gitlab-root-secret.yaml
+    secretDescriptors:
+      - name: Gitlab login with root/password
+        key: gitlab-root-password
+        showClearText: true        
+    before:
+      - $SLEEP$
+  - type: helm
+    source: gitlab
+    endpoint: https://gitlab.dockube.lan
+    certificates:
+      - subjectCn: gitlab.dockube.lan
+        keyUsage: serverAuth
+    before:
+      - helm repo add gitlab https://charts.gitlab.io
+      - helm repo update
+      - echo Installing GitLab using official Helm chart
+    after:
+      - echo GitLab deployed
+      - $SLEEP$
+      - kubectl get pods -n dockube
+      - echo Log in at https://gitlab.dockube.lan
+    parameters:
+      repo: https://charts.gitlab.io
+      version: 9.0.2
+      values: gitlab-values.yaml    

@@ -1,3 +1,5 @@
+using PainKiller.DockubeClient.Extensions;
+
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Manage the Core Dockube cluster", 
@@ -15,7 +17,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     }
     private RunResult StatusCoreCluster(IDictionary<string,string> options)
     {
-        var namespaces = Configuration.Dockube.Releases.Where(r => r.IsCore && !string.IsNullOrWhiteSpace(r.Namespace)).Select(r => r.Namespace).Distinct().ToList();
+        var namespaces = Configuration.Dockube.GetReleases().Where(r => r.IsCore && !string.IsNullOrWhiteSpace(r.Namespace)).Select(r => r.Namespace).Distinct().ToList();
         Writer.WriteHeadLine("Core Cluster Status");
 
         if (options.ContainsKey("pods") || options.Count == 0)
@@ -62,7 +64,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
         }
         if (options.ContainsKey("hosts") || options.Count == 0)
         {
-            var endpoints = Configuration.Dockube.Releases.Where(r => r.IsCore).SelectMany(r => r.Resources).Select(res => res.Endpoint).Where(e => !string.IsNullOrWhiteSpace(e)).Distinct().ToList();
+            var endpoints = Configuration.Dockube.GetReleases().Where(r => r.IsCore).SelectMany(r => r.Resources).Select(res => res.Endpoint).Where(e => !string.IsNullOrWhiteSpace(e)).Distinct().ToList();
             Writer.WriteHeadLine("Hosts");
             foreach (var endpoint in endpoints) Writer.WriteLine($"Endpoint: {endpoint}");
         }
@@ -73,7 +75,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     {
         Writer.WriteHeadLine("Initializing Core Cluster...");
         var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
-        var coreReleases = Configuration.Dockube.Releases.Where(r => r.IsCore).OrderBy(r => r.Order).ToList();
+        var coreReleases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).OrderBy(r => r.Order).ToList();
         foreach (var release in coreReleases)
         {
             Writer.WriteLine($"Publishing release: {release.Name}");
