@@ -59,6 +59,9 @@ configuration:
         - type: helm
           source: gitlab
           endpoint: https://gitlab.dockube.lan
+          certificates:
+          - subjectCn: gitlab.dockube.lan
+            keyUsage: serverAuth
           before:              
             - helm repo add gitlab https://charts.gitlab.io
             - helm repo update
@@ -79,7 +82,8 @@ configuration:
             - $SLEEP$
           after:
             - echo GitLab root secret created            
-            - kubectl get secret gitlab-root-password -n gitlab -o jsonpath="{.data.password}" | %{ [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) }
+            - kubectl get secret gitlab-root-password -n gitlab -o jsonpath='{.data.password}'
+            - echo use decode <base64endocedstring> --base64
       - name: Minio
         namespace: observation
         isCore: true
