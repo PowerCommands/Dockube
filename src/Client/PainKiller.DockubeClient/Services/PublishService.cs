@@ -27,42 +27,52 @@ public class PublishService(string basePath, string certificateBasePath, string 
     }
     public void ExecuteRelease(DockubeRelease release)
     {
-        EnsureNamespaceExists(release.Namespace);
-        foreach (var res in release.Resources)
+        try
         {
-            foreach (var certificate in res.Certificates)
+            EnsureNamespaceExists(release.Namespace);
+            foreach (var res in release.Resources)
             {
-                CreateCertificate(certificate);
-                Thread.Sleep(1000);
-                var safeName = certificate.SubjectCn.Split(' ').First().Replace(".", "-") + "-tls";
-                var cn = certificate.SubjectCn.Split(' ').First();
-                RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{cn}.pem --key=ssl-output\\key\\{cn}.key -n {release.Namespace}", "Certificate");
-            }
-            foreach (var cmd in res.Before)
-                RunCommand(cmd, "Before");
-
-            var command = res.ToCommand(basePath, release.Name, release.Namespace);
-            RunCommand(command, "Apply");
-
-            foreach (var cmd in res.After)
-                RunCommand(cmd, "After");
-            foreach (var secret in res.SecretDescriptors)
-            {
-                Thread.Sleep(1000);
-                var base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {secret.Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'","");
-                Console.WriteLine(secret.Name);
-                try
+                foreach (var certificate in res.Certificates)
                 {
-                    var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(base64Encoded));
-                    Console.WriteLine(secret.ShowClearText ? decoded : base64Encoded);
+                    CreateCertificate(certificate);
+                    Thread.Sleep(1000);
+                    var safeName = certificate.SubjectCn.Split(' ').First().Replace(".", "-") + "-tls";
+                    var cn = certificate.SubjectCn.Split(' ').First();
+                    RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{cn}.pem --key=ssl-output\\key\\{cn}.key -n {release.Namespace}", "Certificate");
                 }
-                catch(Exception e)
+                foreach (var cmd in res.Before)
+                    RunCommand(cmd, "Before");
+
+                var command = res.ToCommand(basePath, release.Name, release.Namespace);
+                _logger.LogInformation($"RELEASE {release.Name} NAMESPACE {release.Namespace}");
+                _logger.LogInformation($"APPLY {command}");
+                RunCommand(command, "Apply");
+
+                foreach (var cmd in res.After)
+                    RunCommand(cmd, "After");
+                foreach (var secret in res.SecretDescriptors)
                 {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(base64Encoded);
+                    Thread.Sleep(1000);
+                    var base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {secret.Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'","");
+                    Console.WriteLine(secret.Name);
+                    try
+                    {
+                        var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(base64Encoded));
+                        Console.WriteLine(secret.ShowClearText ? decoded : base64Encoded);
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(base64Encoded);
+                    }
                 }
+                if(!string.IsNullOrEmpty(res.Endpoint)) RunCommand($"echo {res.Endpoint}", "Endpoint: ");
             }
-            if(!string.IsNullOrEmpty(res.Endpoint)) RunCommand($"echo {res.Endpoint}", "Endpoint: ");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"RELEASE {release.Name} NAMESPACE {release.Namespace}");
+            throw;
         }
     }
     private void CreateCertificate(CertificateRequest request)

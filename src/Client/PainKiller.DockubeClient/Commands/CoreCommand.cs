@@ -6,8 +6,8 @@ namespace PainKiller.DockubeClient.Commands;
                       arguments: ["<Mode>"],
                         options: ["pods", "secrets","tls","endpoints","ingress", "hosts"],
                     suggestions: ["init"],
-                       examples: ["//View status of your core cluster","core","//Initialize the core cluster","core init"])]
-public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+                       examples: ["//View status of your dockube platform","dockube","//Initialize the core platform","dockube init"])]
+public class DockubeCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {

@@ -3,8 +3,8 @@ namespace: observation
 isCore: true
 resources:
   - type: kubectl
-    source: Grafana-Prometheus.yaml
-    endpoint: https://grafana.dockube.lan https://prometheus.dockube.lan/targets
+    source: Prometheus.yaml
+    endpoint: https://prometheus.dockube.lan/targets
     certificates:      
       - subjectCn: prometheus.dockube.lan
         keyUsage: serverAuth    
