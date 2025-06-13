@@ -18,6 +18,7 @@ configuration:
       - Gitlab
       - Minio
       - ArgoCd
+      - KubernetesDashboard
   core:
     name: Dockube
     version: 1.0

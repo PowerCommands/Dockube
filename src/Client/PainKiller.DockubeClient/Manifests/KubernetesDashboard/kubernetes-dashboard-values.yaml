@@ -1,0 +1,28 @@
+fullnameOverride: dashboard
+
+protocolHttp: false
+
+extraArgs:
+  - --enable-skip-login
+  - --enable-insecure-login
+
+metricsScraper:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - dashboard.dockube.lan
+  paths:
+    - /
+  tls:
+    - hosts:
+        - dashboard.dockube.lan
+      secretName: dashboard-dockube-lan-tls
+  targetService:
+    name: kubernetes-dashboard-kong-proxy
+    port: 443

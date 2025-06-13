@@ -1,6 +1,7 @@
 name: ArgoCD
 namespace: argocd
 isCore: true
+retries: 200
 resources:  
   - type: kubectl
     source: ArgoCd.yaml    

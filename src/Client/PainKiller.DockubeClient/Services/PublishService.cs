@@ -53,7 +53,7 @@ public class PublishService(string basePath, string certificateBasePath, string 
                     RunCommand(cmd, "After");
                 foreach (var secret in res.SecretDescriptors)
                 {
-                    var retries = 400;
+                    var retries = release.Retries;
                     var base64Encoded = "";
                     while(retries-- > 0)
                     {

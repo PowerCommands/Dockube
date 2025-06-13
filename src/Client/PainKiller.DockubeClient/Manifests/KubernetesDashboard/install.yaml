@@ -1,0 +1,35 @@
+name: KubernetesDashboard
+namespace: kubernetes-dashboard
+isCore: true
+resources:
+  - type: helm
+    source: kubernetes-dashboard
+    certificates:
+      - subjectCn: dashboard.dockube.lan
+        keyUsage: serverAuth
+    endpoint: https://dashboard.dockube.lan
+    #secretDescriptors:
+    #  - name: Kubernetes dashboard password
+    #    key: dashboard-admin
+    #    showClearText: true
+    before:
+      - echo Installing Kubernetes Dashboard using Helm chart
+      - helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+      - helm repo update
+    after:
+      - echo Kubernetes Dashboard deployed
+      - $SLEEP$
+      - kubectl get svc -n kubernetes-dashboard
+    parameters:
+      repo: https://kubernetes.github.io/dashboard/
+      version: 7.13.0
+      values: kubernetes-dashboard-values.yaml
+  - type: kubectl
+    source: kubernetes-dashboard.yaml
+    after:
+      - $SLEEP$      
+  - type: kubectl
+    source: kubernetes-dashboard-ingress.yaml
+    after:
+      - kubectl -n kubernetes-dashboard create token dashboard-admin
+    
