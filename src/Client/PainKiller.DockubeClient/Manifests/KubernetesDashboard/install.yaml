@@ -7,11 +7,7 @@ resources:
     certificates:
       - subjectCn: dashboard.dockube.lan
         keyUsage: serverAuth
-    endpoint: https://dashboard.dockube.lan
-    #secretDescriptors:
-    #  - name: Kubernetes dashboard password
-    #    key: dashboard-admin
-    #    showClearText: true
+    endpoint: https://dashboard.dockube.lan    
     before:
       - echo Installing Kubernetes Dashboard using Helm chart
       - helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
@@ -31,5 +27,6 @@ resources:
   - type: kubectl
     source: kubernetes-dashboard-ingress.yaml
     after:
+      - echo Kubernetes Dashboard token
       - kubectl -n kubernetes-dashboard create token dashboard-admin
     
