@@ -48,13 +48,26 @@ gitlab:
   minio:
     ingress:
       enabled: false
-
-postgresql:
-  install: true
-  postgresqlPassword: supersecurepassword
+    persistence:
+      size: 5Gi
+  gitaly:
+    persistence:
+      size: 10Gi    
+  redis:
+    master:
+      persistence:
+        size: 1Gi
+  postgresql:
+    install: true
+    postgresqlPassword: supersecurepassword
+    persistence:
+      size: 2Gi
+  toolbox:
+    enabled: false
 
 redis:
-  install: true
+    install: true
 
 gitlab-runner:
   install: false
+
