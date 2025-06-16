@@ -34,6 +34,8 @@
     <None Remove="Manifests\KubernetesDashboard\install.yaml" />
     <None Remove="Manifests\KubernetesDashboard\kubernetes-dashboard-values.yaml" />
     <None Remove="Manifests\KubernetesDashboard\kubernetes-dashboard.yaml" />
+    <None Remove="Manifests\Mailpit\install.yaml" />
+    <None Remove="Manifests\Mailpit\Mailpit.yaml" />
     <None Remove="Manifests\Prometheus\install.yaml" />
     <None Remove="Manifests\Prometheus\Prometheus.yaml" />
   </ItemGroup>
@@ -91,6 +93,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\KubernetesDashboard\kubernetes-dashboard.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\Mailpit\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\Mailpit\Mailpit.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Minio\install.yaml">

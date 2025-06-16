@@ -15,6 +15,7 @@ configuration:
       - Ingress-Nginx-Helm  
       - Prometheus      
       - Grafana
+      - Mailpit
       - Gitlab
       - Minio
       - ArgoCd
@@ -36,6 +37,9 @@ configuration:
             options:
               target: User        
           - name: dockube_ssh
+            options:
+              target: User
+          - name: dockube-gitlab
             options:
               target: User
       storage:

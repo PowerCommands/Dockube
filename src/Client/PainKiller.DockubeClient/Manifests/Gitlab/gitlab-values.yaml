@@ -19,6 +19,13 @@ global:
 
   initialRootPassword:
     secret: gitlab-root-password
+  smtp:
+    enabled: true
+    address: mailpit.mailpit.svc.cluster.local
+    port: 1025
+    domain: dockube.lan
+    authentication: "none"
+    starttls_auto: false
 
 certmanager:
   install: false
@@ -63,7 +70,7 @@ gitlab:
     persistence:
       size: 2Gi
   toolbox:
-    enabled: false
+    enabled: false  
 
 redis:
     install: true
