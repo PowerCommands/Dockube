@@ -8,7 +8,7 @@ namespace PainKiller.DockubeClient.Commands;
 [CommandDesign(description: "Manage the Core Dockube cluster",
                       arguments: ["<Mode>"],
                          quotes: ["<Namespace name>"],
-                        options: ["hosts", "passwords", "pods", "secrets", "tls", "endpoints", "ingress", "namespaces"],
+                        options: ["hosts", "passwords", "pods", "secrets", "tls", "endpoints", "ingress", "namespaces", "pvc"],
                     suggestions: ["init", "\"gitlab\"", "\"observation\""],
                        examples: ["//View status of your dockube platform", "core", "//Initialize the core platform", "core init"])]
 public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
@@ -37,6 +37,11 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
             {
                 Writer.WriteLine($"Pods in namespace: {ns}");
                 RunCommand($"kubectl get pods -n {ns}", $"Pods in {ns}");
+            }
+            if (options.ContainsKey("pvc") || options.Count == 0)
+            {
+                Writer.WriteLine($"PVC:s in namespace: {ns}");
+                RunCommand($"kubectl get pvc -n {ns}", $"PVC:s in {ns}");
             }
             if (options.ContainsKey("secrets") || options.Count == 0)
             {
