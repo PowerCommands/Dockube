@@ -1,6 +1,6 @@
-@DockubeApi_HostAddress = http://localhost:5272
+@DockubeApi_HostAddress = https://dockubeapi.dockube.lan:5001
 
-GET {{DockubeApi_HostAddress}}/weatherforecast/
+GET {{DockubeApi_HostAddress}}/version/
 Accept: application/json
 
 ###

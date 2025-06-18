@@ -1,0 +1,12 @@
+name: DotNetDev
+namespace: default
+isCore: true
+resources:
+  - type: kubectl
+    source: DotNetDev.yaml
+    endpoint: https://dockubeapi.dockube.lan/version    
+    before:
+      - echo Starting  installation
+    after:
+      - $SLEEP$
+      - kubectl get pods -n default

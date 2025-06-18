@@ -1,3 +1,4 @@
+namespace DockubeApi.Contracts;
 public interface IGitlabService
 {
     Task<string?> CreateProjectAsync(string projectName, int? namespaceId = null);

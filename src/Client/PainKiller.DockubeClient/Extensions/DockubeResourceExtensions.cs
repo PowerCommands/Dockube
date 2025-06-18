@@ -52,7 +52,8 @@ public static class DockubeResourceExtensions
     public static List<DockubeRelease> GetReleases(this DockubeConfiguration configuration)
     {
         var releases = new List<DockubeRelease>();
-        foreach (var releaseName in configuration.Releases)
+        var manifestDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, configuration.ManifestBasePath));
+        foreach (var releaseName in manifestDir.GetDirectories().Select(d => d.Name))
         {
             try
             {

@@ -1,5 +1,4 @@
-using DockubeApi.Configuration.DomainObjects;
-namespace PainKiller.DockubeClient.Configuration;
+namespace DockubeApi.Configuration.DomainObjects;
 public class DockubeApiConfiguration : ApplicationConfiguration
 {
     public string ManifestBasePath { get; set; } = "";

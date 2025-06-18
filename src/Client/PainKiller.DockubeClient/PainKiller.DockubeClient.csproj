@@ -26,6 +26,8 @@
     <None Remove="Manifests\ArgoCd\ArgoCd-Ingress.yaml" />
     <None Remove="Manifests\ArgoCd\ArgoCd.yaml" />
     <None Remove="Manifests\ArgoCd\install.yaml" />
+    <None Remove="Manifests\DotNetDev\DotNetDev.yaml" />
+    <None Remove="Manifests\DotNetDev\install.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-root-secret.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-values.yaml" />
     <None Remove="Manifests\Grafana\Grafana.yaml" />
@@ -57,6 +59,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\ArgoCd\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\DotNetDev\DotNetDev.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\DotNetDev\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Gitlab\gitlab-root-secret.yaml">

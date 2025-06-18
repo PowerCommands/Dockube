@@ -1,6 +1,7 @@
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using System.Text;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
+using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Commands;
@@ -121,9 +122,12 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
             {
                 Console.WriteLine($"Access token for {releaseName} (may be short lived)");
                 var result = ShellService.Default.StartInteractiveProcess("cmd.exe", $"/c {tokenCommand}");
-                ConsoleService.Writer.WriteSuccessLine(result);
+                Console.WriteLine(result);
             }
         }
+        var dockubeGitLabUserPassword = Configuration.Core.Modules.Security.DecryptSecret("dockube-gitlab");
+        Console.WriteLine("Gitlab password:");
+        Console.WriteLine(dockubeGitLabUserPassword);
         return Ok();
     }
 }

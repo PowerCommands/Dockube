@@ -288,7 +288,8 @@ public class SslService : ISslService
         var keyPath = Path.Combine(keyDir, $"{commonName}.key");
         var intermediatePath = Path.Combine(intermediateDir, "intermediate.crt");
         var pfxPath = Path.Combine(certDir, $"{commonName}.pfx");
-
+        var systemPfxPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".aspnet", "https", $"{commonName}.pfx");
+        
         if (!File.Exists(certPath) || !File.Exists(keyPath))
             return $"❌ Missing required files for {commonName}.";
 
@@ -303,8 +304,10 @@ public class SslService : ISslService
 
         if (!File.Exists(pfxPath))
             return $"❌ Failed to export PFX for {commonName}.\n🔧 Output:\n{result}";
+        
+        File.Copy(pfxPath, systemPfxPath, overwrite: true);
 
-        return $"✔ Exported PFX: {pfxPath}\n🔐 Password: {password}";
+        return $"✔ Exported PFX: {pfxPath} and {pfxPath}\n🔐 Password: {password}";
     }
     private void GenerateOpenSslConfig(string templatePath, string outputPath, string commonName, IEnumerable<string> sanList)
     {

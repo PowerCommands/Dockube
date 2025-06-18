@@ -1,4 +1,10 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using DockubeApi.Contracts;
+
 namespace DockubeApi.Services;
+
 public class GitlabService : IGitlabService
 {
     private readonly HttpClient _httpClient;

@@ -9,7 +9,7 @@
     }
   },
 
-  "postCreateCommand": "dotnet restore",
+  "postCreateCommand": "cd dockubeapi && dotnet restore && dotnet build --no-incremental",
 
   "customizations": {
     "vscode": {
