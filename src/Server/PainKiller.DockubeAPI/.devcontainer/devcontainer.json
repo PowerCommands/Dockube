@@ -1,23 +1,32 @@
 {
-	"name": "C# (.NET)",
-	"image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
+  "name": "C# (.NET)",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
 
-	"forwardPorts": [5000, 5001],
-	"portsAttributes": {
-		"5001": {
-			"protocol": "https"
-		}
-	},
+  "forwardPorts": [5000, 5001],
+  "portsAttributes": {
+    "5001": {
+      "protocol": "https"
+    }
+  },
 
-	"postCreateCommand": "dotnet restore",
+  "postCreateCommand": "dotnet restore",
 
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"terminal.integrated.defaultProfile.linux": "bash"
-			}
-		}
-	},
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
 
-	"remoteUser": "vscode"
+  "mounts": [
+    "source=${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
+  ],
+
+  "containerEnv": {
+    "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/dockubeapi.dockube.lan.pfx",
+    "ASPNETCORE_Kestrel__Certificates__Default__Password": "myPazzw0rd"
+  },
+
+  "remoteUser": "vscode"
 }

@@ -1,0 +1,15 @@
+version: 1.0
+configuration:
+  manifestBasePath: Manifests
+  gitlab:
+    baseUrl: https://gitlab.dockube.lan
+    repository: Dockube
+    userName: dockube@dockube.lan
+  core:
+    name: Dockube
+    version: 1.0        
+  log:
+    fileName: commandprompt.log
+    filePath: logs
+    rollingIntervall: Day
+    restrictedToMinimumLevel: Debug

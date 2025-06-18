@@ -1,0 +1,7 @@
+public interface IGitlabService
+{
+    Task<string?> CreateProjectAsync(string projectName, int? namespaceId = null);
+    Task<bool> CreateOrUpdateFileAsync(string projectId, string filePath, string branch, string content, string commitMessage);
+    Task<bool> DeleteFileAsync(string projectId, string filePath, string branch, string commitMessage);
+    Task<string?> CreateUserAsync(string name, string username, string email, string password);
+}
