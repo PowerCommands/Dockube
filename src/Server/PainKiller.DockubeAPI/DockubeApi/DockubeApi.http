@@ -1,0 +1,6 @@
+@DockubeApi_HostAddress = http://localhost:5272
+
+GET {{DockubeApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

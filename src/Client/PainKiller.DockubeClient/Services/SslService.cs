@@ -278,6 +278,34 @@ public class SslService : ISslService
 
         return fullChainPath;
     }
+    public string ExportToPfx(string commonName, string intermediateDirectory, string outputFolder, string password = "mypassword")
+    {
+        var certDir = Path.Combine(outputFolder, "certificate");
+        var keyDir = Path.Combine(outputFolder, "key");
+        var intermediateDir = Path.Combine(outputFolder, "intermediate", intermediateDirectory);
+
+        var certPath = Path.Combine(certDir, $"{commonName}.crt");
+        var keyPath = Path.Combine(keyDir, $"{commonName}.key");
+        var intermediatePath = Path.Combine(intermediateDir, "intermediate.crt");
+        var pfxPath = Path.Combine(certDir, $"{commonName}.pfx");
+
+        if (!File.Exists(certPath) || !File.Exists(keyPath))
+            return $"❌ Missing required files for {commonName}.";
+
+        var command = $"pkcs12 -export " +
+                      $"-inkey \"{keyPath}\" " +
+                      $"-in \"{certPath}\" " +
+                      $"{(File.Exists(intermediatePath) ? $"-certfile \"{intermediatePath}\" " : "")}" +
+                      $"-out \"{pfxPath}\" " +
+                      $"-passout pass:{password}";
+
+        var result = ShellService.Default.StartInteractiveProcess("openssl", command, Environment.CurrentDirectory);
+
+        if (!File.Exists(pfxPath))
+            return $"❌ Failed to export PFX for {commonName}.\n🔧 Output:\n{result}";
+
+        return $"✔ Exported PFX: {pfxPath}\n🔐 Password: {password}";
+    }
     private void GenerateOpenSslConfig(string templatePath, string outputPath, string commonName, IEnumerable<string> sanList)
     {
         if (!File.Exists(templatePath)) throw new FileNotFoundException("Template file not found.", templatePath);

@@ -87,6 +87,8 @@ public class PkiCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         if (!signResponse) return Ok();
         var signResult = _sslService.CreateAndSignCertificate(name, validDays, output, ca);
         Writer.WriteLine(signResult);
+        var pfxResult = _sslService.ExportToPfx(name, ca, output, password: "myPazzw0rd");
+        Writer.WriteLine(pfxResult);
         return Ok();
     }
     private RunResult SignAuthCertificate(string output, string name, int validDays, string ca)

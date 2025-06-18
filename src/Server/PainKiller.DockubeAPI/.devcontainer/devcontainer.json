@@ -1,0 +1,23 @@
+{
+	"name": "C# (.NET)",
+	"image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
+
+	"forwardPorts": [5000, 5001],
+	"portsAttributes": {
+		"5001": {
+			"protocol": "https"
+		}
+	},
+
+	"postCreateCommand": "dotnet restore",
+
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	},
+
+	"remoteUser": "vscode"
+}
