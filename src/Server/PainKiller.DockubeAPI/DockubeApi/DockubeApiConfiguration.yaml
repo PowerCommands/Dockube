@@ -5,7 +5,7 @@ configuration:
     baseUrl: https://gitlab-webservice-default.gitlab.svc.cluster.local:8080
     repository: Dockube
     userName: dockube@dockube.lan
-    accessToken: glpat-ByrwpFRBjXVz8aVpfVdz
+    accessToken: 
   core:
     name: Dockube
     version: 1.0        
