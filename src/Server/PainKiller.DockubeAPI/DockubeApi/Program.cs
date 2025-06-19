@@ -17,7 +17,7 @@ builder.WebHost.ConfigureKestrel(options =>
 {
     options.ConfigureHttpsDefaults(httpsOptions =>
     {
-        httpsOptions.ServerCertificate = new X509Certificate2(certPath, certPassword);
+        httpsOptions.ServerCertificate = X509CertificateLoader.LoadPkcs12FromFile(certPath, certPassword);
     });
 });
 
@@ -39,16 +39,22 @@ app.UseHttpsRedirection();
 
 var gitlabService = new GitlabService(configuration.Gitlab.BaseUrl, gitlabToken);
 
-app.MapGet("/version", () => $"{configuration.Core.Name} {configuration.Core.Version}")
-    .WithName("Version");
+app.MapGet("/version", () => $"{configuration.Core.Name} {configuration.Core.Version}").WithName("Version");
 
-app.MapPost("/gitlab/project", async (GitlabProjectRequest request) =>
-{
-    var result = await gitlabService.CreateProjectAsync(request.ProjectName);
-    return Results.Ok(new { ProjectId = result });
-})
+app.MapPost("/gitlab/project", async (GitlabProjectRequest request) => { var result = await gitlabService.CreateProjectAsync(request.ProjectName); return Results.Ok(new { ProjectId = result }); })
 .WithName("CreateGitlabProject")
 .WithDescription("Creates a new GitLab project with the given name")
+.Produces(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status500InternalServerError);
+
+app.MapPost("/gitlab/project/file", async (CreateOrUpdateFileRequest request) =>
+{
+    var result = await gitlabService.CreateOrUpdateFileAsync( request.ProjectId, request.FilePath, request.Branch, request.Content, request.CommitMessage );
+
+    return result ? Results.Ok(new { Message = "File created or updated successfully." }) : Results.StatusCode(StatusCodes.Status500InternalServerError);
+})
+.WithName("CreateOrUpdateGitlabFile")
+.WithDescription("Creates or updates a file in a GitLab project")
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status500InternalServerError);
 
