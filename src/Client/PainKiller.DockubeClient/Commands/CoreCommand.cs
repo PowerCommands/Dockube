@@ -1,6 +1,5 @@
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using System.Text;
-using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.DockubeClient.Extensions;
 
@@ -14,6 +13,7 @@ namespace PainKiller.DockubeClient.Commands;
                        examples: ["//View status of your dockube platform", "core", "//Initialize the core platform", "core init"])]
 public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
+    //TODO: taskkill /F /IM code.exe (need some kind of UtilCommand)
     public override RunResult Run(ICommandLineInput input)
     {
         if (this.GetSuggestion(input.Arguments.FirstOrDefault(), "") == "init") return Init();

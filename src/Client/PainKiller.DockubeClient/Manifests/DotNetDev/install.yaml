@@ -1,12 +1,15 @@
 name: DotNetDev
 namespace: default
-isCore: true
+isCore: false
 resources:
+  - type: kubectl
+    source: DotNetDev_pvc.yaml    
   - type: kubectl
     source: DotNetDev.yaml
     endpoint: https://dockubeapi.dockube.lan/version    
     before:
-      - echo Starting  installation
+      - echo Starting installation of a DevContainer
     after:
       - $SLEEP$
-      - kubectl get pods -n default
+      - kubectl get pods -n default 
+  

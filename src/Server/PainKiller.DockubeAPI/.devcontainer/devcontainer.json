@@ -9,7 +9,7 @@
     }
   },
 
-  "postCreateCommand": "cd dockubeapi && dotnet restore && dotnet build --no-incremental",
+  "postCreateCommand": "dotnet restore && dotnet build --no-incremental",
 
   "customizations": {
     "vscode": {
@@ -18,15 +18,6 @@
       }
     }
   },
-
-  "mounts": [
-    "source=${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
-  ],
-
-  "containerEnv": {
-    "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/dockubeapi.dockube.lan.pfx",
-    "ASPNETCORE_Kestrel__Certificates__Default__Password": "myPazzw0rd"
-  },
-
+  "workspaceFolder": "/workspace/src/Server/PainKiller.DockubeAPI/dockubeapi",
   "remoteUser": "vscode"
 }

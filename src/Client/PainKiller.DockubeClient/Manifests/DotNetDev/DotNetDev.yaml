@@ -1,7 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dotnet-dev  
+  name: dotnet-dev
+  labels:
+    app: devcontainer
 spec:
   containers:
     - name: dev
@@ -9,9 +11,15 @@ spec:
       command: ["sleep", "infinity"]
       tty: true
       stdin: true
+      env:
+        - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+          value: "/workspace/test/certifikat/dockubeapi.dockube.lan.pfx"
+        - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+          value: "myPazzw0rd"
       volumeMounts:
-        - mountPath: /workspace
-          name: code
+        - name: code
+          mountPath: /workspace
   volumes:
-  - name: code
-    emptyDir: {}
+    - name: code
+      persistentVolumeClaim:
+        claimName: dockube-code-pvc
