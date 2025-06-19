@@ -9,12 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Manifests\DotNetDev\**" />
     <Compile Remove="Manifests\Grafana-Prometheus-Helm\**" />
     <Compile Remove="Manifests\Grafana-Prometheus\**" />
     <Compile Remove="Manifests\NewFolder\**" />
+    <EmbeddedResource Remove="Manifests\DotNetDev\**" />
     <EmbeddedResource Remove="Manifests\Grafana-Prometheus-Helm\**" />
     <EmbeddedResource Remove="Manifests\Grafana-Prometheus\**" />
     <EmbeddedResource Remove="Manifests\NewFolder\**" />
+    <None Remove="Manifests\DotNetDev\**" />
     <None Remove="Manifests\Grafana-Prometheus-Helm\**" />
     <None Remove="Manifests\Grafana-Prometheus\**" />
     <None Remove="Manifests\NewFolder\**" />
@@ -26,9 +29,12 @@
     <None Remove="Manifests\ArgoCd\ArgoCd-Ingress.yaml" />
     <None Remove="Manifests\ArgoCd\ArgoCd.yaml" />
     <None Remove="Manifests\ArgoCd\install.yaml" />
-    <None Remove="Manifests\DotNetDev\DotNetDev.yaml" />
-    <None Remove="Manifests\DotNetDev\DotNetDev_PVC.yaml" />
-    <None Remove="Manifests\DotNetDev\install.yaml" />
+    <None Remove="Manifests\DotNetDevAPI\DotNetDev.yaml" />
+    <None Remove="Manifests\DotNetDevAPI\DotNetDev_PVC.yaml" />
+    <None Remove="Manifests\DotNetDevAPI\install.yaml" />
+    <None Remove="Manifests\DotNetDevUI\DotNetDev.yaml" />
+    <None Remove="Manifests\DotNetDevUI\DotNetDev_PVC.yaml" />
+    <None Remove="Manifests\DotNetDevUI\install.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-root-secret.yaml" />
     <None Remove="Manifests\Gitlab\gitlab-values.yaml" />
     <None Remove="Manifests\Grafana\Grafana.yaml" />
@@ -62,13 +68,22 @@
     <Content Include="Manifests\ArgoCd\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\DotNetDev\DotNetDev.yaml">
+    <Content Include="Manifests\DotNetDevAPI\DotNetDev.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\DotNetDev\DotNetDev_PVC.yaml">
+    <Content Include="Manifests\DotNetDevAPI\DotNetDev_PVC.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Manifests\DotNetDev\install.yaml">
+    <Content Include="Manifests\DotNetDevAPI\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\DotNetDevUI\DotNetDev.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\DotNetDevUI\DotNetDev_PVC.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\DotNetDevUI\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Gitlab\gitlab-root-secret.yaml">
