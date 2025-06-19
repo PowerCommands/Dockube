@@ -58,4 +58,15 @@ app.MapPost("/gitlab/project/file", async (CreateOrUpdateFileRequest request) =>
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status500InternalServerError);
 
+app.MapPost("/gitlab/project/file/delete", async (DeleteFileRequest request) =>
+{
+    var result = await gitlabService.DeleteFileAsync( request.ProjectId, request.FilePath, request.Branch, request.CommitMessage);
+
+    return result ? Results.Ok(new { Message = "File created or updated successfully." }) : Results.StatusCode(StatusCodes.Status500InternalServerError);
+})
+.WithName("DeleteGitlabFile")
+.WithDescription("Creates or updates a file in a GitLab project")
+.Produces(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status500InternalServerError);
+
 app.Run();
