@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
+using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Extensions;
 
@@ -12,6 +13,7 @@ public class PublishService(string basePath, string certificateBasePath, string 
     private readonly ILogger<PublishService> _logger = LoggerProvider.CreateLogger<PublishService>();
     public void UninstallRelease(DockubeRelease release)
     {
+        release.Resources.Reverse();
         foreach (var res in release.Resources)
         {
             var cmd = res.ToUninstallCommand(basePath: basePath, releaseName: release.Name, namespaceName: release.Namespace);
@@ -47,6 +49,9 @@ public class PublishService(string basePath, string certificateBasePath, string 
                 var command = res.ToCommand(basePath, release.Name, release.Namespace);
                 _logger.LogInformation($"RELEASE {release.Name} NAMESPACE {release.Namespace}");
                 _logger.LogInformation($"APPLY {command}");
+                
+                DecryptSecrets(basePath, release.Name, res);    //Replaces <ENCRYPTED_STRING> tags with decrypted values
+
                 RunCommand(command, "Apply");
 
                 foreach (var cmd in res.After)
@@ -175,5 +180,46 @@ public class PublishService(string basePath, string certificateBasePath, string 
         if (string.IsNullOrWhiteSpace(s) || s.Length % 4 != 0) 
             return false;
         return Base64Regex.IsMatch(s);
+    }
+    private static void DecryptSecrets(string basePath, string releaseName, DockubeResource resource)
+    {
+        var fullPath = Path.Combine(basePath, releaseName, resource.Source);
+        if(!File.Exists(fullPath))
+        {
+            Console.WriteLine($"File {fullPath} does not exist, skipping decryption.");
+            return;
+        }
+        var content = File.ReadAllText(fullPath);
+        if (!content.Contains("<ENCRYPTED_STRING>")) return;
+
+        var buildContent = new StringBuilder();
+        var rows = content.Split('\n');
+
+        foreach (var row in rows)
+        {
+            var updatedRow = row;
+            var startTag = "<ENCRYPTED_STRING>";
+            var endTag = "</ENCRYPTED_STRING>";
+
+            int startIdx;
+            while ((startIdx = updatedRow.IndexOf(startTag, StringComparison.Ordinal)) != -1)
+            {
+                var endIdx = updatedRow.IndexOf(endTag, startIdx + startTag.Length, StringComparison.Ordinal);
+                if (endIdx == -1) break; // Malformed tag, ignore
+
+                var encryptedValue = updatedRow.Substring(
+                    startIdx + startTag.Length,
+                    endIdx - startIdx - startTag.Length
+                );
+
+                var decryptedValue = EncryptionService.Service.DecryptString(encryptedValue);
+                updatedRow = updatedRow.Substring(0, startIdx)
+                             + decryptedValue
+                             + updatedRow.Substring(endIdx + endTag.Length);
+            }
+
+            buildContent.AppendLine(updatedRow);
+        }
+        File.WriteAllText(fullPath, buildContent.ToString());
     }
 }

@@ -15,7 +15,9 @@ spec:
         - name: ASPNETCORE_Kestrel__Certificates__Default__Path
           value: "/workspace/test/certifikat/dockubeapi.dockube.lan.pfx"
         - name: ASPNETCORE_Kestrel__Certificates__Default__Password
-          value: "myPazzw0rd"
+          value: <ENCRYPTED_STRING>EAAAALPTeg8+xzXxYcK4I2X4eDSH8F9hpxUdoSI+5Oq+FgHo</ENCRYPTED_STRING>
+        - name: DOCKUBE__GITLAB__TOKEN
+          value: <ENCRYPTED_STRING>EAAAAO2TywXrWgjNAzh0zclnmBxDhcR6ykij/wgwqyv0S/b2HQfU5bs+6QMLHquOSayFPQ==</ENCRYPTED_STRING>
       volumeMounts:
         - name: code
           mountPath: /workspace

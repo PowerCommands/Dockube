@@ -31,7 +31,7 @@ public static class DockubeResourceExtensions
         {
             case "kubectl":
                 var fullPath = Path.Combine(basePath, releaseName, resource.Source);
-                return $@"kubectl delete -f ""{fullPath}"" -n {namespaceName} --ignore-not-found --force";
+                return $@"kubectl delete -f ""{fullPath}"" -n {namespaceName} --ignore-not-found --force --grace-period=0";
 
             case "helm":
                 resource.Parameters.TryGetValue("name", out var customName);

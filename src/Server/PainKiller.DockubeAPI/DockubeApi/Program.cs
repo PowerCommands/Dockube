@@ -11,6 +11,7 @@ var configuration = ConfigurationService.Service.Get<DockubeApiConfiguration>().
 
 var certPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path") ?? throw new InvalidOperationException("Cert path not configured");
 var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password") ?? throw new InvalidOperationException("Cert password not configured");
+var gitlabToken = Environment.GetEnvironmentVariable("DOCKUBE__GITLAB__TOKEN") ?? throw new InvalidOperationException("DOCKUBE__GITLAB__TOKEN not configured");
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -36,7 +37,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-var gitlabService = new GitlabService(configuration.Gitlab.BaseUrl, configuration.Gitlab.AccessToken);
+var gitlabService = new GitlabService(configuration.Gitlab.BaseUrl, gitlabToken);
 
 app.MapGet("/version", () => $"{configuration.Core.Name} {configuration.Core.Version}")
     .WithName("Version");
