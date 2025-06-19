@@ -7,10 +7,8 @@ using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔧 Load config
 var configuration = ConfigurationService.Service.Get<DockubeApiConfiguration>().Configuration;
 
-// 🔐 Set up HTTPS 
 var certPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path") ?? throw new InvalidOperationException("Cert path not configured");
 var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password") ?? throw new InvalidOperationException("Cert password not configured");
 
@@ -22,7 +20,6 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 
-// 🔧 Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
@@ -34,13 +31,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// 🔧 Enable Swagger in dev
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// 🔧 GitLab Service
 var gitlabService = new GitlabService(configuration.Gitlab.BaseUrl, configuration.Gitlab.AccessToken);
 
 app.MapGet("/version", () => $"{configuration.Core.Name} {configuration.Core.Version}")
