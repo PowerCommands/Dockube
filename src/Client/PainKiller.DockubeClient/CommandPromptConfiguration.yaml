@@ -8,9 +8,14 @@ configuration:
       defaultName: Dockube
       defaultCa: Dockube Intermediate CA
     ssh:
-      host: dockube.local
-      port: 22
-      userName: dockube
+      - name: nas
+        host: dockube.local
+        port: 22
+        userName: dockube
+      - name: r1
+        host: dockube.server
+        port: 22
+        userName: dockube
     releases:
       - Ingress-Nginx-Helm  
       - Prometheus      
@@ -36,7 +41,10 @@ configuration:
           - name: CommandPrompt_encryptionManager
             options:
               target: User        
-          - name: dockube_ssh
+          - name: dockube_ssh_nas
+            options:
+              target: User
+          - name: dockube_ssh_r1
             options:
               target: User
           - name: dockube-gitlab

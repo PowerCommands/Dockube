@@ -5,6 +5,7 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description:  "Run SSH commands",
                         options: ["host", "port", "userName", "password"],
+                    suggestions: ["r1","nas"],
                        examples: ["//Run SSH command using ssh declared in configuration","ssh","//Hash password with openssl","ssh \"myPassword\" --password"])]
 public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -15,10 +16,14 @@ public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
             Console.WriteLine($"Hash: {SslService.GetPassword($"{input.Quotes.FirstOrDefault()}")}");
             return Ok("Password hashed successfully. Use this hash in your configuration.");
         }
-        input.TryGetOption(out var userName, Configuration.Dockube.Ssh.UserName);
-        input.TryGetOption(out var port, Configuration.Dockube.Ssh.Port);
-        input.TryGetOption(out var host, Configuration.Dockube.Ssh.Host);
-        var password = Configuration.Core.Modules.Security.DecryptSecret("dockube_ssh");
+        var name = this.GetSuggestion(input.Arguments.FirstOrDefault(), "r1");
+        var config = Configuration.Dockube.Ssh.FirstOrDefault(s => s.Name == name);
+        if (config == null) return Nok($"No configuration with name {name} exists.");
+        
+        input.TryGetOption(out var userName, config.UserName);
+        input.TryGetOption(out var port, config.Port);
+        input.TryGetOption(out var host, config.Host);
+        var password = Configuration.Core.Modules.Security.DecryptSecret($"dockube_ssh_{name}");
 
         using var client = new SshClient(host, port, userName, password);
         client.Connect();
