@@ -4,12 +4,17 @@ using Renci.SshNet;
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description:  "Run SSH commands",
-                        options: ["host", "port", "userName"],
-                       examples: ["//Run SSH command using ssh declared in configuration","//ssh"])]
+                        options: ["host", "port", "userName", "password"],
+                       examples: ["//Run SSH command using ssh declared in configuration","ssh","//Hash password with openssl","ssh \"myPassword\" --password"])]
 public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {
+        if (input.HasOption("password"))
+        {
+            Console.WriteLine($"Hash: {SslService.GetPassword($"{input.Quotes.FirstOrDefault()}")}");
+            return Ok("Password hashed successfully. Use this hash in your configuration.");
+        }
         input.TryGetOption(out var userName, Configuration.Dockube.Ssh.UserName);
         input.TryGetOption(out var port, Configuration.Dockube.Ssh.Port);
         input.TryGetOption(out var host, Configuration.Dockube.Ssh.Host);

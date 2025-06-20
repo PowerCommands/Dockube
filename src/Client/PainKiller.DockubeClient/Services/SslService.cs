@@ -330,4 +330,10 @@ public class SslService : ISslService
         template = template.Replace("$DNS$", dnsBlock);
         File.WriteAllText(outputPath, template);
     }
+    public static string GetPassword(string plaintext)
+    {
+        var command = $"passwd -6 {plaintext}";
+        var result = ShellService.Default.StartInteractiveProcess("openssl", command, Environment.CurrentDirectory);
+        return result;
+    }
 }
