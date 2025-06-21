@@ -79,7 +79,7 @@ public class PkiCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
     {
         Writer.WriteLine("Add additional names (SAN) this certificate should be valid for? (e.g. 127.0.0.1)\nEnter a comma-separated list (e.g. localhost,127.0.0.1), or leave blank to skip:");
         var sanResponse = Console.ReadLine();
-        var sanItems = sanResponse.Split(',').ToList();
+        var sanItems = sanResponse?.Split(',').ToList();
         var result = _sslService.CreateRequestForTls(name, output, sanItems);
         Writer.WriteLine(result);
         

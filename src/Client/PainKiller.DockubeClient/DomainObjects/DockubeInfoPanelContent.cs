@@ -1,7 +1,7 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Contracts;
 
 namespace PainKiller.DockubeClient.DomainObjects;
-public class DockubeInfoPanelContent(string executablePath) : IInfoPanelContent
+public class DockubeInfoPanelContent() : IInfoPanelContent
 {
     public string GetText()
     {
