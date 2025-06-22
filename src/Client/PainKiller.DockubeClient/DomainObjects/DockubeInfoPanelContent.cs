@@ -1,4 +1,5 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Contracts;
+using PainKiller.DockubeClient.Managers;
 
 namespace PainKiller.DockubeClient.DomainObjects;
 public class DockubeInfoPanelContent() : IInfoPanelContent
@@ -6,7 +7,8 @@ public class DockubeInfoPanelContent() : IInfoPanelContent
     public string GetText()
     {
         var sslVersion = GetSslVersion();
-        return $"SSL version: {sslVersion}";
+        var currentEnvironment = KubeEnvironmentManager.GetVersion();
+        return $"SSL version: {sslVersion}\nCurrent Environment: {currentEnvironment}";
     }
     private string GetSslVersion()
     {
