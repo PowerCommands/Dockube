@@ -1,0 +1,19 @@
+name: MetalLB
+namespace: metallb-system
+isCore: false
+resources:
+  - type: helm
+    source: metallb
+    before:
+      - helm repo add metallb https://metallb.github.io/metallb
+      - helm repo update
+      - echo Installing MetalLB using Helm
+    after:
+      - echo MetalLB deployed
+      - $SLEEP$
+      - kubectl get pods -n metallb-system
+    parameters:
+      repo: https://metallb.github.io/metallb
+      version: 0.15.2
+  - type: kubectl
+    source: MetalLB-config.yaml
