@@ -48,7 +48,7 @@ spec:
             - name: MINIO_SERVER_URL
               value: http://minio:9000
             - name: MINIO_BROWSER_REDIRECT_URL
-              value: https://minioconsole.dockube.lan
+              value: https://minioconsole.$$DOMAIN_NAME$$
             - name: MINIO_PROMETHEUS_AUTH_TYPE
               value: "public"
           ports:
@@ -73,10 +73,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - minio.dockube.lan
-      secretName: minio-dockube-lan-tls
+        - minio.$$DOMAIN_NAME$$
+      secretName: minio-tls
   rules:
-    - host: minio.dockube.lan
+    - host: minio.$$DOMAIN_NAME$$
       http:
         paths:
           - path: /
@@ -98,10 +98,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - minioconsole.dockube.lan
-      secretName: minioconsole-dockube-lan-tls
+        - minioconsole.$$DOMAIN_NAME$$
+      secretName: minioconsole-tls
   rules:
-    - host: minioconsole.dockube.lan
+    - host: minioconsole.$$DOMAIN_NAME$$
       http:
         paths:
           - path: /
@@ -123,3 +123,22 @@ spec:
     requests:
       storage: 5Gi
   storageClassName: hostpath
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-lb
+  labels:
+    app: minio
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.155
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+    - name: console
+      port: 9001
+      targetPort: 9001
+  selector:
+    app: minio

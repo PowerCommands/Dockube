@@ -10,10 +10,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - dashboard.dockube.lan
-      secretName: dashboard-dockube-lan-tls
+        - dashboard.$$DOMAIN_NAME$$
+      secretName: dashboard-tls
   rules:
-    - host: dashboard.dockube.lan
+    - host: dashboard.$$DOMAIN_NAME$$
       http:
         paths:
           - path: /

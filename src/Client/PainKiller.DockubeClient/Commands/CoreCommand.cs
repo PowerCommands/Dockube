@@ -77,7 +77,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     private RunResult Init()
     {
         Writer.WriteHeadLine("Initializing Core Cluster...");
-        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
+        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa, Configuration.Dockube.DefaultDomain);
         var coreReleases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).ToList();
         foreach (var release in coreReleases)
         {
@@ -95,7 +95,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
         {
             Console.WriteLine($"{dockubeRelease.Name}");
         }
-        var endpoints = Configuration.Dockube.GetReleases().Where(r => r.IsCore).SelectMany(r => r.Resources).Select(res => res.Endpoint).Where(e => !string.IsNullOrWhiteSpace(e)).Distinct().ToList();
+        var endpoints = Configuration.Dockube.GetReleases().Where(r => r.IsCore).SelectMany(r => r.Resources).Select(res => Configuration.Dockube.ToEndpoint(res)).Where(e => !string.IsNullOrWhiteSpace(e)).Distinct().ToList();
         Writer.WriteHeadLine("Hosts");
         foreach (var endpoint in endpoints) Writer.WriteLine($"Endpoint: {endpoint}");
     }

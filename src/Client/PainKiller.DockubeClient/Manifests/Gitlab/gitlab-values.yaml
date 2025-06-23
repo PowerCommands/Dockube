@@ -1,9 +1,9 @@
 global:
   edition: ce
   hosts:
-    domain: dockube.lan
-    externalIP: 127.0.0.1
-    https: true
+    domain: $$DOMAIN_NAME$$
+    externalIP: 192.168.1.154
+    https: false  
 
   ingress:
     configureCertmanager: false
@@ -11,11 +11,11 @@ global:
     annotations:
       nginx.ingress.kubernetes.io/ssl-redirect: "true"    
     hosts:
-      - name: gitlab.dockube.lan
+      - name: gitlab.$$DOMAIN_NAME$$
         path: /
     tls:
       enabled: true
-      secretName: gitlab-dockube-lan-tls
+      secretName: gitlab-tls
 
   initialRootPassword:
     secret: gitlab-root-password
@@ -23,7 +23,7 @@ global:
     enabled: true
     address: mailpit.mailpit.svc.cluster.local
     port: 1025
-    domain: dockube.lan
+    domain: $$DOMAIN_NAME$$
     authentication: "none"
     starttls_auto: false
 
@@ -42,8 +42,11 @@ gitlab:
     maxReplicas: 1
     ingress:
       enabled: true
+      tls:
+        enabled: true                   
+        secretName: gitlab-tls
       hosts:
-        - name: gitlab.dockube.lan
+        - name: gitlab.$$DOMAIN_NAME$$
           path: /
 
   registry:
@@ -73,8 +76,7 @@ gitlab:
     enabled: false  
 
 redis:
-    install: true
+  install: true
 
 gitlab-runner:
   install: false
-

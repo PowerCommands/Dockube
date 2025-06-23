@@ -5,9 +5,9 @@ resources:
   - type: helm
     source: kubernetes-dashboard
     certificates:
-      - subjectCn: dashboard.dockube.lan
+      - subjectCn: dashboard
         keyUsage: serverAuth
-    endpoint: https://dashboard.dockube.lan    
+    endpoint: https://dashboard.$$DOMAIN_NAME$$    
     before:
       - echo Installing Kubernetes Dashboard using Helm chart
       - helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/

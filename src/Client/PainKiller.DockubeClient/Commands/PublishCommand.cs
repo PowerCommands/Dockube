@@ -5,7 +5,7 @@ namespace PainKiller.DockubeClient.Commands;
 [CommandDesign(     description: "Publish an release to your kubernetes cluster", 
                       arguments: ["<release name>"],
                         options: ["uninstall"],
-                    suggestions: ["DotNetDevAPI","DotNetDevUI","Ingress-Nginx-Helm","Grafana","Prometheus","Mailpit","Minio","Gitlab", "ArgoCd","KubernetesDashboard"],
+                    suggestions: ["DotNetDevAPI","DotNetDevUI","MetalLB", "Ingress-Nginx-Helm","Prometheus","Grafana","Mailpit","Gitlab","Minio","ArgoCd","KubernetesDashboard"],
                        examples: ["//Publish Grafana-Prometheus your core cluster","publish Grafana-Prometheus"])]
 public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -16,7 +16,7 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
         if (string.IsNullOrWhiteSpace(releaseName)) return Nok("Release name is required. Please specify the release you want to publish.");
         var release = Configuration.Dockube.GetReleases().FirstOrDefault(r => r.Name.Equals(releaseName, StringComparison.OrdinalIgnoreCase));
         if (release == null) return Nok($"Release '{release?.Name}' not found in configuration.");
-        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa);
+        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa, Configuration.Dockube.DefaultDomain);
         
         if (input.TryGetOption(out bool uninstall, false)) return UnInstall(release, service);
         

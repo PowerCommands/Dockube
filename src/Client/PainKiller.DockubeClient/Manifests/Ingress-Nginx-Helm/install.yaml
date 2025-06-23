@@ -3,7 +3,7 @@ namespace: ingress-nginx
 isCore: true
 resources:
   - type: helm
-    source: ingress-nginx
+    source: ingress-nginx    
     before:
       - echo Installing NGINX Ingress Controller using Helm chart
       - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx

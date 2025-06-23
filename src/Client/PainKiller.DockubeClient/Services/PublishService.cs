@@ -8,7 +8,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Services;
-public class PublishService(string basePath, string certificateBasePath, string ca) : IPublishService
+public class PublishService(string basePath, string certificateBasePath, string ca, string domain) : IPublishService
 {
     private readonly ILogger<PublishService> _logger = LoggerProvider.CreateLogger<PublishService>();
     public void UninstallRelease(DockubeRelease release)
@@ -33,6 +33,13 @@ public class PublishService(string basePath, string certificateBasePath, string 
         try
         {
             EnsureNamespaceExists(release.Namespace);
+
+            var dir = new DirectoryInfo(Path.Combine(basePath, release.Name));
+            foreach (var fileInfo in dir.GetFiles("*.yaml"))
+            {
+                ReplacePlaceholderInFile(fileInfo.FullName, "$$DOMAIN_NAME$$", domain);
+            }
+
             foreach (var res in release.Resources)
             {
                 foreach (var certificate in res.Certificates)
@@ -41,7 +48,8 @@ public class PublishService(string basePath, string certificateBasePath, string 
                     Thread.Sleep(1000);
                     var safeName = certificate.SubjectCn.Split(' ').First().Replace(".", "-") + "-tls";
                     var cn = certificate.SubjectCn.Split(' ').First();
-                    RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{cn}.pem --key=ssl-output\\key\\{cn}.key -n {release.Namespace}", "Certificate");
+                    var cnFullDomain = $"{cn}.{domain}";
+                    RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{cnFullDomain}.pem --key=ssl-output\\key\\{cnFullDomain}.key -n {release.Namespace}", "Certificate");
                 }
                 foreach (var cmd in res.Before)
                     RunCommand(cmd, "Before");
@@ -81,7 +89,7 @@ public class PublishService(string basePath, string certificateBasePath, string 
                         Console.WriteLine(base64Encoded);
                     }
                 }
-                if(!string.IsNullOrEmpty(res.Endpoint)) RunCommand($"echo {res.Endpoint}", "Endpoint: ");
+                if(!string.IsNullOrEmpty(res.Endpoint)) RunCommand($"echo {res.ToEndpoint(domain)}", "Endpoint: ");
             }
         }
         catch (Exception ex)
@@ -94,21 +102,21 @@ public class PublishService(string basePath, string certificateBasePath, string 
     {
         var sslService = SslService.Default;
         var requestSuccess = false;
-        var cn = request.SubjectCn.Split(' ').First();
-        if (!sslService.CertificateExists(cn, certificateBasePath))
+        var cnFullDomain = $"{request.SubjectCn.Split(' ').First()}.{domain}";
+        if (!sslService.CertificateExists(cnFullDomain, certificateBasePath))
         {
             if (request.KeyUsage.ToLower().Trim() == "serverauth")
             {
-                var response = sslService.CreateRequestForTls(cn, certificateBasePath, request.SubjectCn.Split(' '));
-                Console.WriteLine($"Created TLS request for {request.SubjectCn} with response: {response}");
-                _logger.LogInformation($"Created TLS request for {request.SubjectCn} with response: {response}");
+                var response = sslService.CreateRequestForTls(cnFullDomain, certificateBasePath, request.SubjectCn.Split(' '));
+                Console.WriteLine($"Created TLS request for {cnFullDomain} with response: {response}");
+                _logger.LogInformation($"Created TLS request for {cnFullDomain} with response: {response}");
                 requestSuccess = true;
             }
             else if (request.KeyUsage.ToLower().Trim() == "clientauth")
             {
-                var response = sslService.CreateRequestForAuth(cn, certificateBasePath, [cn]);
-                Console.WriteLine($"Created Auth request for {cn} with response: {response}");
-                _logger.LogInformation($"Created Auth request for {cn} with response: {response}");
+                var response = sslService.CreateRequestForAuth(cnFullDomain, certificateBasePath, [cnFullDomain]);
+                Console.WriteLine($"Created Auth request for {cnFullDomain} with response: {response}");
+                _logger.LogInformation($"Created Auth request for {cnFullDomain} with response: {response}");
                 requestSuccess = true;
             }
             else
@@ -117,32 +125,32 @@ public class PublishService(string basePath, string certificateBasePath, string 
             }
             if (requestSuccess)
             {
-                var response = sslService.CreateAndSignCertificate(cn, request.ValidDays, certificateBasePath, ca, request.SubjectCn.Split(' '));
-                Console.WriteLine($"Created and signed certificate for {cn} with response: {response}");
-                _logger.LogInformation($"Created and signed certificate for {cn} with response: {response}");
+                var response = sslService.CreateAndSignCertificate(cnFullDomain, request.ValidDays, certificateBasePath, ca, request.SubjectCn.Split(' '));
+                Console.WriteLine($"Created and signed certificate for {cnFullDomain} with response: {response}");
+                _logger.LogInformation($"Created and signed certificate for {cnFullDomain} with response: {response}");
             }
             else
             {
-                _logger.LogError($"Failed to create certificate request for {cn}.");
-                throw new InvalidOperationException($"Failed to create certificate request for {cn}.");
+                _logger.LogError($"Failed to create certificate request for {cnFullDomain}.");
+                throw new InvalidOperationException($"Failed to create certificate request for {cnFullDomain}.");
             }
         }
         else
         {
-            Console.WriteLine($"Certificate for {cn} already exists, skipping creation.");
-            _logger.LogInformation($"Certificate for {cn} already exists, skipping creation.");
+            Console.WriteLine($"Certificate for {cnFullDomain} already exists, skipping creation.");
+            _logger.LogInformation($"Certificate for {cnFullDomain} already exists, skipping creation.");
         }
 
-        if (!sslService.PemFileExists(cn, certificateBasePath))
+        if (!sslService.PemFileExists(cnFullDomain, certificateBasePath))
         {
-            var response = sslService.ExportFullChainPemFile(cn, ca, certificateBasePath);
-            Console.WriteLine($"Exported full chain PEM file for {cn} with response: {response}");
-            _logger.LogInformation($"Exported full chain PEM file for {cn} with response: {response}");
+            var response = sslService.ExportFullChainPemFile(cnFullDomain, ca, certificateBasePath);
+            Console.WriteLine($"Exported full chain PEM file for {cnFullDomain} with response: {response}");
+            _logger.LogInformation($"Exported full chain PEM file for {cnFullDomain} with response: {response}");
         }
         else
         {
-            Console.WriteLine($"Full chain PEM file for {cn} already exists, skipping export.");
-            _logger.LogInformation($"Full chain PEM file for {cn} already exists, skipping export.");
+            Console.WriteLine($"Full chain PEM file for {cnFullDomain} already exists, skipping export.");
+            _logger.LogInformation($"Full chain PEM file for {cnFullDomain} already exists, skipping export.");
         }
     }
     private void EnsureNamespaceExists(string ns)
@@ -221,5 +229,19 @@ public class PublishService(string basePath, string certificateBasePath, string 
             buildContent.AppendLine(updatedRow);
         }
         File.WriteAllText(fullPath, buildContent.ToString());
+    }
+    private void ReplacePlaceholderInFile(string fullPath, string placeholderTag, string actualValue)
+    {
+        if (!File.Exists(fullPath))
+        {
+            _logger.LogDebug($"File {fullPath} does not exist, skipping placeholder replacement.");
+            return;
+        }
+        var content = File.ReadAllText(fullPath);
+        if (!content.Contains(placeholderTag)) return;
+
+        var updatedContent = content.Replace(placeholderTag, actualValue);
+        _logger.LogInformation($"File {fullPath} updated with {actualValue} instead of {placeholderTag}.");
+        File.WriteAllText(fullPath, updatedContent.ToString());
     }
 }

@@ -1,17 +1,23 @@
 controller:
   publishService:
     enabled: true
+
   metrics:
     enabled: true
+
   admissionWebhooks:
     enabled: true
+
   service:
     type: LoadBalancer
+    loadBalancerIP: 192.168.1.150
     ports:
       http: 80
       https: 443
+
   ingressClassResource:
     name: nginx
     enabled: true
     default: false
+
   ingressClass: nginx

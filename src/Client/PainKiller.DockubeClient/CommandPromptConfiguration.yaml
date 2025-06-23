@@ -2,11 +2,12 @@ version: 1.0
 configuration:
   dockube:
     manifestBasePath: Manifests
+    defaultDomain: dockube.lan
     ssl:
       executablePath: OpenSSL-Win64\bin
       output: ssl-output
       defaultName: Dockube
-      defaultCa: Dockube Intermediate CA
+      defaultCa: Dockube Intermediate CA      
     ssh:
       - name: nas
         host: dockube.local

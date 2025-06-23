@@ -12,9 +12,9 @@ resources:
       - $SLEEP$
   - type: helm
     source: gitlab
-    endpoint: https://gitlab.dockube.lan
+    endpoint: https://gitlab.$$DOMAIN_NAME$$
     certificates:
-      - subjectCn: gitlab.dockube.lan
+      - subjectCn: gitlab
         keyUsage: serverAuth
     before:
       - helm repo add gitlab https://charts.gitlab.io
@@ -23,8 +23,7 @@ resources:
     after:
       - echo GitLab deployed
       - $SLEEP$
-      - kubectl get pods -n dockube
-      - echo Log in at https://gitlab.dockube.lan
+      - kubectl get pods -n gitlab
     parameters:
       repo: https://charts.gitlab.io
       version: 9.0.2

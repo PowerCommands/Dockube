@@ -4,9 +4,10 @@ isCore: true
 resources:
   - type: kubectl
     source: Mailpit.yaml
-    endpoint: https://mail.dockube.lan/
+    endpoint: https://mail.$$DOMAIN_NAME$$
+
     certificates:
-      - subjectCn: mail.dockube.lan
+      - subjectCn: mail
         keyUsage: serverAuth      
     before:
       - echo Starting Mailpit installation

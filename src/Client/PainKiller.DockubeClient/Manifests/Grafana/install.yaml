@@ -4,9 +4,10 @@ isCore: true
 resources:
   - type: kubectl
     source: Grafana.yaml
-    endpoint: https://grafana.dockube.lan
+    endpoint: https://grafana.$$DOMAIN_NAME$$
     certificates:
-      - subjectCn: grafana.dockube.lan
+      - subjectCn: grafana
         keyUsage: serverAuth          
-    after:      
+    after:
+      - $SLEEP$      
       - kubectl get pods -n observation

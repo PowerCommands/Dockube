@@ -11,6 +11,11 @@ resources:
     after:
       - echo MetalLB deployed
       - $SLEEP$
+      - $SLEEP$
+      - $SLEEP$
+      - $SLEEP$
+      - $SLEEP$
+      - $SLEEP$
       - kubectl get pods -n metallb-system
     parameters:
       repo: https://metallb.github.io/metallb

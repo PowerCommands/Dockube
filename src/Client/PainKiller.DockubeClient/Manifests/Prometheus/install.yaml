@@ -4,9 +4,10 @@ isCore: true
 resources:
   - type: kubectl
     source: Prometheus.yaml
-    endpoint: https://prometheus.dockube.lan/targets
+    endpoint: https://prometheus.$$DOMAIN_NAME$$/targets
     certificates:      
-      - subjectCn: prometheus.dockube.lan
+      - subjectCn: prometheus
         keyUsage: serverAuth    
     after:      
+      - $SLEEP$      
       - kubectl get pods -n observation
