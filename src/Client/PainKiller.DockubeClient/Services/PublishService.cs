@@ -55,12 +55,16 @@ public class PublishService(string basePath, string certificateBasePath, string 
                     RunCommand(cmd, "Before");
 
                 var command = res.ToCommand(basePath, release.Name, release.Namespace);
-                _logger.LogInformation($"RELEASE {release.Name} NAMESPACE {release.Namespace}");
-                _logger.LogInformation($"APPLY {command}");
+                
                 
                 DecryptSecrets(basePath, release.Name, res);    //Replaces <ENCRYPTED_STRING> tags with decrypted values
 
-                RunCommand(command, "Apply");
+                if (!string.IsNullOrEmpty(res.Source))
+                {
+                    _logger.LogInformation($"RELEASE {release.Name} NAMESPACE {release.Namespace}");
+                    _logger.LogInformation($"APPLY {command}");
+                    RunCommand(command, "Apply");
+                }
 
                 foreach (var cmd in res.After)
                     RunCommand(cmd, "After");
@@ -191,6 +195,7 @@ public class PublishService(string basePath, string certificateBasePath, string 
     }
     private static void DecryptSecrets(string basePath, string releaseName, DockubeResource resource)
     {
+        if (string.IsNullOrEmpty(resource.Source)) return;
         var fullPath = Path.Combine(basePath, releaseName, resource.Source);
         if(!File.Exists(fullPath))
         {

@@ -1,0 +1,20 @@
+name: Reddis
+namespace: gitlab
+isCore: true
+resources:  
+  - type: helm
+    source: 
+    endpoint: 
+    before:
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm repo update
+      - helm upgrade --install external-redis bitnami/redis  --set architecture=standalone --set auth.enabled=false --set master.extraEnvVars[0].name=DISABLE_JEMALLOC --set-string master.extraEnvVars[0].value=true
+      - echo Installing Reddis using Helm chart from Bitnami
+    after:
+      - echo Reddis deployed
+      - $SLEEP$
+      - kubectl get pods -n gitlab
+    parameters:
+      repo: https://charts.bitnami.com/bitnami 
+      version: latest
+      values:     

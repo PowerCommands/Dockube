@@ -8,4 +8,5 @@ public abstract class ConsoleWriterBase
     protected void Warning(string scope, string text) => _logger.LogWarning($"[{scope}] {text}");
     protected void Error(string scope, string text) => _logger.LogError($"[{scope}] {text}");
     protected void Fatal(string scope, string text) => _logger.LogCritical($"[{scope}] {text}");
+    protected void Debug(string scope, string text) => _logger.LogDebug($"[{scope}] {text}");
 }

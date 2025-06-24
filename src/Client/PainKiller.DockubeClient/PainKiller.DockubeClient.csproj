@@ -49,6 +49,7 @@
     <None Remove="Manifests\MetalLB\MetalLB-config.yaml" />
     <None Remove="Manifests\Prometheus\install.yaml" />
     <None Remove="Manifests\Prometheus\Prometheus.yaml" />
+    <None Remove="Manifests\Reddis\install.yaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -149,6 +150,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Prometheus\Prometheus.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Manifests\Reddis\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

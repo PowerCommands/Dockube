@@ -26,4 +26,6 @@ public class EnvironmentCommand(string identifier) : ConsoleCommandBase<CommandP
         InfoPanelService.Instance.Update();
         return Ok();
     }
+
+    //helm get values gitlab -n gitlab --all > gitlab-effective-values.yaml
 }

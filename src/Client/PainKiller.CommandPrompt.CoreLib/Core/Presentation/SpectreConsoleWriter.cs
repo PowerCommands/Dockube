@@ -35,7 +35,7 @@ public class SpectreConsoleWriter : ConsoleWriterBase, IConsoleWriter
         var color = consoleColor ?? Color.Black;
         var escaped = Markup.Escape(text);
         AnsiConsole.Markup($"{ToDefaultColorIfBlack(escaped, color)}");
-        if (writeLog) Information(scope, text);
+        if (writeLog) Debug(scope, text);
     }
 
     public void WriteLine(string text = "", bool writeLog = true, Color? consoleColor = null, [CallerMemberName] string scope = "")
@@ -44,7 +44,7 @@ public class SpectreConsoleWriter : ConsoleWriterBase, IConsoleWriter
         var color = consoleColor ?? Color.Black;
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"{ToDefaultColorIfBlack(escaped, color)}");
-        if (writeLog) Information(scope, text);
+        if (writeLog) Debug(scope, text);
     }
 
     public void WriteSuccessLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
@@ -52,7 +52,7 @@ public class SpectreConsoleWriter : ConsoleWriterBase, IConsoleWriter
         EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[green]{escaped}[/]");
-        if (writeLog) Information(scope, text);
+        if (writeLog) Debug(scope, text);
     }
     public void WriteWarning(string text, string scope)
     {
