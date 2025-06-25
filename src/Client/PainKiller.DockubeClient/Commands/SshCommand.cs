@@ -24,7 +24,7 @@ public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
             Console.WriteLine($"Hash: {SslService.GetPassword($"{input.Quotes.FirstOrDefault()}")}");
             return Ok("Password hashed successfully. Use this hash in your configuration.");
         }
-        var target = this.GetSuggestion(input.Arguments.FirstOrDefault(), "");
+        var target = input.Arguments.FirstOrDefault() ?? "";
         if (input.HasOption("shutdown")) return Shutdown(target);
 
         if (string.IsNullOrEmpty(target)) return Nok("No hostname provided.");
