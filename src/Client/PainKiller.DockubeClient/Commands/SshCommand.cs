@@ -1,15 +1,22 @@
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
+using PainKiller.ReadLine.Managers;
 using Renci.SshNet;
 
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description:  "Run SSH commands",
-                        options: ["host", "port", "userName", "password", "shutdown"],
-                    suggestions: ["r1","nas","shutdown"],
+                        options: ["host", "port", "userName", "password","shutdown"],
                        examples: ["//Run SSH command using ssh declared in configuration","ssh","//Hash password with openssl","ssh \"myPassword\" --password"])]
 public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private SshClient _client = null!;
+    private readonly string _identifier = identifier;
+
+    public override void OnInitialized()
+    {
+        SuggestionProviderManager.AppendContextBoundSuggestions(_identifier, Configuration.Dockube.Ssh.Select(s => s.Name).ToArray());
+        base.OnInitialized();
+    }
     public override RunResult Run(ICommandLineInput input)
     {
         if (input.HasOption("password"))
@@ -17,10 +24,11 @@ public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
             Console.WriteLine($"Hash: {SslService.GetPassword($"{input.Quotes.FirstOrDefault()}")}");
             return Ok("Password hashed successfully. Use this hash in your configuration.");
         }
-        var target = this.GetSuggestion(input.Arguments.FirstOrDefault(), "r1");
-        
-        if (target == "shutdown") return Shutdown();
-        
+        var target = this.GetSuggestion(input.Arguments.FirstOrDefault(), "");
+        if (input.HasOption("shutdown")) return Shutdown(target);
+
+        if (string.IsNullOrEmpty(target)) return Nok("No hostname provided.");
+
         var config = Configuration.Dockube.Ssh.FirstOrDefault(s => s.Name == target);
         if (config == null) return Nok($"No configuration with name {target} exists.");
         
@@ -52,10 +60,12 @@ public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         Console.WriteLine("Disconnected from SSH server.\n");
         return Ok();
     }
-    public RunResult Shutdown()
+    public RunResult Shutdown(string target)
     {
+        
         foreach (var config in Configuration.Dockube.Ssh.Where(s => s.Host.StartsWith("pi0"))) 
         {
+            if (config.Name != target && !string.IsNullOrEmpty(target)) continue;
             var password = Configuration.Core.Modules.Security.DecryptSecret($"dockube_ssh_{config.Name}");
             _client = new SshClient(config.Host, config.Port, config.UserName, password);
             _client.Connect();

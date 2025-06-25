@@ -54,6 +54,20 @@ public class ShellService : IShellService
             Console.WriteLine(output);
         }
     }
+    public void RunTerminalUntilUserQuits(string program, string args)
+    {
+        var psi = new ProcessStartInfo(program, args)
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = false,
+            RedirectStandardOutput = false,
+            RedirectStandardError = false,
+        };
+
+        var process = new Process { StartInfo = psi };
+        process.Start();
+        process.WaitForExit();
+    }
     public string StartInteractiveProcess(string program, string args = "", string workingDirectory = "", bool waitForExit = true)
     {
         var output = new StringBuilder();
@@ -80,14 +94,12 @@ public class ShellService : IShellService
 
             if (waitForExit)
             {
-                // Läs utdata och felmeddelanden i realtid
                 output.AppendLine(process.StandardOutput.ReadToEnd());
                 output.AppendLine(process.StandardError.ReadToEnd());
                 process.WaitForExit();
             }
             else
             {
-                // Läsa utdata utan att vänta på att processen ska avslutas
                 process.OutputDataReceived += (sender, e) => 
                 {
                     if (e.Data != null) 

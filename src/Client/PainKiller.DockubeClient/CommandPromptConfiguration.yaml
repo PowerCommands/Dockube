@@ -16,7 +16,7 @@ configuration:
       - name: r1
         host: dockube.server
         port: 22
-        userName: dockube
+        userName: dockube      
     releases:
       - Ingress-Nginx-Helm  
       - Prometheus      

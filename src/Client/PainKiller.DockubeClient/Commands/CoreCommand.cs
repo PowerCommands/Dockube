@@ -102,32 +102,49 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
 
     private RunResult GetPasswords()
     {
-        var releases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).ToList();
-        foreach (var release in releases)
+        try
         {
-            var releaseName = release.Name;
-            if (string.IsNullOrEmpty(releaseName)) return Ok();
-            var resource = release.Resources.FirstOrDefault(r => r.SecretDescriptors.Length > 0);
-            if (resource != null)
+            var releases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).ToList();
+            foreach (var release in releases)
             {
-                var base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {resource.SecretDescriptors.First().Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'", "");
-                var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(base64Encoded));
-                Console.WriteLine(releaseName);
-                Console.WriteLine(decoded);
-            }
+                try
+                {
+                    var releaseName = release.Name;
+                    if (string.IsNullOrEmpty(releaseName)) return Ok();
+                    var resource = release.Resources.FirstOrDefault(r => r.SecretDescriptors.Length > 0);
+                    if (resource != null)
+                    {
+                        var base64Encoded = ShellService.Default.StartInteractiveProcess("kubectl.exe", $"get secret {resource.SecretDescriptors.First().Key} -n {release.Namespace} -o jsonpath='{{.data.password}}'").Trim().Replace("'", "");
+                        var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(base64Encoded));
+                        Console.WriteLine(releaseName);
+                        Console.WriteLine(decoded);
+                    }
 
-            var tokenCommandResource = release.Resources.FirstOrDefault(r => r.After.Any(a => a.ToLower().Contains("create token")));
-            var tokenCommand = tokenCommandResource?.After.FirstOrDefault(a => a.ToLower().Contains("create token"))?.Trim();
-            if (tokenCommand != null)
-            {
-                Console.WriteLine($"Access token for {releaseName} (may be short lived)");
-                var result = ShellService.Default.StartInteractiveProcess("cmd.exe", $"/c {tokenCommand}");
-                Console.WriteLine(result);
+                    var tokenCommandResource = release.Resources.FirstOrDefault(r => r.After.Any(a => a.ToLower().Contains("create token")));
+                    var tokenCommand = tokenCommandResource?.After.FirstOrDefault(a => a.ToLower().Contains("create token"))?.Trim();
+                    if (tokenCommand != null)
+                    {
+                        Console.WriteLine($"Access token for {releaseName} (may be short lived)");
+                        var result = ShellService.Default.StartInteractiveProcess("cmd.exe", $"/c {tokenCommand}");
+                        Console.WriteLine(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Writer.WriteLine($"Error retrieving password for release {release.Name}: {ex.Message}");
+                    continue;
+                }
+
             }
+            var dockubeGitLabUserPassword = Configuration.Core.Modules.Security.DecryptSecret("dockube-gitlab");
+            Console.WriteLine("Gitlab password:");
+            Console.WriteLine(dockubeGitLabUserPassword);
         }
-        var dockubeGitLabUserPassword = Configuration.Core.Modules.Security.DecryptSecret("dockube-gitlab");
-        Console.WriteLine("Gitlab password:");
-        Console.WriteLine(dockubeGitLabUserPassword);
+        catch (Exception ex)
+        {
+            Writer.WriteLine($"Error retrieving passwords: {ex.Message}");
+            return Nok(ex.Message);
+        }
         return Ok();
     }
 }

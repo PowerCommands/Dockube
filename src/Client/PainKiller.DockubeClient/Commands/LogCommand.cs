@@ -10,6 +10,8 @@ namespace PainKiller.DockubeClient.Commands;
                        examples: ["//View log on pod gitlab-c649d8bc-lhjjc in namespace gitlab","log gitlab gitlab-c649d8bc-lhjjc"])]
 public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
+
+    //kubectl exec -it deploy/prometheus -n monitoring -- sh
     public override RunResult Run(ICommandLineInput input)
     {
         var ns = input.Arguments.First();
