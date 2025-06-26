@@ -9,8 +9,7 @@ namespace PainKiller.DockubeClient.Commands;
                suggestions: ["gitlab"],
                   examples: ["//Describe a pod in namespace gitlab", "about gitlab",
                              "//Describe a service in namespace gitlab", "about gitlab --svc",
-                             "//Describe an ingress in namespace gitlab", "about gitlab --ingress"
-    ])]
+                             "//Describe an ingress in namespace gitlab", "about gitlab --ingress"])]
 public class AboutCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
@@ -34,10 +33,7 @@ public class AboutCommand(string identifier) : ConsoleCommandBase<CommandPromptC
             return Nok();
         }
 
-        var items = rows
-            .Select(r => r.Split(' ').FirstOrDefault())
-            .Where(p => !string.IsNullOrWhiteSpace(p) && !p.Equals("NAME", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        var items = rows.Select(r => $"{r.Split(' ').FirstOrDefault()}").Where(p => !string.IsNullOrWhiteSpace(p) && !p.Equals("NAME", StringComparison.OrdinalIgnoreCase)).ToList();
 
         var selected = ListService.ListDialog($"Select a {kind} to describe", items);
         var name = selected.First().Value;
