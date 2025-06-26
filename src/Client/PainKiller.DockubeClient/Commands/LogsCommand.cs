@@ -7,8 +7,8 @@ namespace PainKiller.DockubeClient.Commands;
                       arguments: ["<namespace>","<instance-name>"],
                         options: ["file", "prepare-data"],
                     suggestions: ["gitlab"],
-                       examples: ["//View log on pod gitlab-c649d8bc-lhjjc in namespace gitlab","log gitlab gitlab-c649d8bc-lhjjc"])]
-public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+                       examples: ["//View log on pod gitlab-c649d8bc-lhjjc in namespace gitlab","logs gitlab gitlab-c649d8bc-lhjjc"])]
+public class LogsCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {
