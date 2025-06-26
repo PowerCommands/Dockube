@@ -4,9 +4,9 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Connect to pod running in cluster", 
+[CommandDesign(     description: "Connect to pod in provided namespace running in cluster", 
                       arguments: ["<namespace>","<instance-name>"],
-                       examples: ["//Connect to pod","connect"])]
+                       examples: ["//Connect to a pod in gitlab namespace","connect gitlab"])]
 public class ConnectCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)

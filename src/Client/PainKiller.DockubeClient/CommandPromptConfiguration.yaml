@@ -2,6 +2,7 @@ version: 1.0
 configuration:
   dockube:
     manifestBasePath: Manifests
+    backupPath: Backups
     defaultDomain: dockube.lan
     ssl:
       executablePath: OpenSSL-Win64\bin

@@ -5,13 +5,11 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "See log on the provided item", 
                       arguments: ["<namespace>","<instance-name>"],
-                        options: ["file"],
+                        options: ["file", "prepare-data"],
                     suggestions: ["gitlab"],
                        examples: ["//View log on pod gitlab-c649d8bc-lhjjc in namespace gitlab","log gitlab gitlab-c649d8bc-lhjjc"])]
 public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
-
-    //kubectl exec -it deploy/prometheus -n monitoring -- sh
     public override RunResult Run(ICommandLineInput input)
     {
         var ns = input.Arguments.First();
@@ -27,13 +25,18 @@ public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         var pod = ListService.ListDialog("Select your pod", pods);
         var podIdentity = pod.First().Value;
 
-        var prepareData = ShellService.Default.StartInteractiveProcess("kubectl", $"logs -n {ns}  {podIdentity} -c prepare-data");
-        if (!string.IsNullOrWhiteSpace(prepareData))
+        var prepareData = "";
+        if (input.HasOption("prepare-data"))
         {
-            Writer.WriteLine($"Prepare Data Logs for {podIdentity} in namespace {ns}:");
-            Writer.WriteLine(prepareData);
-            Writer.WriteLine("--------------------------------------------------");
+            prepareData = ShellService.Default.StartInteractiveProcess("kubectl", $"logs -n {ns}  {podIdentity} -c prepare-data");
+            if (!string.IsNullOrWhiteSpace(prepareData))
+            {
+                Writer.WriteLine($"Prepare Data Logs for {podIdentity} in namespace {ns}:");
+                Writer.WriteLine(prepareData);
+                Writer.WriteLine("--------------------------------------------------");
+            }
         }
+        
         var result = ShellService.Default.StartInteractiveProcess("kubectl", $"logs {podIdentity}  -n {ns}");
         Console.WriteLine(result);
         if (input.HasOption("file"))
@@ -41,10 +44,12 @@ public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
             var fileName = $"{podIdentity}-logs.txt".PrefixFileTimestamp();
             File.WriteAllText(fileName, result);
             Writer.WriteLine($"Logs saved to {fileName}");
-
-            var fileName2 = $"{podIdentity}-prepare-logs.txt".PrefixFileTimestamp();
-            File.WriteAllText(fileName2, prepareData);
-            Writer.WriteLine($"Logs saved to {fileName2}");
+            if (input.HasOption("prepare-data"))
+            {
+                var fileName2 = $"{podIdentity}-prepare-logs.txt".PrefixFileTimestamp();
+                File.WriteAllText(fileName2, prepareData);
+                Writer.WriteLine($"Logs saved to {fileName2}");
+            }
         }
         return Ok();
     }
