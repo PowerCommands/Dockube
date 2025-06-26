@@ -19,6 +19,7 @@ public static class Startup
     {
         var config = ReadConfiguration();
         Console.Title = config.Core.Name;
+        Environment.CurrentDirectory = AppContext.BaseDirectory;
 
         var logger = LoggerProvider.CreateLogger<Program>();
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
