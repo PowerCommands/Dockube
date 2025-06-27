@@ -9,7 +9,11 @@ public class TerminalCommando<TConfig>(string identifier) : IConsoleCommand wher
     public string Identifier { get; } = identifier;
     public TConfig Configuration { get; private set; } = null!;
     protected virtual void SetConfiguration(TConfig config) => Configuration = config;
-    public RunResult Run(ICommandLineInput input)
+    public virtual RunResult Run(ICommandLineInput input)
+    {
+        return RunTerminal(input);
+    }
+    protected RunResult RunTerminal(ICommandLineInput input)
     {
         Console.Title = $"{Identifier} (ext. terminal session)";
         try
