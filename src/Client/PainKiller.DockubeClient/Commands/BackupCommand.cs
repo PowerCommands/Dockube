@@ -6,7 +6,7 @@ public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPrompt
 {
     public override RunResult Run(ICommandLineInput input)
     {
-        var manifestsSourcePath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.ManifestBasePath);
+        var manifestsSourcePath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.ManifestsPath);
         var certificatesSourcePath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.Ssl.Output);
 
         var safeTimeStamp = DateTime.Now.ToString("yyyyMMddHHmmss");

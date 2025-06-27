@@ -16,7 +16,7 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
         if (string.IsNullOrWhiteSpace(releaseName)) return Nok("Release name is required. Please specify the release you want to publish.");
         var release = Configuration.Dockube.GetReleases().FirstOrDefault(r => r.Name.Equals(releaseName, StringComparison.OrdinalIgnoreCase));
         if (release == null) return Nok($"Release '{release?.Name}' not found in configuration.");
-        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa, Configuration.Dockube.DefaultDomain);
+        var service = new PublishService(Configuration.Dockube.ManifestsPath, Configuration.Dockube.TemplatesPath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa, Configuration.Dockube.DefaultDomain);
         
         if (input.TryGetOption(out bool uninstall, false)) return UnInstall(release, service);
         

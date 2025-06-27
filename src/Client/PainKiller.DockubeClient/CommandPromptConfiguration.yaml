@@ -1,7 +1,8 @@
 version: 1.0
 configuration:
   dockube:
-    manifestBasePath: Manifests
+    templatesPath: Templates
+    manifestsPath: Manifests
     backupPath: Backups
     defaultDomain: dockube.lan
     ssl:

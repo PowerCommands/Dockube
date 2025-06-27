@@ -47,7 +47,7 @@ public static class DockubeResourceExtensions
 
     public static DockubeRelease GetRelease(this DockubeConfiguration configuration, string name)
     {
-        var fileName = Path.Combine(configuration.ManifestBasePath, name, "install.yaml");
+        var fileName = Path.Combine(configuration.ManifestsPath, name, "install.yaml");
         var yamlContent = File.ReadAllText(fileName);
         var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
         return deserializer.Deserialize<DockubeRelease>(yamlContent);
@@ -55,7 +55,7 @@ public static class DockubeResourceExtensions
     public static List<DockubeRelease> GetReleases(this DockubeConfiguration configuration)
     {
         var releases = new List<DockubeRelease>();
-        var manifestDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, configuration.ManifestBasePath));
+        var manifestDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, configuration.ManifestsPath));
         foreach (var releaseName in manifestDir.GetDirectories().Select(d => d.Name))
         {
             try

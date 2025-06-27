@@ -8,7 +8,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Services;
-public class PublishService(string basePath, string certificateBasePath, string ca, string domain) : IPublishService
+public class PublishService(string basePath, string templatesPath, string certificateBasePath, string ca, string domain) : IPublishService
 {
     private readonly ILogger<PublishService> _logger = LoggerProvider.CreateLogger<PublishService>();
     public void UninstallRelease(DockubeRelease release)
@@ -35,9 +35,23 @@ public class PublishService(string basePath, string certificateBasePath, string 
             EnsureNamespaceExists(release.Namespace);
 
             var dir = new DirectoryInfo(Path.Combine(basePath, release.Name));
-            foreach (var fileInfo in dir.GetFiles("*.yaml"))
+            var templatesDir = new DirectoryInfo(Path.Combine(templatesPath, release.Name));
+            foreach (var fileInfo in templatesDir.GetFiles("*.yaml"))
             {
-                ReplacePlaceholderInFile(fileInfo.FullName, "$$DOMAIN_NAME$$", domain);
+                var outputFile = Path.Combine(dir.FullName, fileInfo.Name);
+
+                var placeholders = new Dictionary<string, string>
+                {
+                    ["$$DOMAIN_NAME$$"]      = domain,
+                    ["$$NODE_NAME$$"]        = release.Node,
+                    ["$$REPLICAS$$"]         = $"{release.ResourceProfile.Replicas}",
+                    ["$$CPU_REQUEST$$"]      = release.ResourceProfile.CpuRequest,
+                    ["$$CPU_LIMIT$$"]        = release.ResourceProfile.CpuLimit,
+                    ["$$MEMORY_REQUEST$$"]   = release.ResourceProfile.MemoryRequest,
+                    ["$$MEMORY_LIMIT$$"]     = release.ResourceProfile.MemoryLimit
+                };
+
+                ReplacePlaceholdersInFile(fileInfo.FullName, outputFile, placeholders);
             }
 
             foreach (var res in release.Resources)
@@ -235,18 +249,17 @@ public class PublishService(string basePath, string certificateBasePath, string 
         }
         File.WriteAllText(fullPath, buildContent.ToString());
     }
-    private void ReplacePlaceholderInFile(string fullPath, string placeholderTag, string actualValue)
+    private void ReplacePlaceholdersInFile(string templatePath, string outputPath, Dictionary<string, string> placeholders)
     {
-        if (!File.Exists(fullPath))
-        {
-            _logger.LogDebug($"File {fullPath} does not exist, skipping placeholder replacement.");
-            return;
-        }
-        var content = File.ReadAllText(fullPath);
-        if (!content.Contains(placeholderTag)) return;
+        if (!File.Exists(templatePath)) return;
 
-        var updatedContent = content.Replace(placeholderTag, actualValue);
-        _logger.LogInformation($"File {fullPath} updated with {actualValue} instead of {placeholderTag}.");
-        File.WriteAllText(fullPath, updatedContent.ToString());
+        var content = File.ReadAllText(templatePath);
+
+        foreach (var kvp in placeholders)
+        {
+            content = content.Replace(kvp.Key, kvp.Value);
+        }
+
+        File.WriteAllText(outputPath, content);
     }
 }

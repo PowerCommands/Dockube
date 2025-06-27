@@ -2,6 +2,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using System.Text;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.DockubeClient.Extensions;
+using PainKiller.DockubeClient.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
@@ -76,8 +77,14 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     }
     private RunResult Init()
     {
+        if (KubeEnvironmentManager.GetVersion().Contains("k3s"))
+        {
+            Writer.WriteLine("Init is only intended for Dockcker-Desktop environment.");
+            return Nok("Init is only intended for Docker-Desktop environment.");
+        }
+
         Writer.WriteHeadLine("Initializing Core Cluster...");
-        var service = new PublishService(Configuration.Dockube.ManifestBasePath, Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa, Configuration.Dockube.DefaultDomain);
+        var service = new PublishService(Configuration.Dockube.ManifestsPath, Configuration.Dockube.TemplatesPath , Configuration.Dockube.Ssl.Output, Configuration.Dockube.Ssl.DefaultCa, Configuration.Dockube.DefaultDomain);
         var coreReleases = Configuration.Dockube.GetReleases().Where(r => r.IsCore).ToList();
         foreach (var release in coreReleases)
         {

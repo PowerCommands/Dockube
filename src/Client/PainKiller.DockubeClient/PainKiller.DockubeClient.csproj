@@ -50,6 +50,35 @@
     <None Remove="Manifests\Prometheus\install.yaml" />
     <None Remove="Manifests\Prometheus\Prometheus.yaml" />
     <None Remove="Manifests\Reddis\install.yaml" />
+    <None Remove="Templates\ArgoCd\ArgoCd-Ingress.yaml" />
+    <None Remove="Templates\ArgoCd\ArgoCd.yaml" />
+    <None Remove="Templates\ArgoCd\install.yaml" />
+    <None Remove="Templates\DotNetDevAPI\DotNetDev.yaml" />
+    <None Remove="Templates\DotNetDevAPI\DotNetDev_PVC.yaml" />
+    <None Remove="Templates\DotNetDevAPI\install.yaml" />
+    <None Remove="Templates\DotNetDevUI\DotNetDev.yaml" />
+    <None Remove="Templates\DotNetDevUI\DotNetDev_PVC.yaml" />
+    <None Remove="Templates\DotNetDevUI\install.yaml" />
+    <None Remove="Templates\Gitlab\gitlab-root-secret.yaml" />
+    <None Remove="Templates\Gitlab\gitlab-values.yaml" />
+    <None Remove="Templates\Gitlab\install.yaml" />
+    <None Remove="Templates\Grafana\Grafana.yaml" />
+    <None Remove="Templates\Grafana\install.yaml" />
+    <None Remove="Templates\Ingress-Nginx-Helm\ingress-values.yaml" />
+    <None Remove="Templates\Ingress-Nginx-Helm\install.yaml" />
+    <None Remove="Templates\KubernetesDashboard\install.yaml" />
+    <None Remove="Templates\KubernetesDashboard\kubernetes-dashboard-ingress.yaml" />
+    <None Remove="Templates\KubernetesDashboard\kubernetes-dashboard-values.yaml" />
+    <None Remove="Templates\KubernetesDashboard\kubernetes-dashboard.yaml" />
+    <None Remove="Templates\Mailpit\install.yaml" />
+    <None Remove="Templates\Mailpit\Mailpit.yaml" />
+    <None Remove="Templates\MetalLB\install.yaml" />
+    <None Remove="Templates\MetalLB\MetalLB-config.yaml" />
+    <None Remove="Templates\Minio\install.yaml" />
+    <None Remove="Templates\Minio\Minio.yaml" />
+    <None Remove="Templates\Prometheus\install.yaml" />
+    <None Remove="Templates\Prometheus\Prometheus.yaml" />
+    <None Remove="Templates\Reddis\install.yaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -153,6 +182,93 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Manifests\Reddis\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ArgoCd\ArgoCd-Ingress.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ArgoCd\ArgoCd.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ArgoCd\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DotNetDevAPI\DotNetDev.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DotNetDevAPI\DotNetDev_PVC.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DotNetDevAPI\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DotNetDevUI\DotNetDev.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DotNetDevUI\DotNetDev_PVC.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DotNetDevUI\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Gitlab\gitlab-root-secret.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Gitlab\gitlab-values.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Gitlab\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Grafana\Grafana.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Grafana\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Ingress-Nginx-Helm\ingress-values.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Ingress-Nginx-Helm\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\KubernetesDashboard\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\KubernetesDashboard\kubernetes-dashboard-ingress.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\KubernetesDashboard\kubernetes-dashboard-values.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\KubernetesDashboard\kubernetes-dashboard.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Mailpit\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Mailpit\Mailpit.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\MetalLB\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\MetalLB\MetalLB-config.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Minio\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Minio\Minio.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Prometheus\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Prometheus\Prometheus.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Reddis\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

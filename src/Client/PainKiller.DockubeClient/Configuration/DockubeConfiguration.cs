@@ -1,7 +1,8 @@
 namespace PainKiller.DockubeClient.Configuration;
 public class DockubeConfiguration
 {
-    public string ManifestBasePath { get; set; } = "Manifests";
+    public string ManifestsPath { get; set; } = "Manifests";
+    public string TemplatesPath { get; set; } = "Templates";
     public string BackupPath { get; set; } = "Backups";
     public string DefaultDomain { get; set; } = "dockube.lan";
     public string[] Releases { get; set; } = [];

@@ -1,0 +1,16 @@
+name: Mailpit
+namespace: mailpit
+isCore: true
+resources:
+  - type: kubectl
+    source: Mailpit.yaml
+    endpoint: https://mail.$$DOMAIN_NAME$$
+
+    certificates:
+      - subjectCn: mail
+        keyUsage: serverAuth      
+    before:
+      - echo Starting Mailpit installation
+    after:
+      - $SLEEP$
+      - kubectl get pods -n observation

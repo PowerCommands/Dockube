@@ -13,5 +13,4 @@ public class WslCommand(string identifier) : TerminalCommando<CommandPromptConfi
         
         return RunTerminal(input);
     }
-
 }

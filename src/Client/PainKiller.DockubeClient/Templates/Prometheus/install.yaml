@@ -1,0 +1,20 @@
+name: Prometheus
+namespace: observation
+node: docker-desktop
+resourceProfile:
+  replicas: 1  
+  cpuRequest: "100m"  
+  cpuLimit: "200m"
+  memoryRequest: "128Mi"
+  memoryLimit: "256Mi"  
+isCore: true
+resources:
+  - type: kubectl
+    source: Prometheus.yaml
+    endpoint: https://prometheus.$$DOMAIN_NAME$$/targets
+    certificates:      
+      - subjectCn: prometheus
+        keyUsage: serverAuth    
+    after:      
+      - $SLEEP$      
+      - kubectl get pods -n observation

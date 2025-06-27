@@ -1,0 +1,82 @@
+global:
+  edition: ce
+  hosts:
+    domain: $$DOMAIN_NAME$$
+    externalIP: 192.168.1.154
+    https: false  
+
+  ingress:
+    configureCertmanager: false
+    class: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"    
+    hosts:
+      - name: gitlab.$$DOMAIN_NAME$$
+        path: /
+    tls:
+      enabled: true
+      secretName: gitlab-tls
+
+  initialRootPassword:
+    secret: gitlab-root-password
+  smtp:
+    enabled: true
+    address: mailpit.mailpit.svc.cluster.local
+    port: 1025
+    domain: $$DOMAIN_NAME$$
+    authentication: "none"
+    starttls_auto: false
+
+certmanager:
+  install: false
+
+nginx-ingress:
+  enabled: false
+
+prometheus:
+  install: false
+
+gitlab:
+  webservice:
+    minReplicas: 1
+    maxReplicas: 1
+    ingress:
+      enabled: true
+      tls:
+        enabled: true                   
+        secretName: gitlab-tls
+      hosts:
+        - name: gitlab.$$DOMAIN_NAME$$
+          path: /
+
+  registry:
+    ingress:
+      enabled: false
+  pages:
+    ingress:
+      enabled: false
+  minio:
+    ingress:
+      enabled: false
+    persistence:
+      size: 5Gi
+  gitaly:
+    persistence:
+      size: 10Gi    
+  redis:
+    master:
+      persistence:
+        size: 1Gi
+  postgresql:
+    install: true
+    postgresqlPassword: supersecurepassword
+    persistence:
+      size: 2Gi
+  toolbox:
+    enabled: false  
+
+redis:
+  install: true
+
+gitlab-runner:
+  install: false

@@ -1,0 +1,15 @@
+name: DotNetDevUI
+namespace: default
+isCore: false
+resources:
+  - type: kubectl
+    source: DotNetDev_pvc.yaml    
+  - type: kubectl
+    source: DotNetDev.yaml
+    endpoint: https://dockubeapi.dockube.lan/version    
+    before:
+      - echo Starting installation of a DevContainer (UI) for .NET development
+    after:
+      - $SLEEP$
+      - kubectl get pods -n default 
+  
