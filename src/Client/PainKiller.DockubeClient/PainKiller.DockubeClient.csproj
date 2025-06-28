@@ -222,12 +222,6 @@
     <Content Include="Templates\Gitlab\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\Gitserver\Gitserver.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\Gitserver\install.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Templates\Grafana\Grafana.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
