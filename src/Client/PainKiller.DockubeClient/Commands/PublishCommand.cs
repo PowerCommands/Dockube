@@ -1,14 +1,21 @@
 using PainKiller.DockubeClient.Extensions;
+using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  Publish an release to your kubernetes cluster", 
                       arguments: ["<release name>"],
                         options: ["uninstall"],
-                    suggestions: ["DotNetDevAPI","DotNetDevUI","MetalLB", "Ingress-Nginx-Helm","Prometheus","Grafana","Mailpit","Gitlab","Minio","ArgoCd","KubernetesDashboard"],
                        examples: ["//Publish Grafana-Prometheus your core cluster","publish Grafana-Prometheus"])]
 public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
+    private readonly string _identifier = identifier;
+    public override void OnInitialized()
+    {
+        SuggestionProviderManager.AppendContextBoundSuggestions(_identifier, Configuration.Dockube.GetReleases().Select(s => s.Name).ToArray());
+        base.OnInitialized();
+    }
+
     public override RunResult Run(ICommandLineInput input)
     {
         Environment.CurrentDirectory = AppContext.BaseDirectory;
