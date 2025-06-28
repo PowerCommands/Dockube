@@ -3,7 +3,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "See log on the provided item", 
+[CommandDesign(     description: "Dockube -  See log on the provided item", 
                       arguments: ["<namespace>","<instance-name>"],
                         options: ["file", "prepare-data"],
                     suggestions: ["gitlab"],

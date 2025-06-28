@@ -1,7 +1,7 @@
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Backup manifests and certificates", 
-                       examples: ["//Backup manifests and certificates","backup"])]
+[CommandDesign(     description: "Dockube -  Backup manifests, templates and certificates", 
+                       examples: ["//Backup manifests, templates and certificates","backup"])]
 public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)

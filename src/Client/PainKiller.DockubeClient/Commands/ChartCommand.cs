@@ -1,6 +1,6 @@
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Manage your Helm charts", 
+[CommandDesign(     description: "Dockube -  Manage your Helm charts", 
                         options: ["update","delete"],
                     suggestions: ["nginx", "gitlab"],
                        examples: ["//View versions of a certain chart repo","chart nginx"])]

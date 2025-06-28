@@ -2,7 +2,7 @@ using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Publish an release to your kubernetes cluster", 
+[CommandDesign(     description: "Dockube -  Publish an release to your kubernetes cluster", 
                       arguments: ["<release name>"],
                         options: ["uninstall"],
                     suggestions: ["DotNetDevAPI","DotNetDevUI","MetalLB", "Ingress-Nginx-Helm","Prometheus","Grafana","Mailpit","Gitlab","Minio","ArgoCd","KubernetesDashboard"],

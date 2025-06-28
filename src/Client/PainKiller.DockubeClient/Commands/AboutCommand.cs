@@ -3,7 +3,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(description: "See detailed information about a resource (default is pod)",
+[CommandDesign(description: "Dockube -  See detailed information about a resource (default is pod)",
                  arguments: ["<namespace>"],
                    options: ["pod", "svc", "ingress"],
                suggestions: ["gitlab"],

@@ -1,11 +1,9 @@
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
-using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Managers;
-using Spectre.Console;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Change or view the current kubernetes environment.", 
+[CommandDesign(     description: "Dockube -  Change or view the current kubernetes environment.", 
                     suggestions: ["k3s", "docker-desktop"],
                        examples: ["//Change enviroment to k3s","environment k3s"])]
 public class EnvironmentCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)

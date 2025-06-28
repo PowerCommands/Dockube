@@ -6,7 +6,7 @@ using PainKiller.DockubeClient.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(description: "Manage the Core Dockube cluster",
+     [CommandDesign(description: "Dockube -  Manage the Core Dockube cluster",
                       arguments: ["<Mode>"],
                          quotes: ["<Namespace name>"],
                         options: ["hosts", "passwords", "pods", "secrets", "tls", "endpoints", "ingress", "namespaces", "pvc"],

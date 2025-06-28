@@ -5,7 +5,7 @@ using Renci.SshNet;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description:  "Run SSH commands",
+[CommandDesign(     description:  "Dockube -  Run SSH commands",
                         options: ["host", "port", "userName", "password","shutdown"],
                        examples: ["//Run SSH command using ssh declared in configuration","ssh","//Hash password with openssl","ssh \"myPassword\" --password"])]
 public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)

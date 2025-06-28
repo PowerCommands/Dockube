@@ -2,7 +2,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Show node metrics", 
+[CommandDesign(     description: "Dockube -  Show node metrics", 
                        examples: ["//Show metrics","metrics"])]
 public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {

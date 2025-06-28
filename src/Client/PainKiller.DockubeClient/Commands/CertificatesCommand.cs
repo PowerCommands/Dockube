@@ -1,6 +1,6 @@
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "See information about used certificates in the Dockube platform.", 
+[CommandDesign(     description: "Dockube -  See information about used certificates in the Dockube platform.", 
                       arguments: ["<Mode>"],
                         options: [""],
                     suggestions: ["status"],

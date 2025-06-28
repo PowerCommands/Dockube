@@ -2,7 +2,7 @@ using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Create and manage certificates", 
+[CommandDesign(     description: "Dockube -  Create and manage certificates", 
                          quotes: ["name"],
                       arguments: ["Operation"],
                         options: ["ca","days"],

@@ -1,10 +1,9 @@
-using System.Diagnostics;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Connect to pod in provided namespace running in cluster", 
+[CommandDesign(     description: "Dockube -  Connect to pod in provided namespace running in cluster", 
                       arguments: ["<namespace>","<instance-name>"],
                        examples: ["//Connect to a pod in gitlab namespace","connect gitlab"])]
 public class ConnectCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
