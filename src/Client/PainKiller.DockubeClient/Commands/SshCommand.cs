@@ -1,3 +1,4 @@
+using System.Text;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.ReadLine.Managers;
 using Renci.SshNet;
@@ -40,16 +41,27 @@ public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         _client = new SshClient(host, port, userName, password);
         _client.Connect();
         Writer.WriteSuccessLine($"Connected to {host}:{port} as {userName}.");
-        var cmd = "";
-        while ( cmd != "exit" && cmd != "quit")
+        
+        
+        using var stream = _client.CreateShellStream("xterm", 80, 24, 800, 600, 1024);
+        
+        Thread.Sleep(500);
+        Console.Write(stream.Read());
+
+        string cmd = "";
+
+        while (cmd != "exit" && cmd != "quit")
         {
             Console.Write("SSH> ");
             cmd = Console.ReadLine() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(cmd)) continue;
+
             try
             {
-                var command = _client.RunCommand(cmd);
-                Console.WriteLine(command.Result);
+                stream.WriteLine(cmd);
+                Thread.Sleep(300); // vänta på output
+                string response = ReadStream(stream);
+                Console.WriteLine(response);
             }
             catch (Exception ex)
             {
@@ -59,6 +71,16 @@ public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         _client.Disconnect();
         Console.WriteLine("Disconnected from SSH server.\n");
         return Ok();
+    }
+    static string ReadStream(ShellStream stream)
+    {
+        var output = new StringBuilder();
+        while (stream.DataAvailable)
+        {
+            output.Append(stream.Read());
+            Thread.Sleep(50);
+        }
+        return output.ToString();
     }
     public RunResult Shutdown(string target)
     {
