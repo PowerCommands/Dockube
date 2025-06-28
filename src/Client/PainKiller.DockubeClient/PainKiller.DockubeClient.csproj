@@ -62,6 +62,8 @@
     <None Remove="Templates\Gitlab\gitlab-root-secret.yaml" />
     <None Remove="Templates\Gitlab\gitlab-values.yaml" />
     <None Remove="Templates\Gitlab\install.yaml" />
+    <None Remove="Templates\Gitserver\Gitserver.yaml" />
+    <None Remove="Templates\Gitserver\install.yaml" />
     <None Remove="Templates\Grafana\Grafana.yaml" />
     <None Remove="Templates\Grafana\install.yaml" />
     <None Remove="Templates\Ingress-Nginx-Helm\ingress-values.yaml" />
@@ -218,6 +220,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\Gitlab\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Gitserver\Gitserver.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Gitserver\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\Grafana\Grafana.yaml">

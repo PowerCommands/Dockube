@@ -35,6 +35,11 @@ public class PublishService(string basePath, string templatesPath, string certif
             EnsureNamespaceExists(release.Namespace);
 
             var dir = new DirectoryInfo(Path.Combine(basePath, release.Name));
+            if (!dir.Exists)
+            {
+                dir.Create();
+                _logger.LogInformation($"Created directory {dir.FullName}");
+            }
             var templatesDir = new DirectoryInfo(Path.Combine(templatesPath, release.Name));
             foreach (var fileInfo in templatesDir.GetFiles("*.yaml"))
             {
@@ -259,7 +264,6 @@ public class PublishService(string basePath, string templatesPath, string certif
         {
             content = content.Replace(kvp.Key, kvp.Value);
         }
-
         File.WriteAllText(outputPath, content);
     }
 }
