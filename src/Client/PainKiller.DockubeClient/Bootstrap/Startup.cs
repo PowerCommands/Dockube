@@ -22,7 +22,8 @@ public static class Startup
         Environment.CurrentDirectory = AppContext.BaseDirectory;
 
         var logger = LoggerProvider.CreateLogger<Program>();
-        logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
+        if (config.Core.Prompt.StartsWith("Warning")) logger.LogCritical($"Configuration file {nameof(CommandPromptConfiguration)}.yaml could not be read or serialized..");
+        else logger.LogInformation($"Configuration file {nameof(CommandPromptConfiguration)}.yaml read successfully.");
 
         if(!Directory.Exists(Path.Combine(ApplicationConfiguration.CoreApplicationDataPath, config.Core.RoamingDirectory))) Directory.CreateDirectory(Path.Combine(ApplicationConfiguration.CoreApplicationDataPath, config.Core.RoamingDirectory));
 

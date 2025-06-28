@@ -4,10 +4,10 @@ public class CoreConfiguration
     private string _roamingDirectory = "";
     public string Name { get; set; } = "Command Prompt";
     public string Version { get; set; } = "1.0";
-    public string Prompt { get; set; } = "pcm>";
+    public string Prompt { get; set; } = "Warning fallback configuration is used!>";
     public string DefaultCommand { get; set; } = "";
     public bool ShowLogo { get; set; } = true;
-    public string LogoColor { get; set; } = "DarkMagenta";
+    public string LogoColor { get; set; } = "Red";
     public List<string> Suggestions { get; set; } = [];
 
     public string RoamingDirectory
