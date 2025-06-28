@@ -8,6 +8,7 @@ public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPrompt
     {
         var manifestsSourcePath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.ManifestsPath);
         var certificatesSourcePath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.Ssl.Output);
+        var templatesSourcePath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.TemplatesPath);
 
         var safeTimeStamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var backupPath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.BackupPath, $"backup{safeTimeStamp}");
@@ -18,9 +19,11 @@ public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPrompt
 
             var backupManifestsPath = Path.Combine(backupPath, "manifests");
             var backupCertificatesPath = Path.Combine(backupPath, "certificates");
+            var backupTemplatesPath = Path.Combine(backupPath, "templates");
 
             CopyDirectory(manifestsSourcePath, backupManifestsPath);
             CopyDirectory(certificatesSourcePath, backupCertificatesPath);
+            CopyDirectory(templatesSourcePath, backupTemplatesPath);
 
             Writer.WriteSuccessLine( $"Backup completed to: {backupPath}");
             return Ok();
