@@ -6,25 +6,17 @@ public class DockubeInfoPanelContent(DockubeConfiguration configuration) : IInfo
 {
     public string GetText()
     {
-        var sslVersion = GetSslVersion();
-        var currentEnvironment = KubeEnvironmentManager.GetTarget();
-        var version = KubeEnvironmentManager.GetVersion();
-        var helmVersion = KubeEnvironmentManager.GetHelmVersion();
+        var versionInfo = VersionInformationManager.GetVersionInformation();
 
         var statuses = string.Join(", ", ServiceStatusManager.GetServicesStatus(configuration).Select(s => $"{s.Name} [green]{(s.IsAvailable ? "✅" : "[red]❌[/]")}[/]"));
         var domainLabel = $"Domain: {configuration.DefaultDomain}";
         var servicesLabel = $"Services: {statuses}";
-        var environmentLabel = $"Target: {currentEnvironment}";
-        var versionLabel = $"Kubernetes:  ({version})";
-        var sslLabel = $"SSL: {sslVersion}";
-        var helmVersionLabel = $"Helm: {helmVersion}";
+        var environmentLabel = $"Target: {versionInfo.CurrentEnvironment}";
+        var versionLabel = $"Kubernetes:  ({versionInfo.KubeVersion})";
+        var sslLabel = $"SSL: {versionInfo.SslVersion}";
+        var helmVersionLabel = $"Helm: {versionInfo.HelmVersion}";
         const int padding = -25;
         return $"|{domainLabel,padding}| {environmentLabel,padding}| {servicesLabel,padding}\n|{sslLabel,padding}| {helmVersionLabel, padding}| {versionLabel}";
     }
-    private string GetSslVersion()
-    {
-        var versionInfo = SslService.Default.GetVersion().Trim().Split(' ').Take(2);
-        var retVal = $"{string.Join(' ', versionInfo).Trim()}";
-        return retVal;
-    }
 }
+

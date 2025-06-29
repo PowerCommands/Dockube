@@ -81,7 +81,7 @@ public static class Startup
         var loggerFactory = new SerilogLoggerFactory(serilogLogger);
         LoggerProvider.Configure(loggerFactory);
     }
-    private static void ShowLogo(CoreConfiguration config, int margin = -1)
+    internal static void ShowLogo(CoreConfiguration config, int margin = -1)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         if(!config.ShowLogo) return;
