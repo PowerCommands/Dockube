@@ -5,6 +5,13 @@ configuration:
     manifestsPath: Manifests
     backupPath: Backups
     defaultDomain: dockube.lan
+    serviceStatusChecks:
+      - host: gitlab
+        name: Gitlab
+        tsl: true
+      - host: argocd
+        name: ArgoCD
+        tsl: true
     ssl:
       executablePath: OpenSSL-Win64\bin
       output: ssl-output

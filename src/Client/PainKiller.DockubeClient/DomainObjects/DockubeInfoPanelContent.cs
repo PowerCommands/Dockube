@@ -2,13 +2,15 @@
 using PainKiller.DockubeClient.Managers;
 
 namespace PainKiller.DockubeClient.DomainObjects;
-public class DockubeInfoPanelContent() : IInfoPanelContent
+public class DockubeInfoPanelContent(DockubeConfiguration configuration) : IInfoPanelContent
 {
     public string GetText()
     {
         var sslVersion = GetSslVersion();
         var currentEnvironment = KubeEnvironmentManager.GetVersion();
-        return $"SSL version: {sslVersion}\nCurrent Environment: {currentEnvironment}";
+
+        var statuses = string.Join(", ", ServiceStatusManager.GetServicesStatus(configuration).Select(s => $"{s.Name} {(s.IsAvailable ? "OK" : "OFFLINE")}"));
+        return $"SSL version: {sslVersion}\t\tServices: {statuses}\nCurrent Environment: {currentEnvironment}";
     }
     private string GetSslVersion()
     {

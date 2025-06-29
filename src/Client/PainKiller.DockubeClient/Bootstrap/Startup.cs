@@ -44,7 +44,7 @@ public static class Startup
         Console.WriteLine();
         Console.WriteLine();
 
-        InfoPanelService.Instance.RegisterContent(new DefaultInfoPanel(new DockubeInfoPanelContent(), config.Core.Modules.InfoPanel));
+        InfoPanelService.Instance.RegisterContent(new DefaultInfoPanel(new DockubeInfoPanelContent(config.Dockube), config.Core.Modules.InfoPanel));
 
         var suggestions = new List<string>();
         suggestions.AddRange(config.Core.Suggestions);
