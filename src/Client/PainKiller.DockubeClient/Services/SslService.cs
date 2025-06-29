@@ -268,15 +268,26 @@ public class SslService : ISslService
     {
         var certPath = Path.Combine(output, "certificate", $"{host}.crt");
         var intermediatePath = Path.Combine(output, "intermediate", intermediateDirectory, "intermediate.crt");
-        var keyPath = Path.Combine(output, "key", $"{host}.key");
 
         if (!File.Exists(certPath) || !File.Exists(intermediatePath))
             throw new FileNotFoundException("Required cert files missing.");
 
         var fullChainPath = Path.Combine(output, "certificate" ,$"{host}.pem");
         File.WriteAllText(fullChainPath, File.ReadAllText(certPath) + "\n" + File.ReadAllText(intermediatePath));
-
+        Thread.Sleep(500);
+        ExportFullChainCertFile(host, output);
         return fullChainPath;
+    }
+    private void ExportFullChainCertFile(string host, string output)
+    {
+        var pemPath = Path.Combine(output, "certificate", $"{host}.pem");
+        var keyPath = Path.Combine(output, "key", $"{host}.key");
+
+        if (!File.Exists(pemPath) || !File.Exists(keyPath))
+            throw new FileNotFoundException("Required cert files missing.");
+
+        var certPath = Path.Combine(output, "certificate" ,$"{host}.cert");
+        File.WriteAllText(certPath, File.ReadAllText(pemPath) + "\n" + File.ReadAllText(keyPath));
     }
     public string ExportToPfx(string commonName, string intermediateDirectory, string outputFolder, string password = "mypassword")
     {
