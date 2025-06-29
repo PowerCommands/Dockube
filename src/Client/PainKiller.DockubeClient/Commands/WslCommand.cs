@@ -1,6 +1,6 @@
 ﻿namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(description: "Dockube - Start a WSL terminal session.", 
+[CommandDesign(description: "Dockube -  Start a WSL terminal session.", 
                   examples: ["//Start wsl terminal session","wsl"])]
 public class WslCommand(string identifier) : TerminalCommando<CommandPromptConfiguration>(identifier)
 {

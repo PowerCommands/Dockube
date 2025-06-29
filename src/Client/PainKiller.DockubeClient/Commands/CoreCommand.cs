@@ -77,7 +77,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     }
     private RunResult Init()
     {
-        if (KubeEnvironmentManager.GetVersion().Contains("k3s"))
+        if (KubeEnvironmentManager.GetTarget().Contains("k3s"))
         {
             Writer.WriteLine("Init is only intended for Dockcker-Desktop environment.");
             return Nok("Init is only intended for Docker-Desktop environment.");

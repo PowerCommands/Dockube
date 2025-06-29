@@ -14,13 +14,14 @@ public class EnvironmentCommand(string identifier) : ConsoleCommandBase<CommandP
         if (string.IsNullOrEmpty(environment)) return ViewEnvironment();
         var environmentManager = new KubeEnvironmentManager();
         environmentManager.SwitchEnvironment(environment);
+        Thread.Sleep(1000);
         ViewEnvironment();
         return Ok();
     }
     
     public RunResult ViewEnvironment()
     {
-        Writer.WriteHeadLine($"Current kubernetes environment: {KubeEnvironmentManager.GetVersion()}");
+        Writer.WriteHeadLine($"Current kubernetes environment: {KubeEnvironmentManager.GetTarget()}");
         InfoPanelService.Instance.Update();
         return Ok();
     }

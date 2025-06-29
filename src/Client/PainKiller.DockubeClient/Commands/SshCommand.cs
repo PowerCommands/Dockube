@@ -5,9 +5,11 @@ using Renci.SshNet;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description:  "Dockube -  Run SSH commands",
-                        options: ["host", "port", "userName", "password","shutdown"],
-                       examples: ["//Run SSH command using ssh declared in configuration","ssh","//Hash password with openssl","ssh \"myPassword\" --password"])]
+[CommandDesign(     description:  "Dockube -  Run SSH commands, shutdown hosts, hash password...",
+                        options: ["shutdown", "host", "port", "userName", "password"],
+                       examples: ["//Connect to machine declared in configuration (use tab)","ssh <host-name>","//Hash password with openssl","ssh \"myPassword\" --password",
+                                  "//Shutdown every configured instance with hostname that starts with pi0","ssh --shutdown",
+                                  "//Shutdown specific ssh host","ssh <host-name> --shutdown"])]
 public class SshCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private SshClient _client = null!;

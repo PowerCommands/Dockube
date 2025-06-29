@@ -1,4 +1,5 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
+﻿using System.Text.RegularExpressions;
+using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Managers;
@@ -19,11 +20,29 @@ public class KubeEnvironmentManager
         InfoPanelService.Instance.Update();
         Console.WriteLine($"✅ Switched Kubernetes environment to '{environmentName}'");
     }
-    public static string GetVersion()
+    public static string GetTarget()
     {
         var response = ShellService.Default.StartInteractiveProcess("kubectl", "get nodes");
         var version = response.Contains("docker-desktop",StringComparison.OrdinalIgnoreCase) ? "Docker Desktop" : "k3s";
         return version;
+    }
+    public static string GetVersion()
+    {
+        var response = ShellService.Default.StartInteractiveProcess("kubectl", "version");
+        var lines = response.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        var parts = lines.Select(line =>
+        {
+            var clean = line.Replace(" Version", "").Trim();
+            return clean;
+        });
+        var version = string.Join(" ", parts);
+        return version;
+    }
+    public static string GetHelmVersion()
+    {
+        var response = ShellService.Default.StartInteractiveProcess("helm", "version");
+        var match = Regex.Match(response, @"Version:\s*""(?<version>v[0-9]+\.[0-9]+\.[0-9]+)""");
+        return match.Success ? match.Groups["version"].Value : "unknown";
     }
     private void BackupCurrentConfig()
     {

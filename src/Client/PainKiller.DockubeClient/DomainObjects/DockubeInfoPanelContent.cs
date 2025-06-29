@@ -7,10 +7,19 @@ public class DockubeInfoPanelContent(DockubeConfiguration configuration) : IInfo
     public string GetText()
     {
         var sslVersion = GetSslVersion();
-        var currentEnvironment = KubeEnvironmentManager.GetVersion();
+        var currentEnvironment = KubeEnvironmentManager.GetTarget();
+        var version = KubeEnvironmentManager.GetVersion();
+        var helmVersion = KubeEnvironmentManager.GetHelmVersion();
 
-        var statuses = string.Join(", ", ServiceStatusManager.GetServicesStatus(configuration).Select(s => $"{s.Name} {(s.IsAvailable ? "OK" : "OFFLINE")}"));
-        return $"SSL version: {sslVersion}\t\tServices: {statuses}\nCurrent Environment: {currentEnvironment}";
+        var statuses = string.Join(", ", ServiceStatusManager.GetServicesStatus(configuration).Select(s => $"{s.Name} [green]{(s.IsAvailable ? "✅" : "[red]❌[/]")}[/]"));
+        var domainLabel = $"Domain: {configuration.DefaultDomain}";
+        var servicesLabel = $"Services: {statuses}";
+        var environmentLabel = $"Target: {currentEnvironment}";
+        var versionLabel = $"Kubernetes:  ({version})";
+        var sslLabel = $"SSL: {sslVersion}";
+        var helmVersionLabel = $"Helm: {helmVersion}";
+        const int padding = -25;
+        return $"|{domainLabel,padding}| {environmentLabel,padding}| {servicesLabel,padding}\n|{sslLabel,padding}| {helmVersionLabel, padding}| {versionLabel}";
     }
     private string GetSslVersion()
     {

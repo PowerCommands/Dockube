@@ -1,3 +1,4 @@
+using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
@@ -13,7 +14,7 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
         
         var result = ShellService.Default.StartInteractiveProcess("kubectl", $"top pods --all-namespaces");
         Writer.WriteLine(result);
-        
+        InfoPanelService.Instance.Update();
         return Ok();
     }
 }

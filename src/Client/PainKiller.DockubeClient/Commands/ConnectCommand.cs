@@ -1,4 +1,5 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
+using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
@@ -24,7 +25,8 @@ public class ConnectCommand(string identifier) : ConsoleCommandBase<CommandPromp
         var podIdentity = pod.First().Value;
 
         ShellService.Default.RunTerminalUntilUserQuits("kubectl", $"exec -it {podIdentity} -n {ns} -- sh");
-        
+
+        InfoPanelService.Instance.Update();
         return Ok();
     }
 }

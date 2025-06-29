@@ -1,3 +1,5 @@
+using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
+
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  Backup manifests, templates and certificates", 
@@ -26,6 +28,7 @@ public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPrompt
             CopyDirectory(templatesSourcePath, backupTemplatesPath);
 
             Writer.WriteSuccessLine( $"Backup completed to: {backupPath}");
+            InfoPanelService.Instance.Update();
             return Ok();
         }
         catch (Exception ex)
