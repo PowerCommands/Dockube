@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
-using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Extensions;
+using PainKiller.DockubeClient.Managers;
 
 namespace PainKiller.DockubeClient.Services;
 public class PublishService(string basePath, string templatesPath, string certificateBasePath, string ca, string domain) : IPublishService
@@ -56,27 +56,24 @@ public class PublishService(string basePath, string templatesPath, string certif
                     ["$$MEMORY_LIMIT$$"]     = release.ResourceProfile.MemoryLimit
                 };
 
-                ReplacePlaceholdersInFile(fileInfo.FullName, outputFile, placeholders);
+                ReplaceManager.ReplacePlaceholdersInFile(fileInfo.FullName, outputFile, placeholders);
             }
 
             foreach (var res in release.Resources)
             {
+                ReplaceManager.DecryptSecrets(templatesPath, basePath, release.Name, res.Source);    //Replaces <ENCRYPTED_STRING> tags with decrypted values
+
+                var certManager = new CertificateManager(domain, certificateBasePath, ca);
                 foreach (var certificate in res.Certificates)
                 {
-                    CreateCertificate(certificate);
+                    var certResponse = certManager.CreateCertificate(certificate);
                     Thread.Sleep(1000);
-                    var safeName = certificate.SubjectCn.Split(' ').First().Replace(".", "-") + "-tls";
-                    var cn = certificate.SubjectCn.Split(' ').First();
-                    var cnFullDomain = $"{cn}.{domain}";
-                    RunCommand($"kubectl create secret tls {safeName} --cert=ssl-output\\certificate\\{cnFullDomain}.pem --key=ssl-output\\key\\{cnFullDomain}.key -n {release.Namespace}", "Certificate");
+                    RunCommand($"kubectl create secret tls {certResponse.SafeName} --cert=ssl-output\\certificate\\{certResponse.FullDomain}.pem --key=ssl-output\\key\\{certResponse.FullDomain}.key -n {release.Namespace}", "Certificate");
                 }
                 foreach (var cmd in res.Before)
                     RunCommand(cmd, "Before");
 
                 var command = res.ToCommand(basePath, release.Name, release.Namespace);
-                
-                
-                DecryptSecrets(basePath, release.Name, res);    //Replaces <ENCRYPTED_STRING> tags with decrypted values
 
                 if (!string.IsNullOrEmpty(res.Source))
                 {
@@ -121,61 +118,6 @@ public class PublishService(string basePath, string templatesPath, string certif
             throw;
         }
     }
-    private void CreateCertificate(CertificateRequest request)
-    {
-        var sslService = SslService.Default;
-        var requestSuccess = false;
-        var cnFullDomain = $"{request.SubjectCn.Split(' ').First()}.{domain}";
-        if (!sslService.CertificateExists(cnFullDomain, certificateBasePath))
-        {
-            if (request.KeyUsage.ToLower().Trim() == "serverauth")
-            {
-                var response = sslService.CreateRequestForTls(cnFullDomain, certificateBasePath, request.SubjectCn.Split(' '));
-                Console.WriteLine($"Created TLS request for {cnFullDomain} with response: {response}");
-                _logger.LogInformation($"Created TLS request for {cnFullDomain} with response: {response}");
-                requestSuccess = true;
-            }
-            else if (request.KeyUsage.ToLower().Trim() == "clientauth")
-            {
-                var response = sslService.CreateRequestForAuth(cnFullDomain, certificateBasePath, [cnFullDomain]);
-                Console.WriteLine($"Created Auth request for {cnFullDomain} with response: {response}");
-                _logger.LogInformation($"Created Auth request for {cnFullDomain} with response: {response}");
-                requestSuccess = true;
-            }
-            else
-            {
-                _logger.LogError($"Unknown key usage type: {request.KeyUsage}");
-            }
-            if (requestSuccess)
-            {
-                var response = sslService.CreateAndSignCertificate(cnFullDomain, request.ValidDays, certificateBasePath, ca, request.SubjectCn.Split(' '));
-                Console.WriteLine($"Created and signed certificate for {cnFullDomain} with response: {response}");
-                _logger.LogInformation($"Created and signed certificate for {cnFullDomain} with response: {response}");
-            }
-            else
-            {
-                _logger.LogError($"Failed to create certificate request for {cnFullDomain}.");
-                throw new InvalidOperationException($"Failed to create certificate request for {cnFullDomain}.");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"Certificate for {cnFullDomain} already exists, skipping creation.");
-            _logger.LogInformation($"Certificate for {cnFullDomain} already exists, skipping creation.");
-        }
-
-        if (!sslService.PemFileExists(cnFullDomain, certificateBasePath))
-        {
-            var response = sslService.ExportFullChainPemFile(cnFullDomain, ca, certificateBasePath);
-            Console.WriteLine($"Exported full chain PEM file for {cnFullDomain} with response: {response}");
-            _logger.LogInformation($"Exported full chain PEM file for {cnFullDomain} with response: {response}");
-        }
-        else
-        {
-            Console.WriteLine($"Full chain PEM file for {cnFullDomain} already exists, skipping export.");
-            _logger.LogInformation($"Full chain PEM file for {cnFullDomain} already exists, skipping export.");
-        }
-    }
     private void EnsureNamespaceExists(string ns)
     {
         var command = $"create namespace {ns} --dry-run=client -o yaml | kubectl apply -f -";
@@ -211,59 +153,5 @@ public class PublishService(string basePath, string templatesPath, string certif
         if (string.IsNullOrWhiteSpace(s) || s.Length % 4 != 0) 
             return false;
         return Base64Regex.IsMatch(s);
-    }
-    private static void DecryptSecrets(string basePath, string releaseName, DockubeResource resource)
-    {
-        if (string.IsNullOrEmpty(resource.Source)) return;
-        var fullPath = Path.Combine(basePath, releaseName, resource.Source);
-        if(!File.Exists(fullPath))
-        {
-            Console.WriteLine($"File {fullPath} does not exist, skipping decryption.");
-            return;
-        }
-        var content = File.ReadAllText(fullPath);
-        if (!content.Contains("<ENCRYPTED_STRING>")) return;
-
-        var buildContent = new StringBuilder();
-        var rows = content.Split('\n');
-
-        foreach (var row in rows)
-        {
-            var updatedRow = row;
-            var startTag = "<ENCRYPTED_STRING>";
-            var endTag = "</ENCRYPTED_STRING>";
-
-            int startIdx;
-            while ((startIdx = updatedRow.IndexOf(startTag, StringComparison.Ordinal)) != -1)
-            {
-                var endIdx = updatedRow.IndexOf(endTag, startIdx + startTag.Length, StringComparison.Ordinal);
-                if (endIdx == -1) break; // Malformed tag, ignore
-
-                var encryptedValue = updatedRow.Substring(
-                    startIdx + startTag.Length,
-                    endIdx - startIdx - startTag.Length
-                );
-
-                var decryptedValue = EncryptionService.Service.DecryptString(encryptedValue);
-                updatedRow = updatedRow.Substring(0, startIdx)
-                             + decryptedValue
-                             + updatedRow.Substring(endIdx + endTag.Length);
-            }
-
-            buildContent.AppendLine(updatedRow);
-        }
-        File.WriteAllText(fullPath, buildContent.ToString());
-    }
-    private void ReplacePlaceholdersInFile(string templatePath, string outputPath, Dictionary<string, string> placeholders)
-    {
-        if (!File.Exists(templatePath)) return;
-
-        var content = File.ReadAllText(templatePath);
-
-        foreach (var kvp in placeholders)
-        {
-            content = content.Replace(kvp.Key, kvp.Value);
-        }
-        File.WriteAllText(outputPath, content);
     }
 }
