@@ -73,7 +73,8 @@ public class PublishService(string basePath, string templatesPath, string certif
                 foreach (var cmd in res.Before)
                     RunCommand(cmd, "Before");
 
-                var command = res.ToCommand(basePath, release.Name, release.Namespace);
+                var ns = string.IsNullOrEmpty(res.OverrideNamespace) ? release.Namespace : res.OverrideNamespace;
+                var command = res.ToCommand(basePath, release.Name, ns);
 
                 if (!string.IsNullOrEmpty(res.Source))
                 {
