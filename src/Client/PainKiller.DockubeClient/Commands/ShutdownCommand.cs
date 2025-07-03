@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
+using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.ReadLine.Managers;
 using Renci.SshNet;
@@ -9,6 +12,7 @@ namespace PainKiller.DockubeClient.Commands;
                                   "//Shutdown specific ssh host","shutdown <host-name>"])]
 public class ShutdownCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
+    private readonly ILogger<ShutdownCommand> _logger = LoggerProvider.CreateLogger<ShutdownCommand>();
     private SshClient _client = null!;
     private readonly string _identifier = identifier;
 
@@ -33,6 +37,7 @@ public class ShutdownCommand(string identifier) : ConsoleCommandBase<CommandProm
             Writer.WriteSuccessLine($"Connected to {config.Host}:{config.Port} as {config.UserName}.");
             var command = _client.RunCommand("sudo poweroff");
             Writer.WriteLine($"{config.Host} sudo poweroff...");
+            _logger.LogInformation($"Shutdown command sent to {config.Host}:{config.Port} as {config.UserName}.");
             Thread.Sleep(3000);
             Console.WriteLine(command.Result);
         }
