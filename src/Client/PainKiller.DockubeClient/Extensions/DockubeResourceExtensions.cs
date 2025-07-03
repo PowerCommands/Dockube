@@ -24,6 +24,9 @@ public static class DockubeResourceExtensions
 
                 var versionArg = string.IsNullOrWhiteSpace(version) ? "" : $"--version {version}";
                 return $@"helm upgrade --install {chart} {chart}/{chart} -n {namespaceName} {versionArg} {valuesPath}";
+            case "docker-compose":
+                var composeFile = Path.Combine(basePath, releaseName, resource.Source);
+                return $"docker-compose -f \"{composeFile}\" up -d";
             default:
                 throw new NotSupportedException($"Unsupported resource type: {resource.Type}");
         }
@@ -40,6 +43,9 @@ public static class DockubeResourceExtensions
                 resource.Parameters.TryGetValue("name", out var customName);
                 var helmName = !string.IsNullOrWhiteSpace(customName) ? customName : resource.Source;
                 return $"helm uninstall {helmName} -n {namespaceName}";
+            case "docker-compose":
+                var composeFile = Path.Combine(basePath, releaseName, resource.Source);
+                return $"docker compose -f \"{composeFile}\" down";
             default:
                 throw new NotSupportedException($"Unsupported resource type: {resource.Type}");
         }

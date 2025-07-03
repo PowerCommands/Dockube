@@ -17,9 +17,10 @@ public static class Startup
 {
     public static CommandLoop Build()
     {
+        Environment.CurrentDirectory = AppContext.BaseDirectory;
+
         var config = ReadConfiguration();
         Console.Title = config.Core.Name;
-        Environment.CurrentDirectory = AppContext.BaseDirectory;
 
         var logger = LoggerProvider.CreateLogger<Program>();
         if (config.Core.Prompt.StartsWith("Warning")) logger.LogCritical($"Configuration file {nameof(CommandPromptConfiguration)}.yaml could not be read or serialized..");
@@ -55,6 +56,8 @@ public static class Startup
         
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         logger.LogDebug($"{nameof(EventBusService)} publish: {nameof(WorkingDirectoryChangedEventArgs)} {Environment.CurrentDirectory}");
+
+        logger.LogInformation($"Started {config.Core.Name} version {config.Core.Version}");
 
         return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config.Core);
     }

@@ -1,0 +1,19 @@
+services:
+  splunk:
+    image: splunk/splunk:latest
+    container_name: splunk
+    restart: unless-stopped
+    ports:
+      - "8000:8000"   # HTTPS Web UI
+      - "8088:8088"
+      - "9997:9997"
+    environment:
+      - SPLUNK_PASSWORD=changeme
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_LICENSE_URI=Free
+    volumes:
+      - splunk_data:/opt/splunk/var
+      - $$APP_CONTEXT_BASE_DIRECTORY$$/ssl-output/certificate/splunk.painkiller.lan.pem:/certs/splunk.$$DOMAIN_NAME$$.pem:ro
+      - $$APP_CONTEXT_BASE_DIRECTORY$$/ssl-output/certificate/splunk.painkiller.lan.key:/certs/splunk.$$DOMAIN_NAME$$.key:ro  
+volumes:
+  splunk_data:

@@ -1,0 +1,13 @@
+name: Splunk
+namespace: splunk
+isCore: false
+resources:  
+  - type: docker-compose
+    source: docker-compose.yaml
+    endpoint: https://splunk.$$DOMAIN_NAME$$
+    certificates:
+      - subjectCn: splunk
+        keyUsage: serverAuth          
+    before:
+      - echo Installing Splunk
+    

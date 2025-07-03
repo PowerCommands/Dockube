@@ -53,7 +53,8 @@ public class PublishService(string basePath, string templatesPath, string certif
                     ["$$CPU_REQUEST$$"]      = release.ResourceProfile.CpuRequest,
                     ["$$CPU_LIMIT$$"]        = release.ResourceProfile.CpuLimit,
                     ["$$MEMORY_REQUEST$$"]   = release.ResourceProfile.MemoryRequest,
-                    ["$$MEMORY_LIMIT$$"]     = release.ResourceProfile.MemoryLimit
+                    ["$$MEMORY_LIMIT$$"]     = release.ResourceProfile.MemoryLimit,
+                    ["$$APP_CONTEXT_BASE_DIRECTORY$$/"]        = AppContext.BaseDirectory,
                 };
 
                 ReplaceManager.ReplacePlaceholdersInFile(fileInfo.FullName, outputFile, placeholders);

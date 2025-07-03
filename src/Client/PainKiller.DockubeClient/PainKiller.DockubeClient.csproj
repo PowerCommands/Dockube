@@ -81,6 +81,8 @@
     <None Remove="Templates\Prometheus\install.yaml" />
     <None Remove="Templates\Prometheus\Prometheus.yaml" />
     <None Remove="Templates\Reddis\install.yaml" />
+    <None Remove="Templates\Splunk\docker-compose.yaml" />
+    <None Remove="Templates\Splunk\install.yaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -273,6 +275,12 @@
     <Content Include="Templates\Reddis\install.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Templates\Splunk\docker-compose.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Splunk\install.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -281,6 +289,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PainKiller.CommandPrompt.CoreLib\PainKiller.CommandPrompt.CoreLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Templates\Splunk\server.config.md">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
