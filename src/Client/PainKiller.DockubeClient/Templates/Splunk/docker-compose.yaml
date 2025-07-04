@@ -4,17 +4,18 @@ services:
     container_name: splunk
     restart: unless-stopped
     ports:
-      - "8000:8000"   # HTTPS Web UI
-      - "8088:8088"
-      - "9997:9997"
-      - "8089:8089"   # Log Forward
+      - "8000:8000"   # Web UI
+      - "8088:8088"   # HEC
+      - "9997:9997"   # Universal Forwarder
+      - "8089:8089"   # Management API (för CLI och automation)
     environment:
-      - SPLUNK_PASSWORD=changeme
+      - SPLUNK_PASSWORD=*****
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_LICENSE_URI=Free
     volumes:
-      - splunk_data:/opt/splunk/var
-      - $$APP_CONTEXT_BASE_DIRECTORY$$/ssl-output/certificate/splunk.painkiller.lan.pem:/certs/splunk.$$DOMAIN_NAME$$.pem:ro
-      - $$APP_CONTEXT_BASE_DIRECTORY$$/ssl-output/certificate/splunk.painkiller.lan.key:/certs/splunk.$$DOMAIN_NAME$$.key:ro  
+      - splunk-data:/opt/splunk/var
+      - splunk-etc:/opt/splunk/etc
+
 volumes:
-  splunk_data:
+  splunk-data:
+  splunk-etc: 

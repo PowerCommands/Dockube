@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Managers;
 
@@ -57,5 +58,13 @@ public class KubeEnvironmentManager
 
         File.Copy(CurrentConfig, backupFile);
         Console.WriteLine($"📁 Backup created: {backupFile}");
+    }
+
+    private static List<string> _namespaces = [];
+    public static List<string> GetNamespaces()
+    {
+        if (_namespaces.Count > 0) return _namespaces;
+        _namespaces = ShellService.Default.GetNames("kubectl", "get namespaces");
+        return _namespaces;
     }
 }

@@ -1,23 +1,31 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Extensions;
+using PainKiller.DockubeClient.Managers;
+using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  See log on the provided item", 
                       arguments: ["<namespace>","<instance-name>"],
                         options: ["file", "prepare-data"],
-                    suggestions: ["gitlab"],
                        examples: ["//View log on pod gitlab-c649d8bc-lhjjc in namespace gitlab","logs gitlab gitlab-c649d8bc-lhjjc"])]
 public class LogsCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
+    private readonly string _identifier = identifier;
+    public override void OnInitialized()
+    {
+        var namespaces = KubeEnvironmentManager.GetNamespaces();
+        SuggestionProviderManager.AppendContextBoundSuggestions(_identifier, namespaces.ToArray());
+        base.OnInitialized();
+    }
     public override RunResult Run(ICommandLineInput input)
     {
         var ns = input.Arguments.First();
         if (string.IsNullOrWhiteSpace(ns)) return Nok("Namespace are required.");
         
         var pods = ShellService.Default.GetNames("kubectl", $"get pods -n {ns}");
-        var podIdentity = ListService.ListDialog("Select your pod", pods).First().Value;
+        var podIdentity = ListService.ListDialog("Select your pod", pods, autoSelectIfOnlyOneItem: false).First().Value;
 
         var prepareData = "";
         if (input.HasOption("prepare-data"))
