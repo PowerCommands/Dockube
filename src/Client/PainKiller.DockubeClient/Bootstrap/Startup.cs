@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
+using PainKiller.CommandPrompt.CoreLib.Core.Commands;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
+using PainKiller.CommandPrompt.CoreLib.Core.Managers;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
@@ -58,6 +60,10 @@ public static class Startup
         logger.LogDebug($"{nameof(EventBusService)} publish: {nameof(WorkingDirectoryChangedEventArgs)} {Environment.CurrentDirectory}");
 
         logger.LogInformation($"Started {config.Core.Name} version {config.Core.Version}");
+
+        var logManager = new LogManager(config.Log.FilePath, config.Log.FileName);
+        var entries = logManager.GetLog().Take(3);
+        LogCommand.DisplayTable(entries, 0);
 
         return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config.Core);
     }
