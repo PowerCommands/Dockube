@@ -14,7 +14,7 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
         var podJson = ShellService.Default.StartInteractiveProcess("kubectl", "get pods -A -o json");
         var topOutput = ShellService.Default.StartInteractiveProcess("kubectl", "top pods -A");
 
-        var metadata = new Dictionary<(string ns, string name), (string node, string status)>();
+        var metadata = new Dictionary<(string ns, string name), (string node, string status, string uptime)>();
 
         using var doc = JsonDocument.Parse(podJson);
         var items = doc.RootElement.GetProperty("items");
@@ -25,7 +25,21 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
             var name = item.GetProperty("metadata").GetProperty("name").GetString() ?? "";
             var status = item.GetProperty("status").TryGetProperty("phase", out var statusProp) ? statusProp.GetString() ?? "" : "";
             var node = item.GetProperty("spec").TryGetProperty("nodeName", out var nodeProp) ? nodeProp.GetString() ?? "" : "";
-            metadata[(ns, name)] = (node, status);
+
+            string uptime = "";
+            if (item.GetProperty("status").TryGetProperty("startTime", out var startTimeProp) &&
+                DateTimeOffset.TryParse(startTimeProp.GetString(), out var startTime))
+            {
+                var delta = DateTimeOffset.UtcNow - startTime;
+                if (delta.TotalDays >= 1)
+                    uptime = $"{(int)delta.TotalDays}d {delta.Hours}h";
+                else if (delta.TotalHours >= 1)
+                    uptime = $"{(int)delta.TotalHours}h {delta.Minutes}m";
+                else
+                    uptime = $"{delta.Minutes}m";
+            }
+
+            metadata[(ns, name)] = (node, status, uptime);
         }
 
         var metrics = new List<PodMetric>();
@@ -39,6 +53,7 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
                 {
                     metric.Node = meta.node;
                     metric.Status = meta.status;
+                    metric.Uptime = meta.uptime;
                     metrics.Add(metric);
                 }
             }
@@ -52,6 +67,7 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
             table.AddColumn("Pod");
             table.AddColumn("Node");
             table.AddColumn("Status");
+            table.AddColumn("Uptime");
             table.AddColumn("CPU");
             table.AddColumn("Memory");
 
@@ -61,6 +77,7 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
                     pod.Name,
                     pod.Node,
                     FormatHelpers.FormatStatus(pod.Status ?? ""),
+                    pod.Uptime ?? "",
                     FormatHelpers.FormatCpu(pod.CpuMilliCores),
                     FormatHelpers.FormatMemory(pod.MemoryMiB)
                 );
@@ -70,6 +87,7 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
             var nsMem = nsGroup.Sum(p => p.MemoryMiB);
             table.AddRow(
                 "[bold yellow]Namespace Total[/]",
+                "",
                 "",
                 "",
                 $"[bold green]{FormatHelpers.FormatCpu(nsCpu)}[/]",
@@ -106,8 +124,6 @@ public class MetricsCommand(string identifier) : ConsoleCommandBase<CommandPromp
         return Ok();
     }
 }
-
-
 
 
 

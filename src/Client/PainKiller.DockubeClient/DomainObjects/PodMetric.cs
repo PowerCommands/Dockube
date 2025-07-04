@@ -6,6 +6,7 @@ public class PodMetric
     public string Name { get; set; } = string.Empty;
     public string Node { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public string? Uptime { get; set; } 
     public int CpuMilliCores { get; set; }
     public int MemoryMiB { get; set; }
 
