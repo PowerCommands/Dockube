@@ -33,7 +33,7 @@ public class ConnectCommand(string identifier) : ConsoleCommandBase<CommandPromp
         if (string.IsNullOrWhiteSpace(ns)) return Nok("Namespace are required.");
         
         var pods = ShellService.Default.GetNames("kubectl", $"get pods -n {ns}");
-        var podIdentity = ListService.ListDialog("Select your pod", pods).First().Value;
+        var podIdentity = ListService.ListDialog("Select your pod", pods, autoSelectIfOnlyOneItem: false).First().Value;
         Console.WriteLine("");
         ShellService.Default.RunTerminalUntilUserQuits("kubectl", $"exec -it {podIdentity} -n {ns} -- sh");
 
