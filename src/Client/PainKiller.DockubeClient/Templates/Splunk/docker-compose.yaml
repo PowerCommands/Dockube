@@ -7,6 +7,7 @@ services:
       - "8000:8000"   # HTTPS Web UI
       - "8088:8088"
       - "9997:9997"
+      - "8089:8089"   # Log Forward
     environment:
       - SPLUNK_PASSWORD=changeme
       - SPLUNK_START_ARGS=--accept-license

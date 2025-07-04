@@ -1,5 +1,6 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using PainKiller.DockubeClient.Extensions;
 
 namespace PainKiller.DockubeClient.Commands;
 
@@ -14,16 +15,9 @@ public class LogsCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
     {
         var ns = input.Arguments.First();
         if (string.IsNullOrWhiteSpace(ns)) return Nok("Namespace are required.");
-        var rows = ShellService.Default.StartInteractiveProcess("kubectl", $"get pods -n {ns}").Split('\n');
-        if (rows.Length == 0)
-        {
-            Writer.WriteLine($"No pods found in namespace {ns}.");
-            return Nok();
-        }
         
-        var pods = rows.Select(r => $"{r.Split(' ').FirstOrDefault()}").Where(p => !string.IsNullOrEmpty(p.Trim()) && p.Trim().ToLower() != "name").ToList();
-        var pod = ListService.ListDialog("Select your pod", pods);
-        var podIdentity = pod.First().Value;
+        var pods = ShellService.Default.GetNames("kubectl", $"get pods -n {ns}");
+        var podIdentity = ListService.ListDialog("Select your pod", pods).First().Value;
 
         var prepareData = "";
         if (input.HasOption("prepare-data"))

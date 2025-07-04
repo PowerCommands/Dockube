@@ -1,4 +1,6 @@
-﻿using YamlDotNet.Serialization;
+﻿using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Contracts;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace PainKiller.DockubeClient.Extensions;
@@ -75,5 +77,13 @@ public static class DockubeResourceExtensions
             }
         }
         return releases;
+    }
+    public static List<string> GetNames(this IShellService shellService, string command, string args, string firstRowIdentifier = "name")
+    {
+        var retVal = new List<string>();
+        var rows = ShellService.Default.StartInteractiveProcess(command, args).Split('\n');
+        if(rows.Length == 0) return retVal;
+        retVal = rows.Select(r => $"{r.Split(' ').FirstOrDefault()}").Where(p => !string.IsNullOrEmpty(p.Trim()) && p.Trim().ToLower() != firstRowIdentifier).ToList();
+        return retVal;
     }
 }

@@ -22,3 +22,19 @@ EOF
 ```
 cat /opt/splunk/etc/system/local/server.conf
 ```
+
+## 5. Restart Splunk
+```
+/opt/splunk/bin/splunk restart
+```
+
+## 6. Change admin password
+```
+splunk edit user admin -password <new-password> -auth admin:changeme
+```
+
+## 7. Add splunk forward server
+
+```
+splunk add forward-server localhost:9997 -auth admin:<new-password>
+```
