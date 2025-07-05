@@ -9,10 +9,11 @@ public class CommandLoop(ICommandRuntime runtime, IUserInputReader inputReader, 
     private readonly ILogger<CommandLoop> _logger = LoggerProvider.CreateLogger<CommandLoop>();
     public void Start(string[] args)
     {
-        while (true)
+        var runProgram = true;
+        while (runProgram)
         {
             var input = args.Length > 0 ? string.Join(' ', args) : inputReader.ReadLine(config.Prompt).Trim();
-            args = []; // Reset args for next iteration
+            args = []; 
             _logger.LogDebug(input);
 
             if (string.IsNullOrWhiteSpace(input)) continue;
@@ -22,7 +23,11 @@ public class CommandLoop(ICommandRuntime runtime, IUserInputReader inputReader, 
                 break;
             }
             var result = runtime.Execute(input, config.DefaultCommand);
-            if(result.Success) _logger.LogDebug($"Result: {result.Identifier} {result.Message} {result.Success}");
+            if (result.Success)
+            {
+                _logger.LogDebug($"Result: {result.Identifier} {result.Message} {result.Success}");
+                runProgram = !result.TerminateProgram;
+            }
             else
             {
                 ConsoleService.Writer.WriteError($"Error occured running {result.Identifier} command. {result.Message}", scope:nameof(CommandLoop));

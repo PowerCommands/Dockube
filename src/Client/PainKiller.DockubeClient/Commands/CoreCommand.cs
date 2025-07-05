@@ -30,7 +30,7 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
         if (options.ContainsKey("namespaces") || options.Count == 0)
         {
             Writer.WriteLine("All Namespaces in Cluster");
-            RunCommand("kubectl get namespaces", "Namespaces");
+            ShellService.Default.RunTerminalUntilUserQuits("kubectl","get namespaces");
         }
 
         foreach (var ns in namespaces.Where(n => n.Contains(nameSpace)))
@@ -38,38 +38,38 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
             if (options.ContainsKey("pods") || options.Count == 0)
             {
                 Writer.WriteLine($"Pods in namespace: {ns}");
-                RunCommand($"kubectl get pods -n {ns}", $"Pods in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$"get pods -n {ns}");
             }
             if (options.ContainsKey("pvc") || options.Count == 0)
             {
                 Writer.WriteLine($"PVC:s in namespace: {ns}");
-                RunCommand($"kubectl get pvc -n {ns}", $"PVC:s in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$"get pvc -n {ns}");
             }
             if (options.ContainsKey("secrets") || options.Count == 0)
             {
                 Writer.WriteLine($"Secrets in namespace {ns}");
-                RunCommand($"kubectl get secrets -n {ns}", $"Secrets in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$"get secrets -n {ns}");
             }
 
             if (options.ContainsKey("tls") || options.Count == 0)
             {
                 Writer.WriteLine($"TLS Secrets in namespace {ns}");
-                RunCommand($@"kubectl get secrets -n {ns} -o jsonpath=""{{range .items[?(@.type=='kubernetes.io/tls')]}}{{.metadata.name}}{{'\n'}}{{end}}""", $"TLS Secrets in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$@"get secrets -n {ns} -o jsonpath=""{{range .items[?(@.type=='kubernetes.io/tls')]}}{{.metadata.name}}{{'\n'}}{{end}}""");
             }
 
             if (options.ContainsKey("endpoints") || options.Count == 0)
             {
                 Writer.WriteLine($"Endpoints in namespace {ns}");
-                RunCommand($"kubectl get endpoints -n {ns}", $"Endpoints in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$"get endpoints -n {ns}");
             }
 
             if (options.ContainsKey("ingress") || options.Count == 0)
             {
                 Writer.WriteLine($"Ingress Resources in namespace {ns}");
-                RunCommand($"kubectl get ingress -n {ns}", $"Ingress in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$"get ingress -n {ns}");
 
                 Writer.WriteLine($"Ingress Hosts in namespace {ns}");
-                RunCommand($@"kubectl get ingress -n {ns} -o jsonpath=""{{range .items[*]}}{{.metadata.name}} {{.spec.rules[*].host}}{{'\n'}}{{end}}""", $"Ingress Hosts in {ns}");
+                ShellService.Default.RunTerminalUntilUserQuits("kubectl",$@"get ingress -n {ns} -o jsonpath=""{{range .items[*]}}{{.metadata.name}} {{.spec.rules[*].host}}{{'\n'}}{{end}}""");
             }
         }
         if (options.ContainsKey("hosts") || options.Count == 0) ShowHosts();
@@ -139,7 +139,6 @@ public class CoreCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
                 catch (Exception ex)
                 {
                     Writer.WriteLine($"Error retrieving password for release {release.Name}: {ex.Message}");
-                    continue;
                 }
 
             }

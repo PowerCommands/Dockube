@@ -1,3 +1,5 @@
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  See information about used certificates in the Dockube platform.", 
@@ -40,8 +42,8 @@ public class CertificatesCommand(string identifier) : ConsoleCommandBase<Command
         }
 
         Writer.WriteLine("TLS Secrets in Cluster:");
-        RunCommand(@"kubectl get secrets --all-namespaces -o jsonpath=""{range .items[?(@.type=='kubernetes.io/tls')]}{.metadata.namespace}/{.metadata.name}{'\n'}{end}""", "TLS Secrets");
-
+        ShellService.Default.RunTerminalUntilUserQuits("kubectl",@"get secrets --all-namespaces -o jsonpath=""{range .items[?(@.type=='kubernetes.io/tls')]}{.metadata.namespace}/{.metadata.name}{'\n'}{end}""");
+        
         return Ok();
     }
 

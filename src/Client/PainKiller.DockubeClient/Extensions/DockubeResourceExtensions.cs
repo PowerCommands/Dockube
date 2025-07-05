@@ -8,7 +8,7 @@ namespace PainKiller.DockubeClient.Extensions;
 public static class DockubeResourceExtensions
 {
     public static string ToEndpoint(this DockubeConfiguration configuration, DockubeResource resource) => resource.ToEndpoint(configuration.DefaultDomain);
-    public static string ToEndpoint(this DockubeResource resource, string domain) => resource.Endpoint.Replace("$$DOMAIN_NAME$$", domain);
+    public static string ToEndpoint(this DockubeResource resource, string domain) => $"{resource.Endpoint}".Replace("$$DOMAIN_NAME$$", domain);
     public static string ToCommand(this DockubeResource resource, string basePath, string releaseName, string namespaceName)
     {
         if (string.IsNullOrEmpty(resource.Source)) return "";

@@ -1,3 +1,5 @@
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  Manage your Helm charts", 
@@ -22,26 +24,26 @@ public class ChartCommand(string identifier) : ConsoleCommandBase<CommandPromptC
     public RunResult ShowRepos()
     {
         Writer.WriteHeadLine("Configured Helm repositories:");
-        RunCommand("helm repo list", "Helm Repos");
+        ShellService.Default.RunTerminalUntilUserQuits("helm","repo list");
         ShowCacheStats();
         return Ok();
     }
     public RunResult ViewVersions(string chartName)
     {
         Writer.WriteHeadLine($"Available versions for '{chartName}':");
-        RunCommand($"helm search repo {chartName} --versions", "Helm Versions");
+        ShellService.Default.RunTerminalUntilUserQuits("helm",$"search repo {chartName} --versions");
         return Ok();
     }
     public RunResult UpdateChart(string chartName)
     {
         Writer.WriteHeadLine($"Updating Helm repository (and chart cache) for '{chartName}'...");
-        RunCommand("helm repo update", "Helm Repo Update");
+        ShellService.Default.RunTerminalUntilUserQuits("helm","repo update");
         return Ok();
     }
     public RunResult DeleteChart(string chartName)
     {
         Writer.WriteHeadLine($"Removing Helm repository entry '{chartName}'...");
-        RunCommand($"helm repo remove {chartName}", "Helm Repo Remove");
+        ShellService.Default.RunTerminalUntilUserQuits("helm",$"repo remove {chartName}");
         return Ok();
     }
 
@@ -62,5 +64,4 @@ public class ChartCommand(string identifier) : ConsoleCommandBase<CommandPromptC
         Writer.WriteLine($"Number of cached files : {files.Length}");
         Writer.WriteLine($"Total size                   : {totalMb:F2} MB");
     }
-
 }

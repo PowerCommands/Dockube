@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.ReadLine.Managers;
@@ -38,9 +37,9 @@ public class ShutdownCommand(string identifier) : ConsoleCommandBase<CommandProm
             var command = _client.RunCommand("sudo poweroff");
             Writer.WriteLine($"{config.Host} sudo poweroff...");
             _logger.LogInformation($"Shutdown command sent to {config.Host}:{config.Port} as {config.UserName}.");
-            Thread.Sleep(3000);
+            Thread.Sleep(500);
             Console.WriteLine(command.Result);
         }
-        return Ok("Shutdown command sent to all SSH servers.");
+        return Quit("Shutdown command sent to all SSH servers.");
     }
 }
