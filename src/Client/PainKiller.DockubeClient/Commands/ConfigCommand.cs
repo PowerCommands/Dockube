@@ -20,7 +20,7 @@ public class ConfigCommand(string identifier) : ConsoleCommandBase<CommandPrompt
         var templatesDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.TemplatesPath));
         Writer.WriteDescription($"├──{Emo.Directory.Icon()} Backups path ", Configuration.Dockube.BackupPath, noBorder: true);
         var backupDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.BackupPath));
-        foreach (var dir in backupDir.GetDirectories()) Writer.WriteLine($"│   ├──{Emo.File.Icon()} {dir.Name}");
+        foreach (var dir in backupDir.GetDirectories().OrderByDescending(d => d.CreationTime).Take(10)) Writer.WriteLine($"│   ├──{Emo.File.Icon()} {dir.Name}");
         
         Writer.WriteDescription($"├── Services ", "Status check", noBorder: true);
         foreach (var service in ServiceStatusManager.GetServicesStatus(Configuration.Dockube))

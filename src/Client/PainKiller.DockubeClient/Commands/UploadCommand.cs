@@ -7,42 +7,38 @@ using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Dockube -  Connect to pod in provided namespace running in cluster", 
-                      arguments: ["<namespace>","<instance-name>"],
-                       examples: ["//Connect to a pod in gitlab namespace","connect gitlab"])]
-public class ConnectCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+[CommandDesign(     description: "Dockube -  Upload a file to a pod", 
+                      arguments: ["<namespace>"],
+                       examples: ["//Connect to a pod in gitlab namespace, chose a file to upload","upload gitlab"])]
+public class UploadCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private readonly string _identifier = identifier;
     public override void OnInitialized()
     {
         var namespaces = KubeEnvironmentManager.GetNamespaces().ToList();
-        namespaces.Insert(0, "docker-desktop (connect to Docker container)");
         SuggestionProviderManager.AppendContextBoundSuggestions(_identifier, namespaces.ToArray());
         base.OnInitialized();
     }
     public override RunResult Run(ICommandLineInput input)
     {
         var ns = input.Arguments.First();
-        if (ns.StartsWith("docker-desktop"))
-        {
-            var containers = ShellService.Default.GetNames("docker", "ps --format \"{{.Names}}\"");
-            var containerName = ListService.ListDialog("Select your container", containers, autoSelectIfOnlyOneItem: false).First().Value;
-            Console.WriteLine("");
-            ShellService.Default.RunTerminalUntilUserQuits("docker", $"exec -it {containerName} sh");
-            return Ok("docker-desktop run.");
-        }
         if (string.IsNullOrWhiteSpace(ns)) return Nok("Namespace are required.");
         
         var pods = ShellService.Default.GetNames("kubectl", $"get pods -n {ns}");
         var podIdentity = ListService.ListDialog("Select your pod", pods, autoSelectIfOnlyOneItem: false).First().Value;
         Console.WriteLine("");
-        ShellService.Default.RunTerminalUntilUserQuits("kubectl", $"exec -it {podIdentity} -n {ns} -- sh");
+
+        var dir = new DirectoryInfo(Environment.CurrentDirectory);
+        var file = ListService.ListDialog("Select file to copy", dir.GetFiles().Select(f => f.Name).ToList(), autoSelectIfOnlyOneItem: false).First().Value;
+
+        var args = $"-n {ns} exec -i {podIdentity} -- tee /tmp/{file} < ./{file}";
+        ShellService.Default.Execute("kubectl", args);
 
         Writer.WriteHeadLine("Command below copied to clipboard (sometimes you need a real terminal)");
-        Writer.WriteLine($"kubectl exec -it {podIdentity} -n {ns} -- sh");
-        TextCopy.ClipboardService.SetText($"kubectl exec -it {podIdentity} -n {ns} -- sh");
+        Writer.WriteLine($"kubectl {args}");
+        TextCopy.ClipboardService.SetText($"kubectl {args}");
 
         InfoPanelService.Instance.Update();
-        return Ok("kubectl runned.");
+        return Ok($"kubectl {args}");
     }
 }

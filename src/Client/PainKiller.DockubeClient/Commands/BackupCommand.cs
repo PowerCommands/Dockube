@@ -1,8 +1,12 @@
+﻿using PainKiller.CommandPrompt.CoreLib.Core.Enums;
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Dockube -  Backup manifests, templates and certificates", 
+[CommandDesign(     description: "Dockube -  Backup manifests, templates and certificates",
+                      arguments: ["view"],
+                    suggestions: ["view"],
                        examples: ["//Backup manifests, templates and certificates","backup"])]
 public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -15,6 +19,13 @@ public class BackupCommand(string identifier) : ConsoleCommandBase<CommandPrompt
         var safeTimeStamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var backupPath = Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.BackupPath, $"backup{safeTimeStamp}");
 
+        if (input.Arguments.FirstOrDefault() == "view")
+        {
+            var backupDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.BackupPath));
+            foreach (var dir in backupDir.GetDirectories().OrderByDescending(d => d.CreationTime)) Writer.WriteLine($"│   ├──{Emo.File.Icon()} {dir.Name}");
+            ShellService.Default.OpenDirectory(backupDir.FullName);
+            return Ok("Backup directory opened in file explorer.");
+        }
         try
         {
             Directory.CreateDirectory(backupPath);

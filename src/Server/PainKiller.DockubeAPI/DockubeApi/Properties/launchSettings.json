@@ -7,7 +7,10 @@
       "launchBrowser": false,
       "applicationUrl": "http://0.0.0.0:5000;https://0.0.0.0:5001",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "/workspace/test/certifikat/dockubeapi.painkiller.lan.pfx",
+        "ASPNETCORE_Kestrel__Certificates__Default__Password": "myPazzw0rd",
+        "DOCKUBE__GITLAB__TOKEN": "glpat-aRJnW_FmWHNfzjXMp7Cx"
       }
     }
   }

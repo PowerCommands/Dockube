@@ -1,4 +1,4 @@
-@DockubeApi_HostAddress = https://dockubeapi.dockube.lan:5001
+@DockubeApi_HostAddress = https://dockubeapi.painkiller.lan:5001
 
 GET {{DockubeApi_HostAddress}}/version/
 Accept: application/json
