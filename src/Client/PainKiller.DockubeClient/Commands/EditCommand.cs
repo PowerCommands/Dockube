@@ -9,7 +9,7 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  Edit a yaml file", 
                       arguments: ["<namespace>"],
-                       examples: ["//Connect to a pod in gitlab namespace","connect gitlab"])]
+                       examples: ["//Connect to a pod in gitlab namespace","edit gitlab"])]
 public class EditCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private readonly string _identifier = identifier;
