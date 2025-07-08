@@ -30,14 +30,13 @@ public class EditCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
 
         var resources = ShellService.Default.GetNames("kubectl", $"get {objectType} -n {ns}");
         var resourceName = ListService.ListDialog("Select your resource to edit", resources, autoSelectIfOnlyOneItem: false).First().Value;
+
         
         var args = $"edit {objectType} {resourceName} -n {ns}";
+        Writer.WriteLine($"\nkubectl {args}");
+
         ShellService.Default.RunTerminalUntilUserQuits("kubectl", args);
-
-        Writer.WriteHeadLine("Command below copied to clipboard (sometimes you need a real terminal)");
-        Writer.WriteLine($"kubectl {args}");
-        TextCopy.ClipboardService.SetText($"kubectl {args}");
-
+        
         InfoPanelService.Instance.Update();
         return Ok($"kubectl {args}");
     }
