@@ -1,10 +1,12 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Core.Enums;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.DockubeClient.Bootstrap;
 using PainKiller.DockubeClient.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(description: "Dockube -  See detailed information about current configuration",
+               suggestions: ["templates","backups","manifests"],
                   examples: ["//See detailed information about current configuration", "config"])]
 public class ConfigCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -43,7 +45,11 @@ public class ConfigCommand(string identifier) : ConsoleCommandBase<CommandPrompt
         Writer.WriteDescription($"├──{Emo.CircleWhite.Icon()} Kubernetes ", versionInfo.KubeVersion, noBorder: true);
         Writer.WriteDescription($"├──{Emo.CircleGreen.Icon()} Open SSL ", versionInfo.SslVersion, noBorder: true);
         Writer.WriteDescription($"├──{Emo.CircleBrown.Icon()} Helm ", versionInfo.HelmVersion, noBorder: true);
-        
+
+        var dirName = this.GetSuggestion(input.Arguments.FirstOrDefault(), "templates");
+        if(dirName == "templates") ShellService.Default.OpenDirectory(Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.TemplatesPath));
+        if(dirName == "manifests") ShellService.Default.OpenDirectory(Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.ManifestsPath));
+        if(dirName == "backups") ShellService.Default.OpenDirectory(Path.Combine(AppContext.BaseDirectory, Configuration.Dockube.BackupPath));
         return Ok();
     }
 }

@@ -2,7 +2,7 @@ version: 1.0
 configuration:
   manifestBasePath: Manifests  
   gitlab:
-    baseUrl: http://gitlab-webservice-default.gitlab.svc.cluster.local:8080
+    baseUrl: http://gitlab.gitlab.svc.cluster.local
     repository: Dockube
     userName: Dockube    
     email: dockube@dockube.lan    
