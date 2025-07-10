@@ -12,83 +12,40 @@ public class ShellService : IShellService
     {
         var actualPath = ReplacePlaceholders(path);
         if (!Directory.Exists(actualPath)) return;
-
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = actualPath,
-            UseShellExecute = true,
-            Verb = "open"
-        });
+        Process.Start(new ProcessStartInfo { FileName = actualPath, UseShellExecute = true, Verb = "open" });
     }
-
     public void OpenWithDefaultProgram(string path, string workingDirectory = "")
     {
         var actualPath = ReplacePlaceholders(path);
-
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = actualPath,
-            WorkingDirectory = ReplacePlaceholders(workingDirectory),
-            UseShellExecute = true,
-            Verb = "open"
-        });
+        Process.Start(new ProcessStartInfo { FileName = actualPath, WorkingDirectory = ReplacePlaceholders(workingDirectory), UseShellExecute = true, Verb = "open" });
     }
-
     public void Execute(string program, string args = "", string workingDirectory = "", bool waitForExit = false)
     {
-        var psi = new ProcessStartInfo
-        {
-            FileName = ReplacePlaceholders(program),
-            Arguments = args,
-            WorkingDirectory = ReplacePlaceholders(workingDirectory),
-            RedirectStandardOutput = !waitForExit,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
+        var psi = new ProcessStartInfo { FileName = ReplacePlaceholders(program), Arguments = args, WorkingDirectory = ReplacePlaceholders(workingDirectory), RedirectStandardOutput = !waitForExit, UseShellExecute = false, CreateNoWindow = true };
 
         var process = Process.Start(psi);
-        if (waitForExit)
-        {
-            process!.WaitForExit();
-            var output = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(output);
-        }
+        if (!waitForExit) return;
+        process!.WaitForExit();
+        var output = process.StandardOutput.ReadToEnd();
+        Console.WriteLine(output);
     }
     public void RunTerminalUntilUserQuits(string program, string args)
     {
-        var psi = new ProcessStartInfo(program, args)
-        {
-            UseShellExecute = false,
-            RedirectStandardInput = false,
-            RedirectStandardOutput = false,
-            RedirectStandardError = false,
-        };
-
+        var psi = new ProcessStartInfo(program, args) { UseShellExecute = false, RedirectStandardInput = false, RedirectStandardOutput = false, RedirectStandardError = false, };
         var process = new Process { StartInfo = psi };
         process.Start();
         process.WaitForExit();
     }
     public void RunCommandWithFileInput(string program, string args, string filePath)
     {
-        var psi = new ProcessStartInfo
-        {
-            FileName = program,
-            Arguments = args,
-            UseShellExecute = false,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = false,
-            RedirectStandardError = false,
-        };
+        var psi = new ProcessStartInfo { FileName = program, Arguments = args, UseShellExecute = false, RedirectStandardInput = true, RedirectStandardOutput = false, RedirectStandardError = false, };
 
-        using var process = new Process { StartInfo = psi };
+        using var process = new Process();
+        process.StartInfo = psi;
         process.Start();
 
         using (var writer = process.StandardInput)
-        using (var fileStream = new StreamReader(filePath))
-        {
-            fileStream.BaseStream.CopyTo(writer.BaseStream);
-        }
-
+        using (var fileStream = new StreamReader(filePath)) fileStream.BaseStream.CopyTo(writer.BaseStream);
         process.WaitForExit();
     }
     public string StartInteractiveProcess(string program, string args = "", string workingDirectory = "", bool waitForExit = true)
@@ -97,16 +54,7 @@ public class ShellService : IShellService
 
         try
         {
-            var psi = new ProcessStartInfo
-            {
-                FileName = ReplacePlaceholders(program),
-                Arguments = args,
-                WorkingDirectory = ReplacePlaceholders(workingDirectory),
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+            var psi = new ProcessStartInfo { FileName = ReplacePlaceholders(program), Arguments = args, WorkingDirectory = ReplacePlaceholders(workingDirectory), RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true };
 
             using var process = Process.Start(psi);
             if (process == null)
@@ -114,7 +62,6 @@ public class ShellService : IShellService
                 Console.WriteLine("Failed to start process.");
                 return "Process failed to start.";
             }
-
             if (waitForExit)
             {
                 output.AppendLine(process.StandardOutput.ReadToEnd());
@@ -123,17 +70,14 @@ public class ShellService : IShellService
             }
             else
             {
-                process.OutputDataReceived += (sender, e) => 
+                process.OutputDataReceived += (_, e) => 
                 {
-                    if (e.Data != null) 
-                        output.AppendLine(e.Data);
+                    if (e.Data != null) output.AppendLine(e.Data);
                 };
-                process.ErrorDataReceived += (sender, e) => 
+                process.ErrorDataReceived += (_, e) => 
                 {
-                    if (e.Data != null) 
-                        output.AppendLine($"ERROR: {e.Data}");
+                    if (e.Data != null) output.AppendLine($"ERROR: {e.Data}");
                 };
-
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
             }
@@ -142,13 +86,7 @@ public class ShellService : IShellService
         {
             output.AppendLine($"Error executing {program}: {ex.Message}");
         }
-
         return output.ToString();
     }
-    private static string ReplacePlaceholders(string input)
-    {
-        return input
-            .Replace("$ROAMING$", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData))
-            .Replace("%USERNAME%", Environment.UserName, StringComparison.OrdinalIgnoreCase);
-    }
+    private static string ReplacePlaceholders(string input) => input.Replace("$ROAMING$", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).Replace("%USERNAME%", Environment.UserName, StringComparison.OrdinalIgnoreCase);
 }
