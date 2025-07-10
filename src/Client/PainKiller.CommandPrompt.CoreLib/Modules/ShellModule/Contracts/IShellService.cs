@@ -5,5 +5,6 @@ public interface IShellService
     void OpenWithDefaultProgram(string path, string workingDirectory = "");
     void Execute(string program, string args = "", string workingDirectory = "", bool waitForExit = false);
     void RunTerminalUntilUserQuits(string program, string args);
+    void RunCommandWithFileInput(string program, string args, string filePath);
     string StartInteractiveProcess(string program, string args = "", string workingDirectory = "", bool waitForExit = true);
 }

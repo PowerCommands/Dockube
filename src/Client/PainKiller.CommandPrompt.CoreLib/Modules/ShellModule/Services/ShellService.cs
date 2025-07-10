@@ -68,6 +68,29 @@ public class ShellService : IShellService
         process.Start();
         process.WaitForExit();
     }
+    public void RunCommandWithFileInput(string program, string args, string filePath)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = program,
+            Arguments = args,
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = false,
+            RedirectStandardError = false,
+        };
+
+        using var process = new Process { StartInfo = psi };
+        process.Start();
+
+        using (var writer = process.StandardInput)
+        using (var fileStream = new StreamReader(filePath))
+        {
+            fileStream.BaseStream.CopyTo(writer.BaseStream);
+        }
+
+        process.WaitForExit();
+    }
     public string StartInteractiveProcess(string program, string args = "", string workingDirectory = "", bool waitForExit = true)
     {
         var output = new StringBuilder();

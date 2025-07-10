@@ -32,13 +32,11 @@ public class UploadCommand(string identifier) : ConsoleCommandBase<CommandPrompt
         var file = ListService.ListDialog("Select file to copy", dir.GetFiles().Select(f => f.Name).ToList(), autoSelectIfOnlyOneItem: false).First().Value;
 
         var args = $"-n {ns} exec -i {podIdentity} -- tee /tmp/{file} < ./{file}";
-        ShellService.Default.Execute("kubectl", args);
+        ShellService.Default.RunCommandWithFileInput("kubectl", args, file);
 
-        Writer.WriteHeadLine("Command below copied to clipboard (sometimes you need a real terminal)");
-        Writer.WriteLine($"kubectl {args}");
-        TextCopy.ClipboardService.SetText($"kubectl {args}");
-
+        Writer.WriteHeadLine($"File uploaded to /tmp/{file} on pod {podIdentity}");
+        
         InfoPanelService.Instance.Update();
-        return Ok($"kubectl {args}");
+        return Ok($"File uploaded to /tmp/{file} on pod {podIdentity}");
     }
 }
