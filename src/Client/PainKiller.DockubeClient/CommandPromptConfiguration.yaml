@@ -5,6 +5,7 @@ configuration:
     manifestsPath: Manifests
     backupPath: Backups
     defaultDomain: dockube.lan
+    dockerHubUserName: dockerdoktor
     serviceStatusChecks:
       - host: gitlab
         name: Gitlab
