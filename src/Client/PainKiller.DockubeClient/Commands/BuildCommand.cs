@@ -7,7 +7,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(description: "Dockube -  Clone an existing Docker repo, build your own version with ARM64 support.",
-                   options: ["git", "platform"],
+                   options: ["git", "platform","publish","skipBuild"],
                   examples: ["//Build your docker image of https://github.com/giongto35/cloud-game.git with name cloud-game", "build https://github.com/giongto35/cloud-game.git \"cloud-game\""])]
 public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -17,6 +17,8 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
         var url = input.Arguments.FirstOrDefault();
         var imageName = input.Quotes.FirstOrDefault();
         input.TryGetOption(out var platform, "linux/arm64");
+        input.TryGetOption(out var publish, false);
+        input.TryGetOption(out var skipBuild, false);
         if (string.IsNullOrWhiteSpace(url) || string.IsNullOrEmpty(imageName)) return Nok("You must provide a repository URL and an image name to clone and build.");
 
         var dateTag = DateTime.UtcNow.ToString("yyyy-MM-dd");
@@ -34,15 +36,20 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
                 CloneRepo(url, tempDir.Path);
                 _logger.LogInformation("Cloned repository to temporary directory: {TempDirectory}", tempDir.Path);
             }
-            if (platform == "linux/arm64")
+            if (!skipBuild)
             {
-                Writer.WriteLine($"Adjust makefile for arm64.");
-                PatchMakefileForArm64(tempDir.Path);
+                if (platform == "linux/arm64")
+                {
+                    Writer.WriteLine($"Adjust makefile for arm64.");
+                    PatchMakefileForArm64(tempDir.Path);
+                }
+                Writer.WriteLine($"{nameof(EnsureBuildXBuilder)} ...");
+                EnsureBuildXBuilder(nameof(DockubeClient));
+                Writer.WriteLine($"Build image {localTag} Platform: {platform} ...");
+                BuildImage(tempDir.Path, localTag, platform);
             }
-            Writer.WriteLine($"{nameof(EnsureBuildXBuilder)} ...");
-            EnsureBuildXBuilder(nameof(DockubeClient));
-            Writer.WriteLine($"Build image {localTag} Platform: {platform} ...");
-            BuildImage(tempDir.Path, localTag, platform);
+
+            if (!publish) return Ok();
             Writer.WriteLine($"Push image {localTag} to {remoteTag}...");
             TagAndPushImage(localTag, remoteTag);
         }

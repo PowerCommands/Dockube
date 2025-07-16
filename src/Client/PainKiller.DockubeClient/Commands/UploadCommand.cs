@@ -1,4 +1,3 @@
-using Org.BouncyCastle.Tls;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
@@ -10,7 +9,7 @@ namespace PainKiller.DockubeClient.Commands;
 
 [CommandDesign(     description: "Dockube -  Upload a file to a pod", 
                       arguments: ["<namespace>"],
-                        options: ["ssh"],
+                        options: ["ssh","target"],
                        examples: ["//Connect to a pod in gitlab namespace, chose a file to upload","upload gitlab"])]
 public class UploadCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
@@ -26,7 +25,7 @@ public class UploadCommand(string identifier) : ConsoleCommandBase<CommandPrompt
     {
         var ns = input.Arguments.First();
         if (string.IsNullOrWhiteSpace(ns)) return Nok("Namespace are required.");
-        if (input.HasOption("ssh")) return UploadToSsh(ns);
+        if (input.HasOption("ssh")) return UploadToSsh(ns, input.GetOptionValue("target"));
         
         var pods = ShellService.Default.GetNames("kubectl", $"get pods -n {ns}");
         var podIdentity = ListService.ListDialog("Select your pod", pods, autoSelectIfOnlyOneItem: false).First().Value;
@@ -44,13 +43,13 @@ public class UploadCommand(string identifier) : ConsoleCommandBase<CommandPrompt
         return Ok($"File uploaded to /tmp/{file} on pod {podIdentity}");
     }
 
-    public RunResult UploadToSsh(string name)
+    public RunResult UploadToSsh(string name, string targetDir)
     {
         var dir = new DirectoryInfo(Environment.CurrentDirectory);
         var file = ListService.ListDialog("Select file to copy", dir.GetFiles().Select(f => f.Name).ToList(), autoSelectIfOnlyOneItem: false).First().Value;
         var config = Configuration.Dockube.Ssh.First(s => s.Name == name);
-
-        var args = $"./{file} {config.UserName}@{config.Host}:~";
+        targetDir = string.IsNullOrEmpty(targetDir) ? "~" : targetDir;
+        var args = $"\"./{file}\" {config.UserName}@{config.Host}:{targetDir}";
 
         try
         {
