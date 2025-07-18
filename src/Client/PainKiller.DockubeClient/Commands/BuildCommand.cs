@@ -84,7 +84,7 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
     {
         _logger.LogInformation("Building Docker image: {ImageName} from {Directory} for {Platform}", imageName, directory, platform);
 
-        var args = $"buildx build --platform {platform} -t {imageName} --load \"{directory}\"";
+        var args = $"buildx build --no-cache --platform {platform} -t {imageName} --load \"{directory}\"";
         ShellService.Default.RunTerminalUntilUserQuits("docker", args);
     }
     private void TagAndPushImage(string sourceTag, string destinationTag)
