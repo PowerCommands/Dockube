@@ -3,11 +3,11 @@ using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(     description: "Dockube -  Publish an release to your kubernetes cluster", 
+[CommandDesign(     description: "Dockube -  Install an release to your kubernetes cluster", 
                       arguments: ["<release name>"],
                         options: ["uninstall"],
                        examples: ["//Publish Grafana-Prometheus your core cluster","publish Grafana-Prometheus"])]
-public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+public class InstallCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private readonly string _identifier = identifier;
     public override void OnInitialized()
@@ -27,10 +27,10 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
         
         if (input.TryGetOption(out bool uninstall, false)) return UnInstall(release, service);
         
-        Publish(release, service);
+        Install(release, service);
         return Ok();
     }
-    private RunResult Publish(DockubeRelease release, IPublishService service)
+    private RunResult Install(DockubeRelease release, IPublishService service)
     {
         service.ExecuteRelease(release);
         return Ok();
