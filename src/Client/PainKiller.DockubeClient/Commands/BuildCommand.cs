@@ -21,7 +21,7 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
         input.TryGetOption(out var skipBuild, false);
         if (string.IsNullOrWhiteSpace(url) || string.IsNullOrEmpty(imageName)) return Nok("You must provide a repository URL and an image name to clone and build.");
 
-        var dateTag = DateTime.UtcNow.ToString("yyyy-MM-dd");
+        var dateTag = $"{DateTime.UtcNow:yyyy-MM-dd}{input.GetOptionValue("publish")}";
         var localTag = $"dockube/{imageName}:{dateTag}";
         var remoteTag = $"{Configuration.Dockube.DockerHubUserName}/{imageName}:{dateTag}";
 
