@@ -6,9 +6,10 @@ using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.DockubeClient.Commands;
 
-[CommandDesign(description: "Dockube -  Clone an existing Docker repo, build your own version with ARM64 support.",
-                   options: ["git", "platform","publish","skipBuild"],
-                  examples: ["//Build your docker image of https://github.com/giongto35/cloud-game.git with name cloud-game", "build https://github.com/giongto35/cloud-game.git \"cloud-game\""])]
+[CommandDesign(description: "Dockube -  Clone an existing Docker repo, build your own version with ARM64 support (default).",
+                   options: ["git", "platform","publish","skipBuild","dockerfile"],
+                  examples: ["//Build your docker image of https://github.com/giongto35/cloud-game.git with name cloud-game", "build https://github.com/giongto35/cloud-game.git \"cloud-game\"",
+                             "//Build your docker image of the local git repo D:\\repos\\theGame with name the-game and linux/amd64 support and push it to your dockerhub repository\n(publish requires you to add dockerHubUserName to the Dockube configuration and authenticate your user.)", "build git=D:\\repos\\theGame \"the-game\" --platform=linux/amd64 --publish"])]
 public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     private readonly ILogger<BuildCommand> _logger = LoggerProvider.CreateLogger<BuildCommand>();
@@ -17,14 +18,15 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
         var url = input.Arguments.FirstOrDefault();
         var imageName = input.Quotes.FirstOrDefault();
         input.TryGetOption(out var platform, "linux/arm64");
+        input.TryGetOption(out var dockerfile, "Dockerfile");
         input.TryGetOption(out var publish, false);
         input.TryGetOption(out var skipBuild, false);
         if (string.IsNullOrWhiteSpace(url) || string.IsNullOrEmpty(imageName)) return Nok("You must provide a repository URL and an image name to clone and build.");
 
-        var dateTag = $"{DateTime.UtcNow:yyyy-MM-dd}{input.GetOptionValue("publish")}";
-        var localTag = $"dockube/{imageName}:{dateTag}";    
+        var imageTag = $"{DateTime.UtcNow:yyyy-MM-dd}{input.GetOptionValue("publish")}-{platform.Split('/').Last()}";
+        var localTag = $"dockube/{imageName}:{imageTag}";    
 
-        var remoteTag = $"{Configuration.Dockube.DockerHubUserName}/{imageName}:{dateTag}";
+        var remoteTag = $"{Configuration.Dockube.DockerHubUserName}/{imageName}:{imageTag}";
 
         var gitRepository = input.GetOptionValue("git");
         ITemporaryDirectory tempDir = string.IsNullOrWhiteSpace(gitRepository) ? new TemporaryDirectory() : new LocalDirectory(gitRepository);
@@ -39,15 +41,10 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
             }
             if (!skipBuild)
             {
-                if (platform == "linux/arm64")
-                {
-                    Writer.WriteLine($"Adjust makefile for arm64.");
-                    PatchMakefileForArm64(tempDir.Path);
-                }
                 Writer.WriteLine($"{nameof(EnsureBuildXBuilder)} ...");
                 EnsureBuildXBuilder(nameof(DockubeClient));
                 Writer.WriteLine($"Build image {localTag} Platform: {platform} ...");
-                BuildImage(tempDir.Path, localTag, platform);
+                BuildImage(tempDir.Path, localTag, dockerfile, platform);
             }
 
             if (!publish) return Ok();
@@ -81,11 +78,12 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
             ShellService.Default.RunTerminalUntilUserQuits("docker", $"buildx use {builderName}");
         }
     }
-    private void BuildImage(string directory, string imageName, string platform = "linux/arm64")
+    private void BuildImage(string directory, string imageName, string dockerfile, string platform = "linux/arm64")
     {
         _logger.LogInformation("Building Docker image: {ImageName} from {Directory} for {Platform}", imageName, directory, platform);
+        var dockerfilePath = Path.Combine(directory, dockerfile);
 
-        var args = $"buildx build --no-cache --platform {platform} -t {imageName} --load \"{directory}\"";
+        var args = $"buildx build --no-cache --platform {platform} -t {imageName} --load -f \"{dockerfilePath}\" \"{directory}\"";
         ShellService.Default.RunTerminalUntilUserQuits("docker", args);
     }
     private void TagAndPushImage(string sourceTag, string destinationTag)
@@ -97,54 +95,4 @@ public class BuildCommand(string identifier) : ConsoleCommandBase<CommandPromptC
         _logger.LogInformation("Pushing image {Destination}", destinationTag);
         ShellService.Default.RunTerminalUntilUserQuits("docker", $"push {destinationTag}");
     }
-
-    private void PatchMakefileForArm64(string projectDir)
-    {
-        var makefilePath = Path.Combine(projectDir, "Makefile");
-        if (!File.Exists(makefilePath)) return;
-
-        var lines = File.ReadAllLines(makefilePath).ToList();
-
-        for (int i = 0; i < lines.Count; i++)
-        {
-            var trimmed = lines[i].TrimStart();
-
-            // Modifiera CGO_CFLAGS och CGO_LDFLAGS
-            if (trimmed.StartsWith("CGO_CFLAGS=") && !lines[i].Contains("-march=armv8-a"))
-            {
-                lines[i] = "CGO_CFLAGS='-g -O3 -march=armv8-a'";
-            }
-            if (trimmed.StartsWith("CGO_LDFLAGS=") && !lines[i].Contains("-march=armv8-a"))
-            {
-                lines[i] = "CGO_LDFLAGS='-g -O3 -march=armv8-a'";
-            }
-
-            // Injicera GOARCH=arm64 CGO_ENABLED=1 före go build
-            if (trimmed.StartsWith("go build") && !trimmed.Contains("GOARCH="))
-            {
-                lines[i] = "\tGOARCH=arm64 CGO_ENABLED=1 " + trimmed;
-            }
-
-            // Injicera GOARCH=arm64 på CGO-byggkommandon
-            if ((trimmed.StartsWith("CGO_CFLAGS=") || trimmed.StartsWith("CGO_LDFLAGS=")) &&
-                i + 1 < lines.Count &&
-                lines[i + 1].TrimStart().StartsWith("go build") &&
-                !lines[i + 1].Contains("GOARCH="))
-            {
-                lines[i + 1] = "\tGOARCH=arm64 CGO_ENABLED=1 " + lines[i + 1].TrimStart();
-            }
-
-            // Fixa recept-indentering: TAB istället för spaces
-            if (i > 0 && lines[i - 1].TrimEnd().EndsWith(":") &&
-                lines[i].StartsWith("    ") && !lines[i].StartsWith("\t"))
-            {
-                lines[i] = "\t" + lines[i].TrimStart();
-            }
-        }
-
-        File.WriteAllLines(makefilePath, lines);
-    }
-
-
-
 }
