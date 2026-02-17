@@ -19,15 +19,31 @@ public class ShellService : IShellService
         var actualPath = ReplacePlaceholders(path);
         Process.Start(new ProcessStartInfo { FileName = actualPath, WorkingDirectory = ReplacePlaceholders(workingDirectory), UseShellExecute = true, Verb = "open" });
     }
-    public void Execute(string program, string args = "", string workingDirectory = "", bool waitForExit = false)
+    public void Execute(string program, string args = "", string workingDirectory = "", bool waitForExit = true)
     {
-        var psi = new ProcessStartInfo { FileName = ReplacePlaceholders(program), Arguments = args, WorkingDirectory = ReplacePlaceholders(workingDirectory), RedirectStandardOutput = !waitForExit, UseShellExecute = false, CreateNoWindow = true };
+        var psi = new ProcessStartInfo
+        {
+            FileName = ReplacePlaceholders(program),
+            Arguments = args,
+            WorkingDirectory = ReplacePlaceholders(workingDirectory),
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
 
-        var process = Process.Start(psi);
+        using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
+
+        process.OutputDataReceived += (_, e) => { if (e.Data != null) Console.WriteLine(e.Data); };
+        process.ErrorDataReceived += (_, e) => { if (e.Data != null) Console.Error.WriteLine(e.Data); };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
         if (!waitForExit) return;
-        process!.WaitForExit();
-        var output = process.StandardOutput.ReadToEnd();
-        Console.WriteLine(output);
+
+        process.WaitForExit();
     }
     public void RunTerminalUntilUserQuits(string program, string args)
     {
